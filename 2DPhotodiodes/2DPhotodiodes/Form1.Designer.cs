@@ -60,6 +60,7 @@
             this.startButton = new System.Windows.Forms.Button();
             this.stopButton = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.folderButton = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -302,6 +303,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.folderButton);
             this.groupBox1.Controls.Add(this.textBox1);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.startButton);
@@ -312,6 +314,16 @@
             this.groupBox1.TabIndex = 13;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Controls";
+            // 
+            // folderButton
+            // 
+            this.folderButton.Location = new System.Drawing.Point(6, 139);
+            this.folderButton.Name = "folderButton";
+            this.folderButton.Size = new System.Drawing.Size(75, 23);
+            this.folderButton.TabIndex = 15;
+            this.folderButton.Text = "Folder";
+            this.folderButton.UseVisualStyleBackColor = true;
+            this.folderButton.Click += new System.EventHandler(this.folderButton_Click);
             // 
             // textBox1
             // 
@@ -1315,6 +1327,7 @@
         private AxAPTQuadLib.AxAPTQuad y2Diode;
         private AxAPTQuadLib.AxAPTQuad z1Diode;
         private AxAPTQuadLib.AxAPTQuad z2Diode;
+        private System.Windows.Forms.Button folderButton;
     }
 }
 

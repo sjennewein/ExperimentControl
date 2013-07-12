@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
@@ -29,7 +30,9 @@ namespace _2DPhotodiodes
         private Thread _collectorThread;
         private bool _stop = false;
         private int _delay = 1000;
-        
+        private string _storageFolder = "c:\\temp\\";
+        private StreamWriter logFileWriter;
+             
         #region graph declaration
         private float[] x1Power = new float[samples];
         private readonly Series x1PowerSeries = new Series("x1 power");
@@ -289,26 +292,46 @@ namespace _2DPhotodiodes
 
         private void CollectData()
         {
-            int i = 0;
             float test = 0, test1 = 0, test2 = 0;
-            var random = new Random();
+            Random random = new Random();
+            logFileWriter = new StreamWriter(_storageFolder + "\\diodeLOG.txt", true);
             float[] newValue = new float[18];
             do
             {
-                x1Diode.ReadSumDiffSignals(ref test, ref test1, ref test2);
-                //for (i = 0; i < 18; i++)
-                //{
-                //    newValue[i] = 5;
-                //    //(float) random.NextDouble();
-                //}
+                //x1Diode.ReadSumDiffSignals(ref test, ref test1, ref test2);
+                for (int i = 0; i < 18; i++)
+                {
+                    newValue[i] = (float) random.NextDouble();
+                }
 
                 Add(newValue);
                 UpdateGraphs(1);
                 UpdateTextBoxes(1);
+                WriteDataToFile();
                 Thread.Sleep(_delay);
-                i++;
             } while (!_stop);
-            _collectorThread = null;           
+            _collectorThread = null;
+            logFileWriter.Close();
+        }
+
+        private void WriteDataToFile()
+        {
+            DateTime now = DateTime.Now;
+            
+            logFileWriter.WriteLine("\"" + now.ToString("MM-dd-yy::hh:mm:ss") + "\"," +
+                                    x1X[samples - 1] + "," +
+                                    x1Y[samples - 1] + "," +
+                                    x2X[samples - 1] + "," +
+                                    x2Y[samples - 1] + "," +
+                                    y1X[samples - 1] + "," +
+                                    y1Y[samples - 1] + "," +
+                                    y2X[samples - 1] + "," +
+                                    y2Y[samples - 1] + "," +
+                                    z1X[samples - 1] + "," +
+                                    z1Y[samples - 1] + "," +
+                                    z2X[samples - 1] + "," +
+                                    z2Y[samples - 1]
+                );
         }
 
         private void UpdateTextBoxes(int e)
@@ -490,5 +513,14 @@ namespace _2DPhotodiodes
             }
             return mean;
         }
+
+        private void folderButton_Click(object sender, EventArgs e)
+        {
+            var folder = new FolderBrowserDialog();
+            folder.ShowDialog();
+            _storageFolder = folder.SelectedPath;
+        }
+
+        
     }
 }

@@ -358,7 +358,7 @@
             this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Location = new System.Drawing.Point(439, 436);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(102, 111);
+            this.groupBox2.Size = new System.Drawing.Size(106, 111);
             this.groupBox2.TabIndex = 14;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "x1";
@@ -487,7 +487,7 @@
             this.groupBox3.Controls.Add(this.label25);
             this.groupBox3.Location = new System.Drawing.Point(439, 553);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(102, 111);
+            this.groupBox3.Size = new System.Drawing.Size(106, 111);
             this.groupBox3.TabIndex = 15;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "x2";
@@ -614,9 +614,9 @@
             this.groupBox4.Controls.Add(this.label35);
             this.groupBox4.Controls.Add(this.meany1X);
             this.groupBox4.Controls.Add(this.label37);
-            this.groupBox4.Location = new System.Drawing.Point(547, 436);
+            this.groupBox4.Location = new System.Drawing.Point(551, 436);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(102, 111);
+            this.groupBox4.Size = new System.Drawing.Size(108, 111);
             this.groupBox4.TabIndex = 16;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "y1";
@@ -743,9 +743,9 @@
             this.groupBox5.Controls.Add(this.label47);
             this.groupBox5.Controls.Add(this.meany2X);
             this.groupBox5.Controls.Add(this.label49);
-            this.groupBox5.Location = new System.Drawing.Point(547, 553);
+            this.groupBox5.Location = new System.Drawing.Point(551, 553);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(102, 111);
+            this.groupBox5.Size = new System.Drawing.Size(108, 111);
             this.groupBox5.TabIndex = 15;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "y2";
@@ -872,9 +872,9 @@
             this.groupBox6.Controls.Add(this.label59);
             this.groupBox6.Controls.Add(this.meanz1X);
             this.groupBox6.Controls.Add(this.label61);
-            this.groupBox6.Location = new System.Drawing.Point(655, 436);
+            this.groupBox6.Location = new System.Drawing.Point(665, 436);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(102, 111);
+            this.groupBox6.Size = new System.Drawing.Size(108, 111);
             this.groupBox6.TabIndex = 15;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "z1";
@@ -1001,9 +1001,9 @@
             this.groupBox7.Controls.Add(this.label71);
             this.groupBox7.Controls.Add(this.meanz2X);
             this.groupBox7.Controls.Add(this.label73);
-            this.groupBox7.Location = new System.Drawing.Point(655, 553);
+            this.groupBox7.Location = new System.Drawing.Point(665, 553);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(102, 111);
+            this.groupBox7.Size = new System.Drawing.Size(108, 111);
             this.groupBox7.TabIndex = 15;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "z2";
@@ -1119,7 +1119,7 @@
             // x1Diode
             // 
             this.x1Diode.Enabled = true;
-            this.x1Diode.Location = new System.Drawing.Point(763, 442);
+            this.x1Diode.Location = new System.Drawing.Point(844, 491);
             this.x1Diode.Name = "x1Diode";
             this.x1Diode.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("x1Diode.OcxState")));
             this.x1Diode.Size = new System.Drawing.Size(58, 39);
@@ -1128,7 +1128,7 @@
             // x2Diode
             // 
             this.x2Diode.Enabled = true;
-            this.x2Diode.Location = new System.Drawing.Point(827, 442);
+            this.x2Diode.Location = new System.Drawing.Point(908, 491);
             this.x2Diode.Name = "x2Diode";
             this.x2Diode.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("x2Diode.OcxState")));
             this.x2Diode.Size = new System.Drawing.Size(58, 39);
@@ -1137,7 +1137,7 @@
             // y1Diode
             // 
             this.y1Diode.Enabled = true;
-            this.y1Diode.Location = new System.Drawing.Point(763, 491);
+            this.y1Diode.Location = new System.Drawing.Point(844, 540);
             this.y1Diode.Name = "y1Diode";
             this.y1Diode.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("y1Diode.OcxState")));
             this.y1Diode.Size = new System.Drawing.Size(58, 39);
@@ -1146,7 +1146,7 @@
             // y2Diode
             // 
             this.y2Diode.Enabled = true;
-            this.y2Diode.Location = new System.Drawing.Point(827, 491);
+            this.y2Diode.Location = new System.Drawing.Point(908, 540);
             this.y2Diode.Name = "y2Diode";
             this.y2Diode.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("y2Diode.OcxState")));
             this.y2Diode.Size = new System.Drawing.Size(58, 39);
@@ -1155,7 +1155,7 @@
             // z1Diode
             // 
             this.z1Diode.Enabled = true;
-            this.z1Diode.Location = new System.Drawing.Point(763, 536);
+            this.z1Diode.Location = new System.Drawing.Point(844, 585);
             this.z1Diode.Name = "z1Diode";
             this.z1Diode.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("z1Diode.OcxState")));
             this.z1Diode.Size = new System.Drawing.Size(58, 39);
@@ -1164,7 +1164,7 @@
             // z2Diode
             // 
             this.z2Diode.Enabled = true;
-            this.z2Diode.Location = new System.Drawing.Point(827, 539);
+            this.z2Diode.Location = new System.Drawing.Point(908, 588);
             this.z2Diode.Name = "z2Diode";
             this.z2Diode.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("z2Diode.OcxState")));
             this.z2Diode.Size = new System.Drawing.Size(58, 39);

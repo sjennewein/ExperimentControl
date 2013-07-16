@@ -11,74 +11,64 @@ namespace _2DPhotodiodes
 
     public partial class Form1 : Form
     {
-        #region Input enum
-
-        public enum Input
-        {
-            X1,
-            X2,
-            Y1,
-            Y2,
-            Z1,
-            Z2
-        };
-
-        #endregion
-
         private const int samples = 1000;
         private int counter = 0;
         private Thread _collectorThread;
         private bool _stop = false;
         private int _delay = 1000;
-        private string _storageFolder = "c:\\temp\\";
+        private string _storageFolder = "d:\\manipe\\2ddiodes\\";
         private StreamWriter logFileWriter;
              
         #region graph declaration
-        private float[] x1Power = new float[samples];
+        private double[] x1Power = new double[samples];
         private readonly Series x1PowerSeries = new Series("x1 power");
-        private readonly float[] x1X = new float[samples];
+        private readonly double[] x1X = new double[samples];
         private readonly Series x1XSeries = new Series("x1 x-axis");
-        private readonly float[] x1Y = new float[samples];
+        private readonly double[] x1Y = new double[samples];
         private readonly Series x1YSeries = new Series("x1 y-axis");
 
-        private float[] x2Power = new float[samples];
+        private double[] x2Power = new double[samples];
         private readonly Series x2PowerSeries = new Series("x2 power");
-        private readonly float[] x2X = new float[samples];
+        private readonly double[] x2X = new double[samples];
         private readonly Series x2XSeries = new Series("x2 x-axis");
-        private readonly float[] x2Y = new float[samples];
+        private readonly double[] x2Y = new double[samples];
         private readonly Series x2YSeries = new Series("x2 y-axis");
 
-        private float[] y1Power = new float[samples];
+        private double[] y1Power = new double[samples];
         private readonly Series y1PowerSeries = new Series("y1 power");
-        private readonly float[] y1X = new float[samples];
+        private readonly double[] y1X = new double[samples];
         private readonly Series y1XSeries = new Series("y1 x-axis");
-        private readonly float[] y1Y = new float[samples];
+        private readonly double[] y1Y = new double[samples];
         private readonly Series y1YSeries = new Series("y1 y-axis");
 
-        private float[] y2Power = new float[samples];
+        private double[] y2Power = new double[samples];
         private Series y2PowerSeries = new Series("y2 power");
-        private readonly float[] y2X = new float[samples];
+        private readonly double[] y2X = new double[samples];
         private readonly Series y2XSeries = new Series("y2 x-axis");
-        private readonly float[] y2Y = new float[samples];
+        private readonly double[] y2Y = new double[samples];
         private readonly Series y2YSeries = new Series("y2 y-axis");
 
-        private float[] z1Power = new float[samples];
+        private double[] z1Power = new double[samples];
         private readonly Series z1PowerSeries = new Series("z1 power");
-        private readonly float[] z1X = new float[samples];
+        private readonly double[] z1X = new double[samples];
         private readonly Series z1XSeries = new Series("z1 x-axis");
-        private readonly float[] z1Y = new float[samples];
+        private readonly double[] z1Y = new double[samples];
         private readonly Series z1YSeries = new Series("z1 y-axis");
 
-        private float[] z2Power = new float[samples];
+        private double[] z2Power = new double[samples];
         private readonly Series z2PowerSeries = new Series("z2 power");
-        private readonly float[] z2X = new float[samples];
+        private readonly double[] z2X = new double[samples];
         private readonly Series z2XSeries = new Series("z2 x-axis");
-        private readonly float[] z2Y = new float[samples];
+        private readonly double[] z2Y = new double[samples];
         private readonly Series z2YSeries = new Series("z2 y-axis");
         #endregion
 
         public Form1()
         {
+            System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
+            customCulture.NumberFormat.NumberDecimalSeparator = ".";
+            System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
+
             InitializeComponent();
             x1.Series.Clear();
             x2.Series.Clear();
@@ -100,13 +90,16 @@ namespace _2DPhotodiodes
             x2Diode.HWSerialNum = 89836997;
             y1Diode.HWSerialNum = 89836609;
             y2Diode.HWSerialNum = 89836614;
+            z1Diode.HWSerialNum = 89844786;
+            
+            
            
             #endregion
 
             #region initialize x1
             x1.ChartAreas[0].AxisX.Minimum = 0;
             x1.ChartAreas[0].AxisX.Maximum = samples;
-            x1.ChartAreas[0].AxisY.Minimum = 0;            
+            //x1.ChartAreas[0].AxisY.Minimum = 0;            
             x1.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
             x1.ChartAreas[0].AxisY2.LineColor = Color.Transparent;
             x1.ChartAreas[0].AxisY2.MajorGrid.Enabled = false;
@@ -128,7 +121,7 @@ namespace _2DPhotodiodes
             #region initialize x2
             x2.ChartAreas[0].AxisX.Minimum = 0;
             x2.ChartAreas[0].AxisX.Maximum = samples;
-            x2.ChartAreas[0].AxisY.Minimum = 0;
+            //x2.ChartAreas[0].AxisY.Minimum = 0;
             x2.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
             x2.ChartAreas[0].AxisY2.LineColor = Color.Transparent;
             x2.ChartAreas[0].AxisY2.MajorGrid.Enabled = false;
@@ -149,7 +142,7 @@ namespace _2DPhotodiodes
             #region initialize y1
             y1.ChartAreas[0].AxisX.Minimum = 0;
             y1.ChartAreas[0].AxisX.Maximum = samples;
-            y1.ChartAreas[0].AxisY.Minimum = 0;
+            //y1.ChartAreas[0].AxisY.Minimum = 0;
             y1.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
             y1.ChartAreas[0].AxisY2.LineColor = Color.Transparent;
             y1.ChartAreas[0].AxisY2.MajorGrid.Enabled = false;
@@ -170,7 +163,7 @@ namespace _2DPhotodiodes
             #region initialize y2
             y2.ChartAreas[0].AxisX.Minimum = 0;
             y2.ChartAreas[0].AxisX.Maximum = samples;
-            y2.ChartAreas[0].AxisY.Minimum = 0;
+            //y2.ChartAreas[0].AxisY.Minimum = 0;
             y2.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
             y2.ChartAreas[0].AxisY2.LineColor = Color.Transparent;
             y2.ChartAreas[0].AxisY2.MajorGrid.Enabled = false;
@@ -191,7 +184,7 @@ namespace _2DPhotodiodes
             #region initialize z1
             z1.ChartAreas[0].AxisX.Minimum = 0;
             z1.ChartAreas[0].AxisX.Maximum = samples;
-            z1.ChartAreas[0].AxisY.Minimum = 0;
+            //z1.ChartAreas[0].AxisY.Minimum = 0;
             z1.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
             z1.ChartAreas[0].AxisY2.LineColor = Color.Transparent;
             z1.ChartAreas[0].AxisY2.MajorGrid.Enabled = false;
@@ -212,7 +205,7 @@ namespace _2DPhotodiodes
             #region initialize z2
             z2.ChartAreas[0].AxisX.Minimum = 0;
             z2.ChartAreas[0].AxisX.Maximum = samples;
-            z2.ChartAreas[0].AxisY.Minimum = 0;
+            //z2.ChartAreas[0].AxisY.Minimum = 0;
             z2.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
             z2.ChartAreas[0].AxisY2.LineColor = Color.Transparent;
             z2.ChartAreas[0].AxisY2.MajorGrid.Enabled = false;
@@ -258,7 +251,7 @@ namespace _2DPhotodiodes
 
         }       
 
-        private void Add(float[] newValues)
+        private void Add(double[] newValues)
         {
             counter++;
             Array.Copy(x1X, 1, x1X, 0, x1X.Length - 1);
@@ -273,43 +266,96 @@ namespace _2DPhotodiodes
             Array.Copy(z1Y, 1, z1Y, 0, z1Y.Length - 1);
             Array.Copy(z2X, 1, z2X, 0, z2X.Length - 1);
             Array.Copy(z2Y, 1, z2Y, 0, z2Y.Length - 1);
+            
+            Array.Copy(x1Power, 1, x1Power, 0, x1Power.Length - 1);
+            Array.Copy(x2Power, 1, x2Power, 0, x1Power.Length - 1);
+            Array.Copy(y1Power, 1, y1Power, 0, x1Power.Length - 1);
+            Array.Copy(y2Power, 1, y2Power, 0, x1Power.Length - 1);
+            Array.Copy(z1Power, 1, z1Power, 0, x1Power.Length - 1);
+            Array.Copy(z2Power, 1, z2Power, 0, x1Power.Length - 1);
 
-            x1X[samples - 1] = newValues[0];
-            x1Y[samples - 1] = newValues[1];
-            x2X[samples - 1] = newValues[2];
-            x2Y[samples - 1] = newValues[3];
+            x1Power[samples - 1] = newValues[2] / 1.9103; //calibrate to mW
+            x1X[samples - 1] = 4.5 * newValues[0] / x1Power[samples - 1]; 
+            x1Y[samples - 1] = 4.5 * newValues[1] / x1Power[samples - 1];
 
-            y1X[samples - 1] = newValues[4];
-            y1Y[samples - 1] = newValues[5];
-            y2X[samples - 1] = newValues[6];
-            y2Y[samples - 1] = newValues[7];
+            x2Power[samples - 1] = newValues[5] / 2.2099; //calibrate to mW
+            x2X[samples - 1] = 4.5 * newValues[3] / x2Power[samples - 1];
+            x2Y[samples - 1] = 4.5 * newValues[4] / x2Power[samples - 1];
 
-            z1X[samples - 1] = newValues[8];
-            z1Y[samples - 1] = newValues[9];
-            z2X[samples - 1] = newValues[10];
-            z2Y[samples - 1] = newValues[11];
+            y1Power[samples - 1] = newValues[8] / 2.1387; //calibrate to mW
+            y1X[samples - 1] = 4.5 * newValues[6] / y1Power[samples - 1];
+            y1Y[samples - 1] = 4.5 * newValues[7] / y1Power[samples - 1];
+
+            y2Power[samples - 1] = newValues[11] / 2.2176; //calibrate to mW
+            y2X[samples - 1] = 4.5 * newValues[9] / y2Power[samples - 1];
+            y2Y[samples - 1] = 4.5 * newValues[10] / y2Power[samples - 1];
+
+            z1Power[samples - 1] = newValues[14] / 0.61; //calibrate to mW
+            z1X[samples - 1] = 4.5 * newValues[12] / z1Power[samples - 1];
+            z1Y[samples - 1] = 4.5 * newValues[13] / z1Power[samples - 1];
+
+            z2Power[samples - 1] = newValues[17] / 1.74; //calibrate to mW
+            z2X[samples - 1] = 4.5 * newValues[15] / z2Power[samples - 1];
+            z2Y[samples - 1] = 4.5 * newValues[16] / z2Power[samples - 1];
         }
 
         private void CollectData()
         {
-            float test = 0, test1 = 0, test2 = 0;
+            float sum = 0, x = 0, y = 0;
+            System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
+            customCulture.NumberFormat.NumberDecimalSeparator = ".";
+            System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
+            x1Diode.StartCtrl();
+            x2Diode.StartCtrl();
+            y1Diode.StartCtrl();
+            y2Diode.StartCtrl();
+            z1Diode.StartCtrl();
             Random random = new Random();
             logFileWriter = new StreamWriter(_storageFolder + "\\diodeLOG.txt", true);
-            float[] newValue = new float[18];
+            double[] newValues = new double[18];
             do
             {
-                //x1Diode.ReadSumDiffSignals(ref test, ref test1, ref test2);
-                for (int i = 0; i < 18; i++)
-                {
-                    newValue[i] = (float) random.NextDouble();
-                }
+                x1Diode.ReadSumDiffSignals(ref sum, ref x, ref y);
+                newValues[0] = x;
+                newValues[1] = y;
+                newValues[2] = sum;
+                
+                x2Diode.ReadSumDiffSignals(ref sum, ref x, ref y);
+                newValues[3] = x;
+                newValues[4] = y;
+                newValues[5] = sum;
 
-                Add(newValue);
+                y1Diode.ReadSumDiffSignals(ref sum, ref x, ref y);
+                newValues[6] = x;
+                newValues[7] = y;
+                newValues[8] = sum;
+
+                y2Diode.ReadSumDiffSignals(ref sum, ref x, ref y);
+                newValues[9] = x;
+                newValues[10] = y;
+                newValues[11] = sum;
+
+                z1Diode.ReadSumDiffSignals(ref sum, ref x, ref y);
+                newValues[12] = x;
+                newValues[13] = y;
+                newValues[14] = sum;
+
+                //Z2Diode is missing
+                newValues[15] = 0;
+                newValues[16] = 0;
+                newValues[17] = 0;
+
+                Add(newValues);
                 UpdateGraphs(1);
                 UpdateTextBoxes(1);
                 WriteDataToFile();
                 Thread.Sleep(_delay);
             } while (!_stop);
+            x1Diode.StopCtrl();
+            x2Diode.StopCtrl();
+            y1Diode.StopCtrl();
+            y2Diode.StopCtrl();
+            z1Diode.StopCtrl();
             _collectorThread = null;
             logFileWriter.Close();
         }
@@ -347,54 +393,54 @@ namespace _2DPhotodiodes
                 meanx1X.Text = Convert.ToString(Mean(x1X));
                 meanx1Y.Text = Convert.ToString(Mean(x1Y));
                 meanx1P.Text = Convert.ToString(Mean(x1Power));
-                actualx1X.Text = Convert.ToString(x1X[samples - 1]);
-                actualx1Y.Text = Convert.ToString(x1Y[samples - 1]);
-                actualx1P.Text = Convert.ToString(x1Power[samples - 1]);
+                actualx1X.Text = Convert.ToString(Math.Round(x1X[samples - 1],3));
+                actualx1Y.Text = Convert.ToString(Math.Round(x1Y[samples - 1],3));
+                actualx1P.Text = Convert.ToString(Math.Round(x1Power[samples - 1],3));
                 #endregion
 
                 #region x2
                 meanx2X.Text = Convert.ToString(Mean(x2X));
                 meanx2Y.Text = Convert.ToString(Mean(x2Y));
                 meanx2P.Text = Convert.ToString(Mean(x2Power));
-                actualx2X.Text = Convert.ToString(x2X[samples - 1]);
-                actualx2Y.Text = Convert.ToString(x2Y[samples - 1]);
-                actualx2P.Text = Convert.ToString(x2Power[samples - 1]);
+                actualx2X.Text = Convert.ToString(Math.Round(x2X[samples - 1],3));
+                actualx2Y.Text = Convert.ToString(Math.Round(x2Y[samples - 1],3));
+                actualx2P.Text = Convert.ToString(Math.Round(x2Power[samples - 1],3));
                 #endregion
 
                 #region y1
                 meany1X.Text = Convert.ToString(Mean(y1X));
                 meany1Y.Text = Convert.ToString(Mean(y1Y));
                 meany1P.Text = Convert.ToString(Mean(y1Power));
-                actualy1X.Text = Convert.ToString(y1X[samples - 1]);
-                actualy1Y.Text = Convert.ToString(y1Y[samples - 1]);
-                actualy1P.Text = Convert.ToString(y1Power[samples - 1]);
+                actualy1X.Text = Convert.ToString(Math.Round(y1X[samples - 1],3));
+                actualy1Y.Text = Convert.ToString(Math.Round(y1Y[samples - 1],3));
+                actualy1P.Text = Convert.ToString(Math.Round(y1Power[samples - 1],3));
                 #endregion
 
                 #region y2
                 meany2X.Text = Convert.ToString(Mean(y2X));
                 meany2Y.Text = Convert.ToString(Mean(y2Y));
                 meany2P.Text = Convert.ToString(Mean(y2Power));
-                actualy2X.Text = Convert.ToString(y2X[samples - 1]);
-                actualy2Y.Text = Convert.ToString(y2Y[samples - 1]);
-                actualy2P.Text = Convert.ToString(y2Power[samples - 1]);
+                actualy2X.Text = Convert.ToString(Math.Round(y2X[samples - 1],3));
+                actualy2Y.Text = Convert.ToString(Math.Round(y2Y[samples - 1],3));
+                actualy2P.Text = Convert.ToString(Math.Round(y2Power[samples - 1],3));
                 #endregion
 
                 #region z1
                 meanz1X.Text = Convert.ToString(Mean(z1X));
                 meanz1Y.Text = Convert.ToString(Mean(z1Y));
                 meanz1P.Text = Convert.ToString(Mean(z1Power));
-                actualz1X.Text = Convert.ToString(z1X[samples - 1]);
-                actualz1Y.Text = Convert.ToString(z1Y[samples - 1]);
-                actualz1P.Text = Convert.ToString(z1Power[samples - 1]);
+                actualz1X.Text = Convert.ToString(Math.Round(z1X[samples - 1],3));
+                actualz1Y.Text = Convert.ToString(Math.Round(z1Y[samples - 1],3));
+                actualz1P.Text = Convert.ToString(Math.Round(z1Power[samples - 1],3));
                 #endregion
 
                 #region z2
                 meanz2X.Text = Convert.ToString(Mean(z2X));
                 meanz2Y.Text = Convert.ToString(Mean(z2Y));
                 meanz2P.Text = Convert.ToString(Mean(z2Power));
-                actualz2X.Text = Convert.ToString(z2X[samples - 1]);
-                actualz2Y.Text = Convert.ToString(z2Y[samples - 1]);
-                actualz2P.Text = Convert.ToString(z2Power[samples - 1]);
+                actualz2X.Text = Convert.ToString(Math.Round(z2X[samples - 1],3));
+                actualz2Y.Text = Convert.ToString(Math.Round(z2Y[samples - 1],3));
+                actualz2P.Text = Convert.ToString(Math.Round(z2Power[samples - 1],3));
                 #endregion
             }
         }
@@ -455,6 +501,21 @@ namespace _2DPhotodiodes
                 z2YSeries.Points.DataBindY(z2Y);
                 z2.Update();
                 #endregion
+
+                #region power
+                x1PowerSeries.Points.Clear();
+                x1PowerSeries.Points.DataBindY(x1Power);
+                x2PowerSeries.Points.Clear();
+                x2PowerSeries.Points.DataBindY(x2Power);
+                y1PowerSeries.Points.Clear();
+                y1PowerSeries.Points.DataBindY(y1Power);
+                y2PowerSeries.Points.Clear();
+                y2PowerSeries.Points.DataBindY(y2Power);
+                z1PowerSeries.Points.Clear();
+                z1PowerSeries.Points.DataBindY(z1Power);
+                z2PowerSeries.Points.Clear();
+                z2PowerSeries.Points.DataBindY(z2Power);
+                #endregion
             }
         }
 
@@ -496,9 +557,9 @@ namespace _2DPhotodiodes
             textBox1.Enabled = true;
         } 
         
-        private float Mean(float[] data)
+        private double Mean(double[] data)
         {
-            float mean = 0;
+            double mean = 0;
             if(counter < samples)
             {
                 for (int i = samples - 1; i > samples - (counter + 1); i--)
@@ -511,7 +572,7 @@ namespace _2DPhotodiodes
                     mean += data[i];
                 mean /= samples;
             }
-            return mean;
+            return Math.Round(mean,3);
         }
 
         private void folderButton_Click(object sender, EventArgs e)

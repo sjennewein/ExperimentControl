@@ -1197,7 +1197,7 @@
             this.Controls.Add(this.x1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "2D Photodiodes";
             ((System.ComponentModel.ISupportInitialize)(this.x1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.y1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.z1)).EndInit();

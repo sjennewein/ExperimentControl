@@ -89,9 +89,9 @@ namespace _2DPhotodiodes
             x1Diode.HWSerialNum = 89835583;
             x2Diode.HWSerialNum = 89836997;
             y1Diode.HWSerialNum = 89836609;
-            y2Diode.HWSerialNum = 89836614;
-            z1Diode.HWSerialNum = 89844786;
-            
+            y2Diode.HWSerialNum = 89836614;         
+            z1Diode.HWSerialNum = 89844786;            
+            z2Diode.HWSerialNum = 89844822; 
             
            
             #endregion
@@ -310,6 +310,7 @@ namespace _2DPhotodiodes
             y1Diode.StartCtrl();
             y2Diode.StartCtrl();
             z1Diode.StartCtrl();
+            z2Diode.StartCtrl();
             Random random = new Random();
             logFileWriter = new StreamWriter(_storageFolder + "\\diodeLOG.txt", true);
             double[] newValues = new double[18];
@@ -341,9 +342,10 @@ namespace _2DPhotodiodes
                 newValues[14] = sum;
 
                 //Z2Diode is missing
-                newValues[15] = 0;
-                newValues[16] = 0;
-                newValues[17] = 0;
+                z2Diode.ReadSumDiffSignals(ref sum, ref x, ref y);
+                newValues[15] = x;
+                newValues[16] = y;
+                newValues[17] = sum;
 
                 Add(newValues);
                 UpdateGraphs(1);
@@ -356,6 +358,7 @@ namespace _2DPhotodiodes
             y1Diode.StopCtrl();
             y2Diode.StopCtrl();
             z1Diode.StopCtrl();
+            z2Diode.StartCtrl();
             _collectorThread = null;
             logFileWriter.Close();
         }
@@ -376,7 +379,13 @@ namespace _2DPhotodiodes
                                     z1X[samples - 1] + "," +
                                     z1Y[samples - 1] + "," +
                                     z2X[samples - 1] + "," +
-                                    z2Y[samples - 1]
+                                    z2Y[samples - 1] + "," +
+                                    x1Power[samples - 1] + "," +
+                                    x2Power[samples - 1] + "," +
+                                    y1Power[samples - 1] + "," +
+                                    y2Power[samples - 1] + "," +
+                                    z1Power[samples - 1] + "," +
+                                    z2Power[samples - 1] 
                 );
         }
 
@@ -581,6 +590,8 @@ namespace _2DPhotodiodes
             folder.ShowDialog();
             _storageFolder = folder.SelectedPath;
         }
+
+
 
         
     }

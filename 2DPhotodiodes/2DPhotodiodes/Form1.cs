@@ -268,35 +268,35 @@ namespace _2DPhotodiodes
             Array.Copy(z2Y, 1, z2Y, 0, z2Y.Length - 1);
             
             Array.Copy(x1Power, 1, x1Power, 0, x1Power.Length - 1);
-            Array.Copy(x2Power, 1, x2Power, 0, x1Power.Length - 1);
-            Array.Copy(y1Power, 1, y1Power, 0, x1Power.Length - 1);
-            Array.Copy(y2Power, 1, y2Power, 0, x1Power.Length - 1);
-            Array.Copy(z1Power, 1, z1Power, 0, x1Power.Length - 1);
-            Array.Copy(z2Power, 1, z2Power, 0, x1Power.Length - 1);
+            Array.Copy(x2Power, 1, x2Power, 0, x2Power.Length - 1);
+            Array.Copy(y1Power, 1, y1Power, 0, y1Power.Length - 1);
+            Array.Copy(y2Power, 1, y2Power, 0, y2Power.Length - 1);
+            Array.Copy(z1Power, 1, z1Power, 0, z1Power.Length - 1);
+            Array.Copy(z2Power, 1, z2Power, 0, z2Power.Length - 1);
 
-            x1Power[samples - 1] = newValues[2] / 1.9103; //calibrate to mW
-            x1X[samples - 1] = 4.5 * newValues[0] / x1Power[samples - 1]; 
-            x1Y[samples - 1] = 4.5 * newValues[1] / x1Power[samples - 1];
+            x1Power[samples - 1] = newValues[0] / 1.9103; //calibrate to mW
+            x1X[samples - 1] = 4.5 * newValues[1] / newValues[0]; 
+            x1Y[samples - 1] = 4.5 * newValues[2] / newValues[0];
 
-            x2Power[samples - 1] = newValues[5] / 2.2099; //calibrate to mW
-            x2X[samples - 1] = 4.5 * newValues[3] / x2Power[samples - 1];
-            x2Y[samples - 1] = 4.5 * newValues[4] / x2Power[samples - 1];
+            x2Power[samples - 1] = newValues[3] / 2.2099; //calibrate to mW
+            x2X[samples - 1] = 4.5 * newValues[4] / newValues[3];
+            x2Y[samples - 1] = 4.5 * newValues[5] / newValues[3];
 
-            y1Power[samples - 1] = newValues[8] / 2.1387; //calibrate to mW
-            y1X[samples - 1] = 4.5 * newValues[6] / y1Power[samples - 1];
-            y1Y[samples - 1] = 4.5 * newValues[7] / y1Power[samples - 1];
+            y1Power[samples - 1] = newValues[6] / 2.1387; //calibrate to mW
+            y1X[samples - 1] = 4.5 * newValues[7] / newValues[6];
+            y1Y[samples - 1] = 4.5 * newValues[8] / newValues[6];
 
-            y2Power[samples - 1] = newValues[11] / 2.2176; //calibrate to mW
-            y2X[samples - 1] = 4.5 * newValues[9] / y2Power[samples - 1];
-            y2Y[samples - 1] = 4.5 * newValues[10] / y2Power[samples - 1];
+            y2Power[samples - 1] = newValues[9] / 2.2176; //calibrate to mW
+            y2X[samples - 1] = 4.5 * newValues[10] / newValues[9];
+            y2Y[samples - 1] = 4.5 * newValues[11] / newValues[9];
+            
+            z1Power[samples - 1] = newValues[12] / 0.61; //calibrate to mW
+            z1X[samples - 1] = 4.5 * newValues[13] / newValues[12];
+            z1Y[samples - 1] = 4.5 * newValues[14] / newValues[12];
 
-            z1Power[samples - 1] = newValues[14] / 0.61; //calibrate to mW
-            z1X[samples - 1] = 4.5 * newValues[12] / z1Power[samples - 1];
-            z1Y[samples - 1] = 4.5 * newValues[13] / z1Power[samples - 1];
-
-            z2Power[samples - 1] = newValues[17] / 1.74; //calibrate to mW
-            z2X[samples - 1] = 4.5 * newValues[15] / z2Power[samples - 1];
-            z2Y[samples - 1] = 4.5 * newValues[16] / z2Power[samples - 1];
+            z2Power[samples - 1] = newValues[15] / 1.74; //calibrate to mW
+            z2X[samples - 1] = 4.5 * newValues[16] / newValues[15];
+            z2Y[samples - 1] = 4.5 * newValues[17] / newValues[15];
         }
 
         private void CollectData()
@@ -317,35 +317,35 @@ namespace _2DPhotodiodes
             do
             {
                 x1Diode.ReadSumDiffSignals(ref sum, ref x, ref y);
-                newValues[0] = x;
-                newValues[1] = y;
-                newValues[2] = sum;
+                newValues[0] = sum;
+                newValues[1] = x;
+                newValues[2] = y;
                 
                 x2Diode.ReadSumDiffSignals(ref sum, ref x, ref y);
-                newValues[3] = x;
-                newValues[4] = y;
-                newValues[5] = sum;
+                newValues[3] = sum;
+                newValues[4] = x;
+                newValues[5] = y;
 
                 y1Diode.ReadSumDiffSignals(ref sum, ref x, ref y);
-                newValues[6] = x;
-                newValues[7] = y;
-                newValues[8] = sum;
+                newValues[6] = sum;
+                newValues[7] = x;
+                newValues[8] = y;
 
                 y2Diode.ReadSumDiffSignals(ref sum, ref x, ref y);
-                newValues[9] = x;
-                newValues[10] = y;
-                newValues[11] = sum;
+                newValues[9] = sum;
+                newValues[10] = x;
+                newValues[11] = y;
 
                 z1Diode.ReadSumDiffSignals(ref sum, ref x, ref y);
-                newValues[12] = x;
-                newValues[13] = y;
-                newValues[14] = sum;
+                newValues[12] = sum;
+                newValues[13] = x;
+                newValues[14] = y;
 
-                //Z2Diode is missing
+                
                 z2Diode.ReadSumDiffSignals(ref sum, ref x, ref y);
-                newValues[15] = x;
-                newValues[16] = y;
-                newValues[17] = sum;
+                newValues[15] = sum;
+                newValues[16] = x;
+                newValues[17] = y;
 
                 Add(newValues);
                 UpdateGraphs(1);

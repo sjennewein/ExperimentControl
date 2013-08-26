@@ -35,6 +35,7 @@ namespace APDTrigger
             WindowsFormsHost host = new WindowsFormsHost();
             Chart plot = new Chart();
             host.Child = plot;
+            
             //grid1.Children.Add(host);
         }
     }

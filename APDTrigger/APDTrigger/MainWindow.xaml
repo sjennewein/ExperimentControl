@@ -4,7 +4,7 @@
     <Grid Name="grid1">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="178*" />
-            <ColumnDefinition Width="353*" />
+            <ColumnDefinition Width="353*" Name="righside" />
         </Grid.ColumnDefinitions>
         <GroupBox Header="Counter Settings" Height="190" HorizontalAlignment="Left" Name="groupBox1" VerticalAlignment="Top" Width="178">
             <Grid>

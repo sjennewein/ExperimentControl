@@ -1,5 +1,4 @@
-﻿using System;
-using NationalInstruments.DAQmx;
+﻿using NationalInstruments.DAQmx;
 
 namespace APDTrigger.Hardware
 {
@@ -18,28 +17,35 @@ namespace APDTrigger.Hardware
     /* counter. This clock samples the counter with 1us                     */
     /* into the buffer. With this you get total amount of                   */
     /* photons over time => the derivative gives the                        */
-    /* amount of photons at that timepoint.                                 */
+    /* amount of photons at that time point.                                */
     /*                                                                      */
     /************************************************************************/
 
     public class Counter
     {
+        private readonly int _thresholdBin;
         private readonly Task _myAcquisitionTask;
         private readonly Task _myThresholdTask;
         private readonly Task _myTriggerTask;
-        private AsyncCallback _myCallBack;
-        private CounterReader _myCounterReader;
-        private Task _runningTask;
+        private readonly double _threshold;
+        private int _detectedBins;
         private double[] _samples;
 
-        public Counter()
+        public Counter(double threshold, int thresholdBin)
         {
             _myThresholdTask = new Task();
             _myTriggerTask = new Task();
             _myAcquisitionTask = new Task();
+            _threshold = threshold;
+            _thresholdBin = thresholdBin;
         }
 
-        public void AimTrigger(int samples2acquire)
+        public double[] Samples
+        {
+            get { return _samples; }
+        }
+
+        public void AimTrigger(int samples2Acquire)
         {
             //minimum and maximum counter values are ignored in this measurement mode
             //measurement time is in seconds
@@ -52,13 +58,13 @@ namespace APDTrigger.Hardware
             const CIPeriodStartingEdge edge = CIPeriodStartingEdge.Rising;
 
             _myThresholdTask.CIChannels.CreatePeriodChannel("", "", minValue, maxValue, edge,
-                                                            CIPeriodMeasurementMethod.HighFrequencyTwoCounter,
-                                                            measurementTime, divisor,
-                                                            CIPeriodUnits.Ticks);
+                CIPeriodMeasurementMethod.HighFrequencyTwoCounter,
+                measurementTime, divisor,
+                CIPeriodUnits.Ticks);
 
             _myThresholdTask.CIChannels.All.DuplicateCountPrevention = true;
-            _myThresholdTask.Timing.ConfigureImplicit(SampleQuantityMode.ContinuousSamples, samples2acquire);
-                //don't know if needed copied from old stuff
+            _myThresholdTask.Timing.ConfigureImplicit(SampleQuantityMode.ContinuousSamples, samples2Acquire);
+            //don't know if needed copied from old stuff
 
             /*************************************************************************************/
             /*     The trigger is fired when the read in counts are over a certain threshold     */
@@ -68,7 +74,7 @@ namespace APDTrigger.Hardware
             _myTriggerTask.Timing.ConfigureImplicit(SampleQuantityMode.FiniteSamples, 1);
         }
 
-        public void PrepareAquisition(int clockEdges)
+        public void PrepareAcquisition(int clockEdges)
         {
             const CICountEdgesActiveEdge edge = CICountEdgesActiveEdge.Rising;
             const CICountEdgesCountDirection countDirection = CICountEdgesCountDirection.Up;
@@ -79,16 +85,56 @@ namespace APDTrigger.Hardware
             _myAcquisitionTask.CIChannels.All.DuplicateCountPrevention = true;
 
             _myAcquisitionTask.Timing.ConfigureSampleClock("/Dev1/PFI0", 1000000, clockActiveEdge,
-                                                          SampleQuantityMode.FiniteSamples, clockEdges);
+                SampleQuantityMode.FiniteSamples, clockEdges);
         }
 
         public void StartMeasurement()
-        {}
-
-        private void ReadCounter()
         {
-            var test = new CounterReader(_myThresholdTask.Stream);
-            test.
+        }
+
+        private void RunExperiment()
+        {
+            ReadThresholdCounter();
+
+            //check if the value read from the counter is bigger than the set threshold
+            if (_samples[0] >= _threshold)
+                _detectedBins++;
+            else
+                _detectedBins = 0;
+
+            //check if enough bins have been over the threshold => atom in the trap
+            if (_detectedBins >= _thresholdBin)
+            {
+                _detectedBins = 0;
+                _myThresholdTask.Stop();
+                
+                //send a trigger to the digital output card
+                _myTriggerTask.Start();
+                _myTriggerTask.Stop();
+
+                PerformAcquisition();
+            }
+        }
+
+        private void ReadThresholdCounter()
+        {
+            var thresholdReader = new CounterReader(_myThresholdTask.Stream);
+            _samples = thresholdReader.ReadMultiSampleDouble(-1);
+        }
+
+        private void PerformAcquisition()
+        {
+            _myAcquisitionTask.Start();
+            var acquisitionReader = new CounterReader(_myAcquisitionTask.Stream);
+
+            double[] samples = acquisitionReader.ReadMultiSampleDouble(-1);
+            double[] derivedSamples = new double[samples.Length - 1];
+
+            //the counter spits out an integrated photon value so we have to derive this
+            for (int counter = 1; counter < samples.Length; counter++)
+            {
+                derivedSamples[counter - 1] = samples[counter] - samples[counter - 1];
+            }
 
 
         }

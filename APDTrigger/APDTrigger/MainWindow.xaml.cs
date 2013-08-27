@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Forms.DataVisualization.Charting;
-using APDTrigger.Control;
+//using APDTrigger.Control;
 
 
 namespace APDTrigger
@@ -23,11 +23,11 @@ namespace APDTrigger
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly Elements controller = new Elements();
+        //private readonly Elements controller = new Elements();
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = controller;
+            //DataContext = controller;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -38,5 +38,7 @@ namespace APDTrigger
             
             //grid1.Children.Add(host);
         }
+
+
     }
 }

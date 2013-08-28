@@ -1,4 +1,5 @@
-﻿using NationalInstruments.DAQmx;
+﻿using System;
+using NationalInstruments.DAQmx;
 
 namespace APDTrigger.Hardware
 {
@@ -27,17 +28,20 @@ namespace APDTrigger.Hardware
         private readonly Task _myAcquisitionTask;
         private readonly Task _myThresholdTask;
         private readonly Task _myTriggerTask;
-        private readonly double _threshold;
+        private readonly double _thresholdTrigger;
+        private readonly int _binSize;
         private int _detectedBins;
         private double[] _samples;
 
-        public Counter(double threshold, int thresholdBin)
+
+        public Counter(double thresholdTrigger, int thresholdBin, int binSize)
         {
             _myThresholdTask = new Task();
             _myTriggerTask = new Task();
             _myAcquisitionTask = new Task();
-            _threshold = threshold;
+            _thresholdTrigger = thresholdTrigger;
             _thresholdBin = thresholdBin;
+            _binSize = binSize;
         }
 
         public double[] Samples
@@ -97,7 +101,7 @@ namespace APDTrigger.Hardware
             ReadThresholdCounter();
 
             //check if the value read from the counter is bigger than the set threshold
-            if (_samples[0] >= _threshold)
+            if (_samples[0] >= _thresholdTrigger)
                 _detectedBins++;
             else
                 _detectedBins = 0;
@@ -127,13 +131,33 @@ namespace APDTrigger.Hardware
             _myAcquisitionTask.Start();
             var acquisitionReader = new CounterReader(_myAcquisitionTask.Stream);
 
-            double[] samples = acquisitionReader.ReadMultiSampleDouble(-1);
-            double[] derivedSamples = new double[samples.Length - 1];
+            int[] samples = acquisitionReader.ReadMultiSampleInt32(-1);
+            int[] derivedSamples = new int[samples.Length - 1];
 
             //the counter spits out an integrated photon value so we have to derive this
             for (int counter = 1; counter < samples.Length; counter++)
             {
                 derivedSamples[counter - 1] = samples[counter] - samples[counter - 1];
+            }
+
+            //1us is to fine grain for most of our stuff so we bin that
+            int binnedSize = (int) Math.Ceiling( derivedSamples.Length / (double) _binSize );                     
+
+            double[] binnedSamples = new double[binnedSize];
+
+            int binCounter = 0;
+            for (int offset = 0; offset < derivedSamples.Length; offset += _binSize)
+            {
+                double tempData = 0;
+                for (int counter = 0; counter < _binSize; counter++)
+                {
+                    if (offset + counter > derivedSamples.Length)
+                        break;
+
+                    tempData += derivedSamples[offset + counter];
+                }
+                binnedSamples[binCounter] = tempData;
+                binCounter++;
             }
 
 

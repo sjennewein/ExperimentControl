@@ -10,7 +10,7 @@
             <ColumnDefinition Width="178*" />
             <ColumnDefinition Width="353*" Name="righside" />
         </Grid.ColumnDefinitions>
-        <GroupBox Header="Counter Settings" Height="138" HorizontalAlignment="Left" Name="groupBox1" VerticalAlignment="Top" Width="178">
+        <GroupBox Header="Trigger Settings" Height="138" HorizontalAlignment="Left" Name="groupBox1" VerticalAlignment="Top" Width="178">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="19*" />
@@ -32,7 +32,7 @@
                 <TextBox Height="20" Name="textBox6" Text="3" VerticalAlignment="Top" Grid.Column="1" Grid.Row="2" />
             </Grid>
         </GroupBox>
-        <GroupBox Header="Recapture" Height="201" HorizontalAlignment="Left" Name="groupBox2" VerticalAlignment="Top" Width="178" Grid.Row="1">
+        <GroupBox Header="Recapture Settings" Height="201" HorizontalAlignment="Left" Name="groupBox2" VerticalAlignment="Top" Width="178" Grid.Row="1">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="34*" />

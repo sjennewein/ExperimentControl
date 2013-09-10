@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Threading;
+using System.Windows.Forms;
 using NationalInstruments.DAQmx;
+using Timer = System.Threading.Timer;
 
 namespace APDTrigger.Hardware
 {
@@ -13,10 +16,10 @@ namespace APDTrigger.Hardware
     /* atom trapped and send a start trigger to the other                   */
     /* cards.                                                               */
     /* At the end of a run normally we do a release and                     */
-    /* recapture experiment. Therefor a 1MHz external                       */
-    /* frequency generator is connected to one of the                       */
+    /* recapture measurement. For that we use a 1MHz external               */
+    /* frequency generator connected to one of the                          */
     /* counter. This clock samples the counter with 1us                     */
-    /* into the buffer. With this you get total amount of                   */
+    /* into the buffer. With this you get the total amount of               */
     /* photons over time => the derivative gives the                        */
     /* amount of photons at that time point.                                */
     /*                                                                      */
@@ -24,16 +27,24 @@ namespace APDTrigger.Hardware
 
     public class Counter
     {
-        private readonly int _thresholdBin;
+        private readonly int _binSize;
         private readonly Task _myAcquisitionTask;
         private readonly Task _myThresholdTask;
         private readonly Task _myTriggerTask;
+        private readonly int _thresholdBin;
         private readonly double _thresholdTrigger;
-        private readonly int _binSize;
         private int _detectedBins;
+        private object _lockExperiment;
+        private Timer _myTimer;
         private double[] _samples;
+        private bool _running = false;
 
-
+        /// <summary>
+        ///     Provides the functionality of a standard ASPHERIX experiment in terms of the counter card
+        /// </summary>
+        /// <param name="thresholdTrigger">The value from the APD above you think you have an atom in the trap</param>
+        /// <param name="thresholdBin">How often this value has to appear in a row before the trigger is send</param>
+        /// <param name="binSize">The number of original datapoints per bin (normaly we sample with 1us and want to have 10ms)</param>
         public Counter(double thresholdTrigger, int thresholdBin, int binSize)
         {
             _myThresholdTask = new Task();
@@ -49,6 +60,10 @@ namespace APDTrigger.Hardware
             get { return _samples; }
         }
 
+        /// <summary>
+        ///     Initialize the threshold measurement and the trigger which will be send if it's successful.
+        /// </summary>
+        /// <param name="samples2Acquire">Define the amount of read samples (in continous mode it's the buffersize)</param>
         public void AimTrigger(int samples2Acquire)
         {
             //minimum and maximum counter values are ignored in this measurement mode
@@ -68,7 +83,7 @@ namespace APDTrigger.Hardware
 
             _myThresholdTask.CIChannels.All.DuplicateCountPrevention = true;
             _myThresholdTask.Timing.ConfigureImplicit(SampleQuantityMode.ContinuousSamples, samples2Acquire);
-            //don't know if needed copied from old stuff
+
 
             /*************************************************************************************/
             /*     The trigger is fired when the read in counts are over a certain threshold     */
@@ -78,6 +93,10 @@ namespace APDTrigger.Hardware
             _myTriggerTask.Timing.ConfigureImplicit(SampleQuantityMode.FiniteSamples, 1);
         }
 
+        /// <summary>
+        ///     Initialize the second counter for the release and recapture measurement
+        /// </summary>
+        /// <param name="clockEdges">Define the amount of clock-cycles to acquire (will fail if it gets less)</param>
         public void PrepareAcquisition(int clockEdges)
         {
             const CICountEdgesActiveEdge edge = CICountEdgesActiveEdge.Rising;
@@ -92,31 +111,64 @@ namespace APDTrigger.Hardware
                 SampleQuantityMode.FiniteSamples, clockEdges);
         }
 
+        /// <summary>
+        /// Start the experiment
+        /// </summary>
         public void StartMeasurement()
         {
+            if (_running == false)
+            {
+                _myTimer = new Timer(RunExperiment, null, 0, 10);
+                _running = true;
+            }
+            
         }
 
-        private void RunExperiment()
+        /// <summary>
+        /// Stop the experiment
+        /// </summary>
+        public void StopExperiment()
+        {
+            if (_running == true)
+            {
+                _myTimer.Change(Timeout.Infinite, Timeout.Infinite);
+                _myTimer = null;
+                _running = false;
+            }
+        }
+
+        private void RunExperiment(object state)
         {
             ReadThresholdCounter();
 
-            //check if the value read from the counter is bigger than the set threshold
-            if (_samples[0] >= _thresholdTrigger)
-                _detectedBins++;
-            else
-                _detectedBins = 0;
-
-            //check if enough bins have been over the threshold => atom in the trap
-            if (_detectedBins >= _thresholdBin)
+            //keeps on reading data every 10ms but only evaluates it if no other experiment is running
+            if (Monitor.TryEnter(_lockExperiment))
             {
-                _detectedBins = 0;
-                _myThresholdTask.Stop();
-                
-                //send a trigger to the digital output card
-                _myTriggerTask.Start();
-                _myTriggerTask.Stop();
+                try
+                {
+                    //check if the value read from the counter is bigger than the set threshold
+                    if (_samples[0] >= _thresholdTrigger)
+                        _detectedBins++;
+                    else
+                        _detectedBins = 0;
 
-                PerformAcquisition();
+                    //check if enough bins have been over the threshold => atom in the trap
+                    if (_detectedBins >= _thresholdBin)
+                    {
+                        _detectedBins = 0;
+                        //_myThresholdTask.Stop(); // might be useful (old style)
+
+                        //send a trigger to the digital output card
+                        _myTriggerTask.Start();
+                        _myTriggerTask.Stop();
+
+                        PerformAcquisition();
+                    }
+                }
+                finally
+                {
+                    Monitor.Exit(_lockExperiment);
+                }
             }
         }
 
@@ -132,7 +184,7 @@ namespace APDTrigger.Hardware
             var acquisitionReader = new CounterReader(_myAcquisitionTask.Stream);
 
             int[] samples = acquisitionReader.ReadMultiSampleInt32(-1);
-            int[] derivedSamples = new int[samples.Length - 1];
+            var derivedSamples = new int[samples.Length - 1];
 
             //the counter spits out an integrated photon value so we have to derive this
             for (int counter = 1; counter < samples.Length; counter++)
@@ -140,27 +192,35 @@ namespace APDTrigger.Hardware
                 derivedSamples[counter - 1] = samples[counter] - samples[counter - 1];
             }
 
-            //1us is to fine grain for most of our stuff so we bin that
-            int binnedSize = (int) Math.Ceiling( derivedSamples.Length / (double) _binSize );                     
+            //1us is to fine grain for most of our stuff so we have to bin the acquired data
+            var bins = (int) Math.Ceiling(derivedSamples.Length/(double) _binSize);
 
-            double[] binnedSamples = new double[binnedSize];
+            int[] binnedData = bin(derivedSamples, bins);
+        }
 
+        /// <summary>
+        ///     bin APD data into bins
+        /// </summary>
+        private int[] bin(int[] data, int bins)
+        {
             int binCounter = 0;
-            for (int offset = 0; offset < derivedSamples.Length; offset += _binSize)
+
+            var binnedData = new int[bins];
+
+            for (int binStep = 0; binStep < data.Length; binStep += _binSize)
             {
-                double tempData = 0;
+                int tempData = 0;
                 for (int counter = 0; counter < _binSize; counter++)
                 {
-                    if (offset + counter > derivedSamples.Length)
+                    if (binStep + counter > data.Length)
                         break;
 
-                    tempData += derivedSamples[offset + counter];
+                    tempData += data[binStep + counter];
                 }
-                binnedSamples[binCounter] = tempData;
+                binnedData[binCounter] = tempData;
                 binCounter++;
             }
-
-
+            return binnedData;
         }
     }
 }

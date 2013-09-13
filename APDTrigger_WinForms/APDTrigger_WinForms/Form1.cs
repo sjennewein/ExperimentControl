@@ -27,7 +27,7 @@ namespace APDTrigger_WinForms
             controller.DetectionBins = 3;
             controller.Threshold = 18000;
             controller.Finished += OnFinished;
-            controller.NewData += OnNewData;
+            
 
             InitializeComponent();
             
@@ -101,6 +101,8 @@ namespace APDTrigger_WinForms
 
         private void OnNewData(object sender, EventArgs e)
         {
+            
+
             if (InvokeRequired)
             {
                 myGuiCallback callback = OnNewData;
@@ -109,7 +111,7 @@ namespace APDTrigger_WinForms
             else
             {
                 double dataInterval = controller.Binning / 300.0;
-                System.Console.WriteLine(controller.Data[0]);
+                //System.Console.WriteLine(controller.Data[0]);
                 lightningChartBasic1.BeginUpdate();
                 _pointCount++;
                 double x = (double)_pointCount * dataInterval;

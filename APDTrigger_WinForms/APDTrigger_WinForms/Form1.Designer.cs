@@ -70,6 +70,7 @@
             this.label11 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.apdHistogram = new Arction.LightningChartBasic.LightningChartBasic();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -525,6 +526,11 @@
             this.apdHistogram.ZoomFactor = 2D;
             this.apdHistogram.ZoomRectLine = ((Arction.LightningChartBasic.LineStyle)(resources.GetObject("apdHistogram.ZoomRectLine")));
             // 
+            // timer1
+            // 
+            this.timer1.Interval = 20;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -589,6 +595,7 @@
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label9;
         private Arction.LightningChartBasic.LightningChartBasic apdHistogram;
+        private System.Windows.Forms.Timer timer1;
     }
 }
 

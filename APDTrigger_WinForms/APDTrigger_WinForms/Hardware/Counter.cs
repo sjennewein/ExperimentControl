@@ -69,12 +69,12 @@ namespace APDTrigger.Hardware
         /// </param>
         public void AimTrigger(int samples2Acquire)
         {
-            //minimum and maximum counter values are ignored in this measurement mode
+            //minimum and maximum counter values are ignored in this measurement mode, but shouldn't be the same
             //measurement time is in seconds
             //divisor has to be 4 copied from documentation
 
             const double minValue = 0;
-            const double maxValue = 0;
+            const double maxValue = 5;
             const long divisor = 4;
             const double measurementTime = 0.01; //10ms binning
             const CIPeriodStartingEdge edge = CIPeriodStartingEdge.Rising;
@@ -135,8 +135,13 @@ namespace APDTrigger.Hardware
             if (_running)
             {
                 _myTimer.Change(Timeout.Infinite, Timeout.Infinite);
+                Thread.Sleep(30);
                 _myTimer.Dispose();
-                _myTimer = null;
+                
+                _myTriggerTask.Stop();
+                _myThresholdTask.Stop();
+                _myAcquisitionTask.Stop();
+
                 //Thread.Sleep(20);
 
                 Console.WriteLine("should be finished");
@@ -186,10 +191,10 @@ namespace APDTrigger.Hardware
 
         private void ReadThresholdCounter()
         {
-            // var thresholdReader = new CounterReader(_myThresholdTask.Stream);
-            //_NewSample = thresholdReader.ReadSingleSampleInt32();
+            var thresholdReader = new CounterReader(_myThresholdTask.Stream);
+            _NewSample = thresholdReader.ReadSingleSampleInt32();
             
-            _NewSample = rand.Next(0,3000);
+            //_NewSample = rand.Next(0,3000);
             
             EventHandler dataUpdate = NewData;
             if (null != dataUpdate)

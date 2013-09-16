@@ -63,8 +63,9 @@ namespace APDTrigger_WinForms
             apdSignal.YAxes[0].Title.Color = Color.Black;
             apdSignal.YAxes[0].Title.Shadow.Visible = false;
             apdSignal.YAxes[0].Units.Visible = false;
+            //apdSignal.YAxes[0].SetRange(0,30);
 
-            apdSignal.XAxis.SetRange(0, 5);
+            apdSignal.XAxis.SetRange(0,5);
             apdSignal.XAxis.Title.Text = "Time [mm:ss]";
             apdSignal.XAxis.Units.Visible = false;
             apdSignal.XAxis.Title.Color = Color.Black;
@@ -129,21 +130,21 @@ namespace APDTrigger_WinForms
             start_button.Enabled = false;
             controller.Start();
             
-            _myApdSignalTimer = new Timer(UpdateApdSignal, null, 0, 20);
+            //_myApdSignalTimer = new Timer(UpdateApdSignal, null, 0, 10);
             _myApdHistogramTimer =  new Timer(UpdateApdHistogram, null, 0, 1000);
-            
+            timer1.Start();
         }
 
         private void stop_button_Click(object sender, EventArgs e)
         {
             controller.Stop();            
-            _myApdSignalTimer.Dispose();
+            //_myApdSignalTimer.Dispose();
             _myApdHistogramTimer.Dispose();
+            timer1.Stop();
         }
 
         private void OnFinished(object sender, EventArgs e)
-        {
-            Console.WriteLine("STOPPED");
+        {            
             start_button.Enabled = true;
         }
 
@@ -183,14 +184,14 @@ namespace APDTrigger_WinForms
 
         private void UpdateApdSignal(object state)
         {
-            if (InvokeRequired)
-            {
-                myGuiCallback callback = UpdateApdSignal;
-                Invoke(callback, new[] {state});
-            }
-            else
-            {
-                double dataInterval = controller.Binning/300.0;
+            //if (InvokeRequired)
+            //{
+            //    myGuiCallback callback = UpdateApdSignal;
+            //    Invoke(callback, new[] {state});
+            //}
+            //else
+            //{
+                double dataInterval = controller.Binning/800.0;
                 //System.Console.WriteLine(controller.Data[0]);
                 apdSignal.BeginUpdate();
                 _pointCount++;
@@ -200,11 +201,11 @@ namespace APDTrigger_WinForms
                 pointsArray[0].X = x;
                 pointsArray[0].Y = y;
                 apdSignal.PointLineSeries[0].AddPoints(pointsArray, false);
-                apdSignal.XAxis.ScrollPosition = x;
+                apdSignal.XAxis.ScrollPosition = x;                
                 bool foobar = true;
                 apdSignal.YAxes[0].Fit(1, out foobar, false);
                 apdSignal.EndUpdate();
-            }
+            //}
         }
 
         private void triggerRadioButton_CheckedChanged(object sender, EventArgs e)
@@ -212,5 +213,10 @@ namespace APDTrigger_WinForms
         }
 
         internal delegate void myGuiCallback(object state);
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            UpdateApdSignal(null);
+        }
     }
 }

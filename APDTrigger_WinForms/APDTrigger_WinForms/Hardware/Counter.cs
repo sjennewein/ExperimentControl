@@ -36,7 +36,8 @@ namespace APDTrigger.Hardware
         private int _detectedBins;
         private Timer _myTimer;
         private bool _running;
-        private double[] _samples;
+        private int _NewSample;
+        
 
         /// <summary>
         ///     Provides the functionality of a standard ASPHERIX experiment in terms of the counter card
@@ -54,17 +55,17 @@ namespace APDTrigger.Hardware
             _apdBinSize = apdBinSize;
         }
 
-        public double[] Samples
+        public int NewSample
         {
-            get { return _samples; }
+            get { return _NewSample; }
         }
 
         /// <summary>
         ///     Initialize the threshold measurement and the trigger which will be send if it's successful.
         /// </summary>
         /// <param name="samples2Acquire">
-        ///     Define the amount of read samples same value as for PrepareAcquisition (in continous mode
-        ///     it's the buffersize)
+        ///     Define the amount of read samples same value as for PrepareAcquisition (in continuous mode
+        ///     it's the buffer size)
         /// </param>
         public void AimTrigger(int samples2Acquire)
         {
@@ -120,7 +121,7 @@ namespace APDTrigger.Hardware
         {
             if (_running == false)
             {
-                _myTimer = new Timer(RunExperiment, null, 0, 20);
+                _myTimer = new Timer(RunExperiment, null, 0, 10);
 
                 _running = true;
             }
@@ -136,7 +137,7 @@ namespace APDTrigger.Hardware
                 _myTimer.Change(Timeout.Infinite, Timeout.Infinite);
                 _myTimer.Dispose();
                 _myTimer = null;
-                Thread.Sleep(20);
+                //Thread.Sleep(20);
 
                 Console.WriteLine("should be finished");
 
@@ -158,7 +159,7 @@ namespace APDTrigger.Hardware
                 try
                 {
                     //check if the value read from the counter is bigger than the set threshold
-                    if (_samples[0] >= _thresholdTrigger)
+                    if (_NewSample >= _thresholdTrigger)
                         _detectedBins++;
                     else
                         _detectedBins = 0;
@@ -186,19 +187,13 @@ namespace APDTrigger.Hardware
         private void ReadThresholdCounter()
         {
             // var thresholdReader = new CounterReader(_myThresholdTask.Stream);
-            // _samples = thresholdReader.ReadMultiSampleDouble(-1);
-            double[] newData = new double[10];
-            for (int i = 0; i < 10; i++)
-            {
-                newData[i] = 100*rand.NextDouble();
-            }
-            _samples = newData;
+            //_NewSample = thresholdReader.ReadSingleSampleInt32();
+            
+            _NewSample = rand.Next(0,3000);
             
             EventHandler dataUpdate = NewData;
             if (null != dataUpdate)
-                dataUpdate(this, new EventArgs());
-            
-            
+                dataUpdate(this, new EventArgs());                        
         }
 
         private void PerformAcquisition()

@@ -53,7 +53,7 @@
             this.label7 = new System.Windows.Forms.Label();
             this.radioButton4 = new System.Windows.Forms.RadioButton();
             this.radioButton3 = new System.Windows.Forms.RadioButton();
-            this.lightningChartBasic1 = new Arction.LightningChartBasic.LightningChartBasic();
+            this.apdSignal = new Arction.LightningChartBasic.LightningChartBasic();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.textBox13 = new System.Windows.Forms.TextBox();
             this.label16 = new System.Windows.Forms.Label();
@@ -69,6 +69,7 @@
             this.label13 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
+            this.apdHistogram = new Arction.LightningChartBasic.LightningChartBasic();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -241,9 +242,9 @@
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(3, 80);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(100, 13);
+            this.label6.Size = new System.Drawing.Size(117, 13);
             this.label6.TabIndex = 19;
-            this.label6.Text = "Samples to acquire:";
+            this.label6.Text = "NewSample to acquire:";
             // 
             // acquireInput
             // 
@@ -305,43 +306,43 @@
             this.radioButton3.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.radioButton3.UseVisualStyleBackColor = true;
             // 
-            // lightningChartBasic1
+            // apdSignal
             // 
-            this.lightningChartBasic1.AllowPan = true;
-            this.lightningChartBasic1.AllowZoom = true;
-            this.lightningChartBasic1.AntiAliasLevel = ((uint)(4u));
-            this.lightningChartBasic1.AutoShrinkYAxesGap = true;
-            this.lightningChartBasic1.AutoYFit = ((Arction.LightningChartBasic.AutoYFit)(resources.GetObject("lightningChartBasic1.AutoYFit")));
-            this.lightningChartBasic1.BackColor = System.Drawing.Color.LightGray;
-            this.lightningChartBasic1.Background = ((Arction.LightningChartBasic.Fill)(resources.GetObject("lightningChartBasic1.Background")));
-            this.lightningChartBasic1.Bands = ((System.Collections.Generic.List<Arction.LightningChartBasic.Series.Band>)(resources.GetObject("lightningChartBasic1.Bands")));
-            this.lightningChartBasic1.BarSeries = ((System.Collections.Generic.List<Arction.LightningChartBasic.Series.BarSeries>)(resources.GetObject("lightningChartBasic1.BarSeries")));
-            this.lightningChartBasic1.ChartEventMarkers = ((System.Collections.Generic.List<Arction.LightningChartBasic.EventMarkers.ChartEventMarker>)(resources.GetObject("lightningChartBasic1.ChartEventMarkers")));
-            this.lightningChartBasic1.ConstantLines = ((System.Collections.Generic.List<Arction.LightningChartBasic.Series.ConstantLine>)(resources.GetObject("lightningChartBasic1.ConstantLines")));
-            this.lightningChartBasic1.DropOldEventMarkers = true;
-            this.lightningChartBasic1.DropOldSeriesData = true;
-            this.lightningChartBasic1.FreeformPointLineSeries = ((System.Collections.Generic.List<Arction.LightningChartBasic.Series.FreeformPointLineSeries>)(resources.GetObject("lightningChartBasic1.FreeformPointLineSeries")));
-            this.lightningChartBasic1.GraphBackground = ((Arction.LightningChartBasic.Fill)(resources.GetObject("lightningChartBasic1.GraphBackground")));
-            this.lightningChartBasic1.GraphMargins = new System.Windows.Forms.Padding(80, 20, 30, 60);
-            this.lightningChartBasic1.LegendBox = ((Arction.LightningChartBasic.LegendBox)(resources.GetObject("lightningChartBasic1.LegendBox")));
-            this.lightningChartBasic1.LineSeriesCursors = ((System.Collections.Generic.List<Arction.LightningChartBasic.LineSeriesCursor>)(resources.GetObject("lightningChartBasic1.LineSeriesCursors")));
-            this.lightningChartBasic1.Location = new System.Drawing.Point(186, 12);
-            this.lightningChartBasic1.MinimumSize = new System.Drawing.Size(120, 90);
-            this.lightningChartBasic1.MouseInteraction = true;
-            this.lightningChartBasic1.Name = "lightningChartBasic1";
-            this.lightningChartBasic1.PointLineSeries = ((System.Collections.Generic.List<Arction.LightningChartBasic.Series.PointLineSeries>)(resources.GetObject("lightningChartBasic1.PointLineSeries")));
-            this.lightningChartBasic1.RaiseEventsAfterDraw = false;
-            this.lightningChartBasic1.ScrollBars = ((System.Collections.Generic.List<Arction.LightningChartBasic.ScrollBar>)(resources.GetObject("lightningChartBasic1.ScrollBars")));
-            this.lightningChartBasic1.Size = new System.Drawing.Size(530, 467);
-            this.lightningChartBasic1.StackedYAxesGap = 20;
-            this.lightningChartBasic1.TabIndex = 2;
-            this.lightningChartBasic1.ThrowChartExceptions = false;
-            this.lightningChartBasic1.Title = ((Arction.LightningChartBasic.Titles.ChartTitle)(resources.GetObject("lightningChartBasic1.Title")));
-            this.lightningChartBasic1.XAxis = ((Arction.LightningChartBasic.Axes.AxisX)(resources.GetObject("lightningChartBasic1.XAxis")));
-            this.lightningChartBasic1.YAxes = ((System.Collections.Generic.List<Arction.LightningChartBasic.Axes.AxisY>)(resources.GetObject("lightningChartBasic1.YAxes")));
-            this.lightningChartBasic1.YAxesLayout = Arction.LightningChartBasic.YAxesLayout.LayeredCommonXAxis;
-            this.lightningChartBasic1.ZoomFactor = 2D;
-            this.lightningChartBasic1.ZoomRectLine = ((Arction.LightningChartBasic.LineStyle)(resources.GetObject("lightningChartBasic1.ZoomRectLine")));
+            this.apdSignal.AllowPan = true;
+            this.apdSignal.AllowZoom = true;
+            this.apdSignal.AntiAliasLevel = ((uint)(4u));
+            this.apdSignal.AutoShrinkYAxesGap = true;
+            this.apdSignal.AutoYFit = ((Arction.LightningChartBasic.AutoYFit)(resources.GetObject("apdSignal.AutoYFit")));
+            this.apdSignal.BackColor = System.Drawing.Color.LightGray;
+            this.apdSignal.Background = ((Arction.LightningChartBasic.Fill)(resources.GetObject("apdSignal.Background")));
+            this.apdSignal.Bands = ((System.Collections.Generic.List<Arction.LightningChartBasic.Series.Band>)(resources.GetObject("apdSignal.Bands")));
+            this.apdSignal.BarSeries = ((System.Collections.Generic.List<Arction.LightningChartBasic.Series.BarSeries>)(resources.GetObject("apdSignal.BarSeries")));
+            this.apdSignal.ChartEventMarkers = ((System.Collections.Generic.List<Arction.LightningChartBasic.EventMarkers.ChartEventMarker>)(resources.GetObject("apdSignal.ChartEventMarkers")));
+            this.apdSignal.ConstantLines = ((System.Collections.Generic.List<Arction.LightningChartBasic.Series.ConstantLine>)(resources.GetObject("apdSignal.ConstantLines")));
+            this.apdSignal.DropOldEventMarkers = true;
+            this.apdSignal.DropOldSeriesData = true;
+            this.apdSignal.FreeformPointLineSeries = ((System.Collections.Generic.List<Arction.LightningChartBasic.Series.FreeformPointLineSeries>)(resources.GetObject("apdSignal.FreeformPointLineSeries")));
+            this.apdSignal.GraphBackground = ((Arction.LightningChartBasic.Fill)(resources.GetObject("apdSignal.GraphBackground")));
+            this.apdSignal.GraphMargins = new System.Windows.Forms.Padding(80, 20, 30, 60);
+            this.apdSignal.LegendBox = ((Arction.LightningChartBasic.LegendBox)(resources.GetObject("apdSignal.LegendBox")));
+            this.apdSignal.LineSeriesCursors = ((System.Collections.Generic.List<Arction.LightningChartBasic.LineSeriesCursor>)(resources.GetObject("apdSignal.LineSeriesCursors")));
+            this.apdSignal.Location = new System.Drawing.Point(186, 12);
+            this.apdSignal.MinimumSize = new System.Drawing.Size(120, 90);
+            this.apdSignal.MouseInteraction = true;
+            this.apdSignal.Name = "apdSignal";
+            this.apdSignal.PointLineSeries = ((System.Collections.Generic.List<Arction.LightningChartBasic.Series.PointLineSeries>)(resources.GetObject("apdSignal.PointLineSeries")));
+            this.apdSignal.RaiseEventsAfterDraw = false;
+            this.apdSignal.ScrollBars = ((System.Collections.Generic.List<Arction.LightningChartBasic.ScrollBar>)(resources.GetObject("apdSignal.ScrollBars")));
+            this.apdSignal.Size = new System.Drawing.Size(530, 467);
+            this.apdSignal.StackedYAxesGap = 20;
+            this.apdSignal.TabIndex = 2;
+            this.apdSignal.ThrowChartExceptions = false;
+            this.apdSignal.Title = ((Arction.LightningChartBasic.Titles.ChartTitle)(resources.GetObject("apdSignal.Title")));
+            this.apdSignal.XAxis = ((Arction.LightningChartBasic.Axes.AxisX)(resources.GetObject("apdSignal.XAxis")));
+            this.apdSignal.YAxes = ((System.Collections.Generic.List<Arction.LightningChartBasic.Axes.AxisY>)(resources.GetObject("apdSignal.YAxes")));
+            this.apdSignal.YAxesLayout = Arction.LightningChartBasic.YAxesLayout.LayeredCommonXAxis;
+            this.apdSignal.ZoomFactor = 2D;
+            this.apdSignal.ZoomRectLine = ((Arction.LightningChartBasic.LineStyle)(resources.GetObject("apdSignal.ZoomRectLine")));
             // 
             // groupBox3
             // 
@@ -486,13 +487,52 @@
             this.label9.TabIndex = 0;
             this.label9.Text = "Cycle";
             // 
+            // apdHistogram
+            // 
+            this.apdHistogram.AllowPan = true;
+            this.apdHistogram.AllowZoom = true;
+            this.apdHistogram.AntiAliasLevel = ((uint)(4u));
+            this.apdHistogram.AutoShrinkYAxesGap = true;
+            this.apdHistogram.AutoYFit = ((Arction.LightningChartBasic.AutoYFit)(resources.GetObject("apdHistogram.AutoYFit")));
+            this.apdHistogram.BackColor = System.Drawing.Color.LightGray;
+            this.apdHistogram.Background = ((Arction.LightningChartBasic.Fill)(resources.GetObject("apdHistogram.Background")));
+            this.apdHistogram.Bands = ((System.Collections.Generic.List<Arction.LightningChartBasic.Series.Band>)(resources.GetObject("apdHistogram.Bands")));
+            this.apdHistogram.BarSeries = ((System.Collections.Generic.List<Arction.LightningChartBasic.Series.BarSeries>)(resources.GetObject("apdHistogram.BarSeries")));
+            this.apdHistogram.ChartEventMarkers = ((System.Collections.Generic.List<Arction.LightningChartBasic.EventMarkers.ChartEventMarker>)(resources.GetObject("apdHistogram.ChartEventMarkers")));
+            this.apdHistogram.ConstantLines = ((System.Collections.Generic.List<Arction.LightningChartBasic.Series.ConstantLine>)(resources.GetObject("apdHistogram.ConstantLines")));
+            this.apdHistogram.DropOldEventMarkers = true;
+            this.apdHistogram.DropOldSeriesData = true;
+            this.apdHistogram.FreeformPointLineSeries = ((System.Collections.Generic.List<Arction.LightningChartBasic.Series.FreeformPointLineSeries>)(resources.GetObject("apdHistogram.FreeformPointLineSeries")));
+            this.apdHistogram.GraphBackground = ((Arction.LightningChartBasic.Fill)(resources.GetObject("apdHistogram.GraphBackground")));
+            this.apdHistogram.GraphMargins = new System.Windows.Forms.Padding(80, 20, 30, 60);
+            this.apdHistogram.LegendBox = ((Arction.LightningChartBasic.LegendBox)(resources.GetObject("apdHistogram.LegendBox")));
+            this.apdHistogram.LineSeriesCursors = ((System.Collections.Generic.List<Arction.LightningChartBasic.LineSeriesCursor>)(resources.GetObject("apdHistogram.LineSeriesCursors")));
+            this.apdHistogram.Location = new System.Drawing.Point(186, 485);
+            this.apdHistogram.MinimumSize = new System.Drawing.Size(120, 90);
+            this.apdHistogram.MouseInteraction = true;
+            this.apdHistogram.Name = "apdHistogram";
+            this.apdHistogram.PointLineSeries = ((System.Collections.Generic.List<Arction.LightningChartBasic.Series.PointLineSeries>)(resources.GetObject("apdHistogram.PointLineSeries")));
+            this.apdHistogram.RaiseEventsAfterDraw = false;
+            this.apdHistogram.ScrollBars = ((System.Collections.Generic.List<Arction.LightningChartBasic.ScrollBar>)(resources.GetObject("apdHistogram.ScrollBars")));
+            this.apdHistogram.Size = new System.Drawing.Size(530, 332);
+            this.apdHistogram.StackedYAxesGap = 20;
+            this.apdHistogram.TabIndex = 4;
+            this.apdHistogram.ThrowChartExceptions = false;
+            this.apdHistogram.Title = ((Arction.LightningChartBasic.Titles.ChartTitle)(resources.GetObject("apdHistogram.Title")));
+            this.apdHistogram.XAxis = ((Arction.LightningChartBasic.Axes.AxisX)(resources.GetObject("apdHistogram.XAxis")));
+            this.apdHistogram.YAxes = ((System.Collections.Generic.List<Arction.LightningChartBasic.Axes.AxisY>)(resources.GetObject("apdHistogram.YAxes")));
+            this.apdHistogram.YAxesLayout = Arction.LightningChartBasic.YAxesLayout.LayeredCommonXAxis;
+            this.apdHistogram.ZoomFactor = 2D;
+            this.apdHistogram.ZoomRectLine = ((Arction.LightningChartBasic.LineStyle)(resources.GetObject("apdHistogram.ZoomRectLine")));
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(728, 491);
+            this.ClientSize = new System.Drawing.Size(728, 829);
+            this.Controls.Add(this.apdHistogram);
             this.Controls.Add(this.groupBox3);
-            this.Controls.Add(this.lightningChartBasic1);
+            this.Controls.Add(this.apdSignal);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Name = "Form1";
@@ -511,7 +551,7 @@
 
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
-        private Arction.LightningChartBasic.LightningChartBasic lightningChartBasic1;
+        private Arction.LightningChartBasic.LightningChartBasic apdSignal;
         private System.Windows.Forms.RadioButton radioButton2;
         private System.Windows.Forms.RadioButton radioButton1;
         private System.Windows.Forms.Button stop_button;
@@ -548,6 +588,7 @@
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label9;
+        private Arction.LightningChartBasic.LightningChartBasic apdHistogram;
     }
 }
 

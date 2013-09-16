@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading;
 using APDTrigger.Hardware;
@@ -27,7 +28,13 @@ namespace APDTrigger_WinForms.Controls
         public int NoAtoms { get; set; }
         public int Atoms { get; set; }
 
-        public double[] Data {get { return _myCounterHardware.Samples; }}
+        public int Data {get { return _myCounterHardware.NewSample; }}
+
+        private int[] _myHistogramData = new int[600];
+        private List<AgingDataPoint> _myDataList = new List<AgingDataPoint>();
+        private object _listPadlock = new object();
+        public int[] HistogramData {get { return _myHistogramData; }}
+
 
         public void Start()
         {
@@ -61,9 +68,50 @@ namespace APDTrigger_WinForms.Controls
 
         private void OnNewData(object sender, EventArgs e)
         {
-            EventHandler UpdateData = NewData;
-            if(null != UpdateData)
-                UpdateData(this, new EventArgs());
+            AddHistogramData();
+        }
+
+        private void AddHistogramData()
+        {
+            TimeSpan lifetime = new TimeSpan(0, 0, 0, 10);
+            AgingDataPoint newDataPoint = new AgingDataPoint(Data, lifetime, _myDataList);
+            lock (_listPadlock)
+            {
+                _myDataList.Add(newDataPoint);    
+            }
+            
+        }
+
+        public void UpdateHistogramData()
+        {
+            //arbitrary chosen 600 bins 
+            const int bucketNumber = 600;
+            const int interval = 5; // 5 counts per bucket => max 3000 counts
+
+            int[] buckets = new int[bucketNumber + 1]; // extra bucket is for the rubbish
+
+            
+
+            //bucket sort
+            lock (_listPadlock)
+            {
+                foreach (AgingDataPoint dataPoint in _myDataList)
+                {
+                    dataPoint.CheckLifetime();
+
+                    if (dataPoint.Value/interval > bucketNumber)
+                    {
+                        buckets[bucketNumber + 1]++; //put too big values in the trash
+                    }
+                    else
+                    {
+                        buckets[dataPoint.Value/interval]++;
+                    }
+
+                }
+            }
+            _myHistogramData = buckets;
+
         }
 
         public event EventHandler Finished;

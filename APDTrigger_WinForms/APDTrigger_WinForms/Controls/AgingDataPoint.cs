@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows.Forms.VisualStyles;
 
 namespace APDTrigger_WinForms.Controls
 {
@@ -23,8 +24,8 @@ namespace APDTrigger_WinForms.Controls
         }
 
         public void CheckLifetime()
-        {
-            if (_myTimeOfBirth - DateTime.Now >= _myLifetime)
+        {            
+            if (DateTime.Now - _myTimeOfBirth >= _myLifetime)
                 _myParent.Remove(this);
         }
     }

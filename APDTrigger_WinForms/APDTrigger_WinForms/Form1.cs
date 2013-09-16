@@ -59,7 +59,7 @@ namespace APDTrigger_WinForms
             apdSignal.Background.Color = Color.LightGray;
             apdSignal.Background.GradientColor = Color.LightGray;
 
-            apdSignal.YAxes[0].Title.Text = "Counts per bin ";
+            apdSignal.YAxes[0].Title.Text = "Counts per bin";
             apdSignal.YAxes[0].Title.Color = Color.Black;
             apdSignal.YAxes[0].Title.Shadow.Visible = false;
             apdSignal.YAxes[0].Units.Visible = false;
@@ -92,14 +92,32 @@ namespace APDTrigger_WinForms
             apdHistogram.Title.Color = Color.Black;
 
             apdHistogram.GraphMargins = new Padding(75, 40, 40, 50);
-            
+
+            apdHistogram.GraphBackground.Color = Color.White;
+            apdHistogram.GraphBackground.GradientColor = Color.White;
+            apdHistogram.LegendBox.Visible = false;
+            apdHistogram.Background.Color = Color.LightGray;
+            apdHistogram.Background.GradientColor = Color.LightGray;
+
+            apdHistogram.YAxes[0].Title.Text = "Magnitude";
+            apdHistogram.YAxes[0].Title.Color = Color.Black;
+            apdHistogram.YAxes[0].Title.Shadow.Visible = false;
+            apdHistogram.YAxes[0].Units.Visible = false;
+
+            apdHistogram.XAxis.Title.Text = "Counts";
+            apdHistogram.XAxis.Units.Visible = false;
+            apdHistogram.XAxis.Title.Color = Color.Black;
+            apdHistogram.XAxis.Title.Shadow.Visible = false;
+
             apdHistogram.LegendBox.Visible = false;
             apdHistogram.DropOldSeriesData = true;
             apdHistogram.XAxis.ValueType = XAxisValueType.Number;
 
-            apdHistogram.BarViewOptions.Grouping = BarsGrouping.ByIndexFitWidth;
+            apdHistogram.BarViewOptions.Grouping = BarsGrouping.ByIndex;
+            
             apdHistogram.BarViewOptions.BarSpacing = 5;
 
+            apdHistogram.MouseInteraction = false;
             apdHistogram.XAxis.SetRange(0, 50);
             apdHistogram.YAxes[0].SetRange(0,100);
 
@@ -110,8 +128,8 @@ namespace APDTrigger_WinForms
         {
             start_button.Enabled = false;
             controller.Start();
-            //UpdateApdHistogram(null);
-           // _myApdSignalTimer = new Timer(UpdateApdSignal, null, 0, 20);
+            
+            _myApdSignalTimer = new Timer(UpdateApdSignal, null, 0, 20);
             _myApdHistogramTimer =  new Timer(UpdateApdHistogram, null, 0, 1000);
             
         }
@@ -119,8 +137,7 @@ namespace APDTrigger_WinForms
         private void stop_button_Click(object sender, EventArgs e)
         {
             controller.Stop();            
-            //_myApdSignalTimer.Dispose();
-
+            _myApdSignalTimer.Dispose();
             _myApdHistogramTimer.Dispose();
         }
 
@@ -134,17 +151,19 @@ namespace APDTrigger_WinForms
         {
             if (InvokeRequired)
             {
+                controller.UpdateHistogramData();
+
                 myGuiCallback callback = UpdateApdHistogram;
                 Invoke(callback, new[] {state});
             }
             else
-            {
-                controller.UpdateHistogramData();
-                
+            {                               
                 apdHistogram.BeginUpdate();
                 apdHistogram.BarSeries.Clear();
+                
                 BarSeries bs = new BarSeries(apdHistogram,apdHistogram.YAxes[0]);
                 apdHistogram.BarSeries.Add(bs);
+                bs.BarWidth = 3;
                 
                 
                 for (int iBucket = 0; iBucket < 50; iBucket++)
@@ -155,7 +174,8 @@ namespace APDTrigger_WinForms
                     
                 }
 
-                
+                bool foobar = true;
+                apdHistogram.YAxes[0].Fit(10, out foobar, false);
                 apdHistogram.EndUpdate();
                                  
             }

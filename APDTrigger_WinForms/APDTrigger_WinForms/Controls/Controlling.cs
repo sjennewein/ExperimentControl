@@ -95,10 +95,13 @@ namespace APDTrigger_WinForms.Controls
             //bucket sort
             lock (_listPadlock)
             {
-                foreach (AgingDataPoint dataPoint in _myDataList)
+                for (int iPoint = 0; iPoint < _myDataList.Count; iPoint++)
                 {
-                    dataPoint.CheckLifetime();
+                    _myDataList[iPoint].CheckLifetime(); //call this only when locked and not with foreach
+                }
 
+                foreach (AgingDataPoint dataPoint in _myDataList)
+                {                
                     if (dataPoint.Value/interval > bucketNumber)
                     {
                         buckets[bucketNumber + 1]++; //put too big values in the trash

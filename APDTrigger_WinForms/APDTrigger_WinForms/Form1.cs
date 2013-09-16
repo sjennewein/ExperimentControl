@@ -119,7 +119,7 @@ namespace APDTrigger_WinForms
             apdHistogram.BarViewOptions.BarSpacing = 5;
 
             apdHistogram.MouseInteraction = false;
-            apdHistogram.XAxis.SetRange(0, 50);
+            apdHistogram.XAxis.SetRange(0, 60);
             apdHistogram.YAxes[0].SetRange(0,100);
 
             apdHistogram.EndUpdate();
@@ -167,7 +167,7 @@ namespace APDTrigger_WinForms
                 bs.BarWidth = 3;
                 
                 
-                for (int iBucket = 0; iBucket < 50; iBucket++)
+                for (int iBucket = 0; iBucket < 60; iBucket++)
                 {
                     //barData[iBucket].Y = controller.HistogramData[iBucket];
 

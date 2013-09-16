@@ -85,8 +85,8 @@ namespace APDTrigger_WinForms.Controls
         public void UpdateHistogramData()
         {
             //arbitrary chosen 600 bins 
-            const int bucketNumber = 600;
-            const int interval = 5; // 5 counts per bucket => max 3000 counts
+            const int bucketNumber = 60;
+            const int interval = 3; // 5 counts per bucket => max 3000 counts
 
             int[] buckets = new int[bucketNumber + 1]; // extra bucket is for the rubbish
 

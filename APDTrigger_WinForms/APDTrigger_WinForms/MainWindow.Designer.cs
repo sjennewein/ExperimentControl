@@ -1,6 +1,6 @@
 ﻿namespace APDTrigger_WinForms
 {
-    partial class Form1
+    partial class MainWindow
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label8 = new System.Windows.Forms.Label();
             this.runsInput = new System.Windows.Forms.TextBox();
@@ -311,7 +311,7 @@
             // 
             this.apdSignal.AllowPan = true;
             this.apdSignal.AllowZoom = true;
-            this.apdSignal.AntiAliasLevel = ((uint)(4u));
+            this.apdSignal.AntiAliasLevel = ((uint)(0u));
             this.apdSignal.AutoShrinkYAxesGap = true;
             this.apdSignal.AutoYFit = ((Arction.LightningChartBasic.AutoYFit)(resources.GetObject("apdSignal.AutoYFit")));
             this.apdSignal.BackColor = System.Drawing.Color.LightGray;
@@ -344,6 +344,7 @@
             this.apdSignal.YAxesLayout = Arction.LightningChartBasic.YAxesLayout.LayeredCommonXAxis;
             this.apdSignal.ZoomFactor = 2D;
             this.apdSignal.ZoomRectLine = ((Arction.LightningChartBasic.LineStyle)(resources.GetObject("apdSignal.ZoomRectLine")));
+            this.apdSignal.DoubleClick += new System.EventHandler(this.apdSignal_DoubleClick);
             // 
             // groupBox3
             // 
@@ -492,7 +493,7 @@
             // 
             this.apdHistogram.AllowPan = true;
             this.apdHistogram.AllowZoom = true;
-            this.apdHistogram.AntiAliasLevel = ((uint)(4u));
+            this.apdHistogram.AntiAliasLevel = ((uint)(0u));
             this.apdHistogram.AutoShrinkYAxesGap = true;
             this.apdHistogram.AutoYFit = ((Arction.LightningChartBasic.AutoYFit)(resources.GetObject("apdHistogram.AutoYFit")));
             this.apdHistogram.BackColor = System.Drawing.Color.LightGray;

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.Threading;
 using System.Windows.Forms;
 using APDTrigger_WinForms.Controls;
 using Arction.LightningChartBasic;
@@ -9,15 +8,16 @@ using Timer = System.Threading.Timer;
 
 namespace APDTrigger_WinForms
 {
-    public partial class Form1 : Form
+    public partial class MainWindow : Form
     {
         private readonly Controlling controller = new Controlling();
-        private Timer _myApdSignalTimer;
         private Timer _myApdHistogramTimer;
-        private Int16 _pointCount;
+        private Timer _myApdSignalTimer;
+        private int _pointCount;
+        public bool AutoUpdate = false;
         private Random rand = new Random();
 
-        public Form1()
+        public MainWindow()
         {
             controller.Binning = 10;
             controller.APDBinsize = 100;
@@ -30,14 +30,14 @@ namespace APDTrigger_WinForms
 
             binningInput.DataBindings.Add("Text", controller, "Binning", true, DataSourceUpdateMode.OnPropertyChanged);
             thresholdInput.DataBindings.Add("Text", controller, "Threshold", true,
-                DataSourceUpdateMode.OnPropertyChanged);
+                                            DataSourceUpdateMode.OnPropertyChanged);
             detectionInput.DataBindings.Add("Text", controller, "DetectionBins", true,
-                DataSourceUpdateMode.OnPropertyChanged);
+                                            DataSourceUpdateMode.OnPropertyChanged);
             cyclesInput.DataBindings.Add("Text", controller, "Cycles", true, DataSourceUpdateMode.OnPropertyChanged);
             runsInput.DataBindings.Add("Text", controller, "Runs", true, DataSourceUpdateMode.OnPropertyChanged);
             apdInput.DataBindings.Add("Text", controller, "APDBinsize", true, DataSourceUpdateMode.OnPropertyChanged);
             acquireInput.DataBindings.Add("Text", controller, "Samples2Acquire", true,
-                DataSourceUpdateMode.OnPropertyChanged);
+                                          DataSourceUpdateMode.OnPropertyChanged);
 
             InitializeApdSignalChart();
             InitializeApdHistogram();
@@ -65,7 +65,7 @@ namespace APDTrigger_WinForms
             apdSignal.YAxes[0].Units.Visible = false;
             //apdSignal.YAxes[0].SetRange(0,30);
 
-            apdSignal.XAxis.SetRange(0,5);
+            apdSignal.XAxis.SetRange(0, 5);
             apdSignal.XAxis.Title.Text = "Time [mm:ss]";
             apdSignal.XAxis.Units.Visible = false;
             apdSignal.XAxis.Title.Color = Color.Black;
@@ -115,12 +115,12 @@ namespace APDTrigger_WinForms
             apdHistogram.XAxis.ValueType = XAxisValueType.Number;
 
             apdHistogram.BarViewOptions.Grouping = BarsGrouping.ByIndex;
-            
+
             apdHistogram.BarViewOptions.BarSpacing = 5;
 
             apdHistogram.MouseInteraction = false;
             apdHistogram.XAxis.SetRange(0, 60);
-            apdHistogram.YAxes[0].SetRange(0,100);
+            apdHistogram.YAxes[0].SetRange(0, 100);
 
             apdHistogram.EndUpdate();
         }
@@ -129,22 +129,22 @@ namespace APDTrigger_WinForms
         {
             start_button.Enabled = false;
             controller.Start();
-            
+
             //_myApdSignalTimer = new Timer(UpdateApdSignal, null, 0, 10);
-            _myApdHistogramTimer =  new Timer(UpdateApdHistogram, null, 0, 1000);
+            _myApdHistogramTimer = new Timer(UpdateApdHistogram, null, 0, 1000);
             timer1.Start();
         }
 
         private void stop_button_Click(object sender, EventArgs e)
         {
-            controller.Stop();            
+            controller.Stop();
             //_myApdSignalTimer.Dispose();
             _myApdHistogramTimer.Dispose();
             timer1.Stop();
         }
 
         private void OnFinished(object sender, EventArgs e)
-        {            
+        {
             start_button.Enabled = true;
         }
 
@@ -158,65 +158,68 @@ namespace APDTrigger_WinForms
                 Invoke(callback, new[] {state});
             }
             else
-            {                               
+            {
                 apdHistogram.BeginUpdate();
                 apdHistogram.BarSeries.Clear();
-                
-                BarSeries bs = new BarSeries(apdHistogram,apdHistogram.YAxes[0]);
+
+                var bs = new BarSeries(apdHistogram, apdHistogram.YAxes[0]);
                 apdHistogram.BarSeries.Add(bs);
                 bs.BarWidth = 3;
-                
-                
+
+
                 for (int iBucket = 0; iBucket < 60; iBucket++)
                 {
                     //barData[iBucket].Y = controller.HistogramData[iBucket];
 
-                    bs.AddValue(iBucket, (double) controller.HistogramData[iBucket], "", false);
-                    
+                    bs.AddValue(iBucket, controller.HistogramData[iBucket], "", false);
                 }
 
                 bool foobar = true;
                 apdHistogram.YAxes[0].Fit(10, out foobar, false);
                 apdHistogram.EndUpdate();
-                                 
             }
         }
 
         private void UpdateApdSignal(object state)
         {
-            //if (InvokeRequired)
-            //{
-            //    myGuiCallback callback = UpdateApdSignal;
-            //    Invoke(callback, new[] {state});
-            //}
-            //else
-            //{
-                double dataInterval = controller.Binning/800.0;
-                //System.Console.WriteLine(controller.Data[0]);
-                apdSignal.BeginUpdate();
-                _pointCount++;
-                double x = _pointCount*dataInterval;
-                double y = controller.Data;
-                var pointsArray = new SeriesPoint[1];
-                pointsArray[0].X = x;
-                pointsArray[0].Y = y;
-                apdSignal.PointLineSeries[0].AddPoints(pointsArray, false);
-                apdSignal.XAxis.ScrollPosition = x;                
-                bool foobar = true;
-                apdSignal.YAxes[0].Fit(1, out foobar, false);
-                apdSignal.EndUpdate();
-            //}
+            double dataInterval = controller.Binning/800.0;
+            //System.Console.WriteLine(controller.Data[0]);
+            apdSignal.BeginUpdate();
+            _pointCount++;
+            double x = _pointCount*dataInterval;
+            double y = controller.Data;
+            var pointsArray = new SeriesPoint[1];
+            pointsArray[0].X = x;
+            pointsArray[0].Y = y;
+            apdSignal.PointLineSeries[0].AddPoints(pointsArray, false);
+            apdSignal.XAxis.ScrollPosition = x;
+            bool foobar = true;
+            if(AutoUpdate)
+            {
+                apdSignal.YAxes[0].Fit(1, out foobar, false);    
+            }            
+            apdSignal.EndUpdate();
         }
 
         private void triggerRadioButton_CheckedChanged(object sender, EventArgs e)
         {
         }
 
-        internal delegate void myGuiCallback(object state);
-
         private void timer1_Tick(object sender, EventArgs e)
         {
             UpdateApdSignal(null);
+        }
+
+        #region Nested type: myGuiCallback
+
+        internal delegate void myGuiCallback(object state);
+
+        #endregion
+
+        private void apdSignal_DoubleClick(object sender, EventArgs e)
+        {
+            Form contextMenu = new ChartContextMenu(this, apdSignal);
+            contextMenu.ShowDialog();
         }
     }
 }

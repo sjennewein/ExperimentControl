@@ -135,7 +135,7 @@ namespace APDTrigger.Hardware
             if (_running)
             {
                 _myTimer.Change(Timeout.Infinite, Timeout.Infinite);
-                Thread.Sleep(30);
+                Thread.Sleep(30);  //wait until all timer processes are finished
                 _myTimer.Dispose();
                 
                 _myTriggerTask.Stop();
@@ -191,10 +191,10 @@ namespace APDTrigger.Hardware
 
         private void ReadThresholdCounter()
         {
-            var thresholdReader = new CounterReader(_myThresholdTask.Stream);
-            _NewSample = thresholdReader.ReadSingleSampleInt32();
+            //var thresholdReader = new CounterReader(_myThresholdTask.Stream);
+            //_NewSample = thresholdReader.ReadSingleSampleInt32();
             
-            //_NewSample = rand.Next(0,3000);
+            _NewSample = rand.Next(0,30);
             
             EventHandler dataUpdate = NewData;
             if (null != dataUpdate)

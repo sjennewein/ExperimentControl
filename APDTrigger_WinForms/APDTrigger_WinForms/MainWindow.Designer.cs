@@ -30,11 +30,12 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.groupBox_Trigger = new System.Windows.Forms.GroupBox();
+            this.saveCheckBox = new System.Windows.Forms.CheckBox();
             this.label8 = new System.Windows.Forms.Label();
             this.runsInput = new System.Windows.Forms.TextBox();
-            this.radioButton2 = new System.Windows.Forms.RadioButton();
-            this.radioButton1 = new System.Windows.Forms.RadioButton();
+            this.radioButton_Endless = new System.Windows.Forms.RadioButton();
+            this.radioButton_triggered = new System.Windows.Forms.RadioButton();
             this.stop_button = new System.Windows.Forms.Button();
             this.start_button = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
@@ -45,14 +46,14 @@
             this.cyclesInput = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.binningInput = new System.Windows.Forms.TextBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.groupBox_Recapture = new System.Windows.Forms.GroupBox();
             this.label6 = new System.Windows.Forms.Label();
             this.acquireInput = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.apdInput = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
-            this.radioButton4 = new System.Windows.Forms.RadioButton();
-            this.radioButton3 = new System.Windows.Forms.RadioButton();
+            this.radioButton_No = new System.Windows.Forms.RadioButton();
+            this.radioButton_Yes = new System.Windows.Forms.RadioButton();
             this.apdSignal = new Arction.LightningChartBasic.LightningChartBasic();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.textBox13 = new System.Windows.Forms.TextBox();
@@ -71,35 +72,46 @@
             this.label9 = new System.Windows.Forms.Label();
             this.apdHistogram = new Arction.LightningChartBasic.LightningChartBasic();
             this.ApdSignalUpdate = new System.Windows.Forms.Timer(this.components);
-            this.saveCheckBox = new System.Windows.Forms.CheckBox();
-            this.groupBox1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
+            this.groupBox_Trigger.SuspendLayout();
+            this.groupBox_Recapture.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
-            // groupBox1
+            // groupBox_Trigger
             // 
-            this.groupBox1.Controls.Add(this.saveCheckBox);
-            this.groupBox1.Controls.Add(this.label8);
-            this.groupBox1.Controls.Add(this.runsInput);
-            this.groupBox1.Controls.Add(this.radioButton2);
-            this.groupBox1.Controls.Add(this.radioButton1);
-            this.groupBox1.Controls.Add(this.stop_button);
-            this.groupBox1.Controls.Add(this.start_button);
-            this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Controls.Add(this.detectionInput);
-            this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Controls.Add(this.label4);
-            this.groupBox1.Controls.Add(this.thresholdInput);
-            this.groupBox1.Controls.Add(this.cyclesInput);
-            this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Controls.Add(this.binningInput);
-            this.groupBox1.Location = new System.Drawing.Point(12, 12);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(168, 231);
-            this.groupBox1.TabIndex = 0;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Trigger Settings";
+            this.groupBox_Trigger.Controls.Add(this.saveCheckBox);
+            this.groupBox_Trigger.Controls.Add(this.label8);
+            this.groupBox_Trigger.Controls.Add(this.runsInput);
+            this.groupBox_Trigger.Controls.Add(this.radioButton_Endless);
+            this.groupBox_Trigger.Controls.Add(this.radioButton_triggered);
+            this.groupBox_Trigger.Controls.Add(this.stop_button);
+            this.groupBox_Trigger.Controls.Add(this.start_button);
+            this.groupBox_Trigger.Controls.Add(this.label3);
+            this.groupBox_Trigger.Controls.Add(this.detectionInput);
+            this.groupBox_Trigger.Controls.Add(this.label2);
+            this.groupBox_Trigger.Controls.Add(this.label4);
+            this.groupBox_Trigger.Controls.Add(this.thresholdInput);
+            this.groupBox_Trigger.Controls.Add(this.cyclesInput);
+            this.groupBox_Trigger.Controls.Add(this.label1);
+            this.groupBox_Trigger.Controls.Add(this.binningInput);
+            this.groupBox_Trigger.Location = new System.Drawing.Point(12, 12);
+            this.groupBox_Trigger.Name = "groupBox_Trigger";
+            this.groupBox_Trigger.Size = new System.Drawing.Size(168, 231);
+            this.groupBox_Trigger.TabIndex = 0;
+            this.groupBox_Trigger.TabStop = false;
+            this.groupBox_Trigger.Text = "Trigger Settings";
+            // 
+            // saveCheckBox
+            // 
+            this.saveCheckBox.AutoSize = true;
+            this.saveCheckBox.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.saveCheckBox.Location = new System.Drawing.Point(64, 138);
+            this.saveCheckBox.Name = "saveCheckBox";
+            this.saveCheckBox.Size = new System.Drawing.Size(57, 17);
+            this.saveCheckBox.TabIndex = 14;
+            this.saveCheckBox.Text = "Save: ";
+            this.saveCheckBox.UseVisualStyleBackColor = true;
+            this.saveCheckBox.CheckedChanged += new System.EventHandler(this.saveCheckBox_CheckedChanged);
             // 
             // label8
             // 
@@ -117,28 +129,28 @@
             this.runsInput.Size = new System.Drawing.Size(53, 20);
             this.runsInput.TabIndex = 11;
             // 
-            // radioButton2
+            // radioButton_Endless
             // 
-            this.radioButton2.Checked = true;
-            this.radioButton2.Location = new System.Drawing.Point(96, 169);
-            this.radioButton2.Name = "radioButton2";
-            this.radioButton2.Size = new System.Drawing.Size(65, 17);
-            this.radioButton2.TabIndex = 0;
-            this.radioButton2.TabStop = true;
-            this.radioButton2.Text = "Endless";
-            this.radioButton2.UseVisualStyleBackColor = true;
-            this.radioButton2.CheckedChanged += new System.EventHandler(this.triggerRadioButton_CheckedChanged);
+            this.radioButton_Endless.Checked = true;
+            this.radioButton_Endless.Location = new System.Drawing.Point(96, 169);
+            this.radioButton_Endless.Name = "radioButton_Endless";
+            this.radioButton_Endless.Size = new System.Drawing.Size(65, 17);
+            this.radioButton_Endless.TabIndex = 0;
+            this.radioButton_Endless.TabStop = true;
+            this.radioButton_Endless.Text = "Endless";
+            this.radioButton_Endless.UseVisualStyleBackColor = true;
+            this.radioButton_Endless.CheckedChanged += new System.EventHandler(this.triggerRadioButton_CheckedChanged);
             // 
-            // radioButton1
+            // radioButton_triggered
             // 
-            this.radioButton1.AutoSize = true;
-            this.radioButton1.Location = new System.Drawing.Point(6, 169);
-            this.radioButton1.Name = "radioButton1";
-            this.radioButton1.Size = new System.Drawing.Size(70, 17);
-            this.radioButton1.TabIndex = 8;
-            this.radioButton1.Text = "Triggered";
-            this.radioButton1.UseVisualStyleBackColor = true;
-            this.radioButton1.CheckedChanged += new System.EventHandler(this.triggerRadioButton_CheckedChanged);
+            this.radioButton_triggered.AutoSize = true;
+            this.radioButton_triggered.Location = new System.Drawing.Point(6, 169);
+            this.radioButton_triggered.Name = "radioButton_triggered";
+            this.radioButton_triggered.Size = new System.Drawing.Size(70, 17);
+            this.radioButton_triggered.TabIndex = 8;
+            this.radioButton_triggered.Text = "Triggered";
+            this.radioButton_triggered.UseVisualStyleBackColor = true;
+            this.radioButton_triggered.CheckedChanged += new System.EventHandler(this.triggerRadioButton_CheckedChanged);
             // 
             // stop_button
             // 
@@ -224,21 +236,21 @@
             this.binningInput.Size = new System.Drawing.Size(53, 20);
             this.binningInput.TabIndex = 0;
             // 
-            // groupBox2
+            // groupBox_Recapture
             // 
-            this.groupBox2.Controls.Add(this.label6);
-            this.groupBox2.Controls.Add(this.acquireInput);
-            this.groupBox2.Controls.Add(this.label5);
-            this.groupBox2.Controls.Add(this.apdInput);
-            this.groupBox2.Controls.Add(this.label7);
-            this.groupBox2.Controls.Add(this.radioButton4);
-            this.groupBox2.Controls.Add(this.radioButton3);
-            this.groupBox2.Location = new System.Drawing.Point(12, 311);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(168, 103);
-            this.groupBox2.TabIndex = 1;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Recapture Settings";
+            this.groupBox_Recapture.Controls.Add(this.label6);
+            this.groupBox_Recapture.Controls.Add(this.acquireInput);
+            this.groupBox_Recapture.Controls.Add(this.label5);
+            this.groupBox_Recapture.Controls.Add(this.apdInput);
+            this.groupBox_Recapture.Controls.Add(this.label7);
+            this.groupBox_Recapture.Controls.Add(this.radioButton_No);
+            this.groupBox_Recapture.Controls.Add(this.radioButton_Yes);
+            this.groupBox_Recapture.Location = new System.Drawing.Point(12, 311);
+            this.groupBox_Recapture.Name = "groupBox_Recapture";
+            this.groupBox_Recapture.Size = new System.Drawing.Size(168, 103);
+            this.groupBox_Recapture.TabIndex = 1;
+            this.groupBox_Recapture.TabStop = false;
+            this.groupBox_Recapture.Text = "Recapture Settings";
             // 
             // label6
             // 
@@ -281,33 +293,33 @@
             this.label7.TabIndex = 15;
             this.label7.Text = "Recaputre:";
             // 
-            // radioButton4
+            // radioButton_No
             // 
-            this.radioButton4.AutoSize = true;
-            this.radioButton4.CheckAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.radioButton4.Checked = true;
-            this.radioButton4.Location = new System.Drawing.Point(135, 19);
-            this.radioButton4.Name = "radioButton4";
-            this.radioButton4.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.radioButton4.Size = new System.Drawing.Size(25, 30);
-            this.radioButton4.TabIndex = 11;
-            this.radioButton4.TabStop = true;
-            this.radioButton4.Text = "No";
-            this.radioButton4.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
-            this.radioButton4.UseVisualStyleBackColor = true;
+            this.radioButton_No.AutoSize = true;
+            this.radioButton_No.CheckAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.radioButton_No.Checked = true;
+            this.radioButton_No.Location = new System.Drawing.Point(135, 19);
+            this.radioButton_No.Name = "radioButton_No";
+            this.radioButton_No.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.radioButton_No.Size = new System.Drawing.Size(25, 30);
+            this.radioButton_No.TabIndex = 11;
+            this.radioButton_No.TabStop = true;
+            this.radioButton_No.Text = "No";
+            this.radioButton_No.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.radioButton_No.UseVisualStyleBackColor = true;
             // 
-            // radioButton3
+            // radioButton_Yes
             // 
-            this.radioButton3.AutoSize = true;
-            this.radioButton3.CheckAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.radioButton3.Location = new System.Drawing.Point(104, 19);
-            this.radioButton3.Name = "radioButton3";
-            this.radioButton3.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.radioButton3.Size = new System.Drawing.Size(29, 30);
-            this.radioButton3.TabIndex = 9;
-            this.radioButton3.Text = "Yes";
-            this.radioButton3.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
-            this.radioButton3.UseVisualStyleBackColor = true;
+            this.radioButton_Yes.AutoSize = true;
+            this.radioButton_Yes.CheckAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.radioButton_Yes.Location = new System.Drawing.Point(104, 19);
+            this.radioButton_Yes.Name = "radioButton_Yes";
+            this.radioButton_Yes.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.radioButton_Yes.Size = new System.Drawing.Size(29, 30);
+            this.radioButton_Yes.TabIndex = 9;
+            this.radioButton_Yes.Text = "Yes";
+            this.radioButton_Yes.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.radioButton_Yes.UseVisualStyleBackColor = true;
             // 
             // apdSignal
             // 
@@ -534,18 +546,6 @@
             this.ApdSignalUpdate.Interval = 20;
             this.ApdSignalUpdate.Tick += new System.EventHandler(this.ApdSignalUpdate_Tick);
             // 
-            // saveCheckBox
-            // 
-            this.saveCheckBox.AutoSize = true;
-            this.saveCheckBox.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.saveCheckBox.Location = new System.Drawing.Point(64, 138);
-            this.saveCheckBox.Name = "saveCheckBox";
-            this.saveCheckBox.Size = new System.Drawing.Size(57, 17);
-            this.saveCheckBox.TabIndex = 14;
-            this.saveCheckBox.Text = "Save: ";
-            this.saveCheckBox.UseVisualStyleBackColor = true;
-            this.saveCheckBox.CheckedChanged += new System.EventHandler(this.saveCheckBox_CheckedChanged);
-            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -554,14 +554,14 @@
             this.Controls.Add(this.apdHistogram);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.apdSignal);
-            this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.groupBox_Recapture);
+            this.Controls.Add(this.groupBox_Trigger);
             this.Name = "MainWindow";
             this.Text = "Form1";
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
+            this.groupBox_Trigger.ResumeLayout(false);
+            this.groupBox_Trigger.PerformLayout();
+            this.groupBox_Recapture.ResumeLayout(false);
+            this.groupBox_Recapture.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.ResumeLayout(false);
@@ -570,11 +570,11 @@
 
         #endregion
 
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.GroupBox groupBox_Trigger;
+        private System.Windows.Forms.GroupBox groupBox_Recapture;
         private Arction.LightningChartBasic.LightningChartBasic apdSignal;
-        private System.Windows.Forms.RadioButton radioButton2;
-        private System.Windows.Forms.RadioButton radioButton1;
+        private System.Windows.Forms.RadioButton radioButton_Endless;
+        private System.Windows.Forms.RadioButton radioButton_triggered;
         private System.Windows.Forms.Button stop_button;
         private System.Windows.Forms.Button start_button;
         private System.Windows.Forms.Label label3;
@@ -583,11 +583,11 @@
         private System.Windows.Forms.TextBox thresholdInput;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox binningInput;
-        private System.Windows.Forms.RadioButton radioButton3;
+        private System.Windows.Forms.RadioButton radioButton_Yes;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox cyclesInput;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.RadioButton radioButton4;
+        private System.Windows.Forms.RadioButton radioButton_No;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox runsInput;
         private System.Windows.Forms.Label label6;

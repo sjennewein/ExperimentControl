@@ -10,39 +10,34 @@ namespace APDTrigger_WinForms
 {
     public partial class MainWindow : Form
     {
-
-        internal delegate void myGuiCallback(object state);        
-        
-
-        private readonly Controller controller = new Controller();
-        private Timer _myApdHistogramTimer;
-        private Timer _myApdSignalTimer;
-        private int _pointCount;
+        private readonly Controller _myController = new Controller();
         public bool AutoUpdate = false;
+        private Timer _myApdHistogramTimer;
+        private int _pointCount;
         private Random rand = new Random();
 
         public MainWindow()
         {
             InitializeComponent();
-            controller.Binning = 10;
-            controller.APDBinsize = 100;
-            controller.DetectionBins = 3;
-            controller.Threshold = 18000;
-            stop_button.Enabled = false;            
-            
-            controller.Finished += OnFinished;
+            _myController.Binning = 10;
+            _myController.APDBinsize = 100;
+            _myController.DetectionBins = 3;
+            _myController.Threshold = 18000;
+            stop_button.Enabled = false;
+
+            _myController.Finished += OnFinished;
             //this.FormClosing += stop_button_Click;  //hopefully enough to close all hardware handles when closing the application            
 
-            binningInput.DataBindings.Add("Text", controller, "Binning", true, DataSourceUpdateMode.OnPropertyChanged);
-            thresholdInput.DataBindings.Add("Text", controller, "Threshold", true,
-                                            DataSourceUpdateMode.OnPropertyChanged);
-            detectionInput.DataBindings.Add("Text", controller, "DetectionBins", true,
-                                            DataSourceUpdateMode.OnPropertyChanged);
-            cyclesInput.DataBindings.Add("Text", controller, "Cycles", true, DataSourceUpdateMode.OnPropertyChanged);
-            runsInput.DataBindings.Add("Text", controller, "Runs", true, DataSourceUpdateMode.OnPropertyChanged);
-            apdInput.DataBindings.Add("Text", controller, "APDBinsize", true, DataSourceUpdateMode.OnPropertyChanged);
-            acquireInput.DataBindings.Add("Text", controller, "Samples2Acquire", true,
-                                          DataSourceUpdateMode.OnPropertyChanged);
+            binningInput.DataBindings.Add("Text", _myController, "Binning", true, DataSourceUpdateMode.OnPropertyChanged);
+            thresholdInput.DataBindings.Add("Text", _myController, "Threshold", true,
+                DataSourceUpdateMode.OnPropertyChanged);
+            detectionInput.DataBindings.Add("Text", _myController, "DetectionBins", true,
+                DataSourceUpdateMode.OnPropertyChanged);
+            cyclesInput.DataBindings.Add("Text", _myController, "Cycles", true, DataSourceUpdateMode.OnPropertyChanged);
+            runsInput.DataBindings.Add("Text", _myController, "Runs", true, DataSourceUpdateMode.OnPropertyChanged);
+            apdInput.DataBindings.Add("Text", _myController, "APDBinsize", true, DataSourceUpdateMode.OnPropertyChanged);
+            acquireInput.DataBindings.Add("Text", _myController, "Samples2Acquire", true,
+                DataSourceUpdateMode.OnPropertyChanged);
 
             InitializeApdSignalChart();
             InitializeApdHistogram();
@@ -117,16 +112,16 @@ namespace APDTrigger_WinForms
 
             apdHistogram.LegendBox.Visible = false;
             apdHistogram.DropOldSeriesData = true;
-            apdHistogram.XAxis.ValueType = XAxisValueType.Number;          
-                       
+            apdHistogram.XAxis.ValueType = XAxisValueType.Number;
+
             apdHistogram.BarViewOptions.BarSpacing = 1;
             apdHistogram.BarViewOptions.Grouping = BarsGrouping.ByXValue;
-            apdHistogram.BarViewOptions.Stacking = BarsStacking.None; 
+            apdHistogram.BarViewOptions.Stacking = BarsStacking.None;
             apdHistogram.BarViewOptions.IndexGroupingFitGroupDistance = 0;
             apdHistogram.BarViewOptions.IndexGroupingFitSideMargins = 0;
-                                   
+
             //apdHistogram.MouseInteraction = false;
-            apdHistogram.XAxis.SetRange(0,600);
+            apdHistogram.XAxis.SetRange(0, 600);
             apdHistogram.YAxes[0].SetRange(0, 100);
 
             apdHistogram.EndUpdate();
@@ -134,22 +129,25 @@ namespace APDTrigger_WinForms
 
         private void start_button_Click(object sender, EventArgs e)
         {
-            start_button.Enabled = false;
-            controller.Start();
+            DisableAllInput();
+            stop_button.Enabled = true;
+            _myController.Start();
 
             //_myApdSignalTimer = new Timer(UpdateApdSignal, null, 0, 10);
             _myApdHistogramTimer = new Timer(UpdateApdHistogram, null, 0, 1000);
             ApdSignalUpdate.Start();
-            stop_button.Enabled = true;
         }
 
         private void stop_button_Click(object sender, EventArgs e)
         {
-            controller.Stop();
+            _myController.Stop();
             ApdSignalUpdate.Stop();
 
-            _myApdHistogramTimer.Dispose();            
+            _myApdHistogramTimer.Dispose();
+            EnableAllInput();
             stop_button.Enabled = false;
+
+            //reactivate all b
         }
 
         private void OnFinished(object sender, EventArgs e)
@@ -161,7 +159,7 @@ namespace APDTrigger_WinForms
         {
             if (InvokeRequired)
             {
-                controller.UpdateHistogramData();
+                _myController.UpdateHistogramData();
 
                 myGuiCallback callback = UpdateApdHistogram;
                 Invoke(callback, new[] {state});
@@ -177,15 +175,14 @@ namespace APDTrigger_WinForms
                 bs.Fill.GradientColor = ChartTools.CalcGradient(Color.Black, Color.Black, 10);
                 bs.Fill.Color = Color.LightGray;
                 bs.BarWidth = 0;
-              
 
 
                 for (int iBucket = 0; iBucket < 600; iBucket++)
                 {
-                    //barData[iBucket].Y = controller.HistogramData[iBucket];
+                    //barData[iBucket].Y = _myController.HistogramData[iBucket];
 
-                    
-                    bs.AddValue((double)iBucket, (double) controller.HistogramData[iBucket], "", true);
+
+                    bs.AddValue(iBucket, _myController.HistogramData[iBucket], "", true);
                 }
 
                 bool foobar = true;
@@ -196,28 +193,48 @@ namespace APDTrigger_WinForms
 
         private void UpdateApdSignal(object state)
         {
-            double dataInterval = controller.Binning/800.0;
-            //System.Console.WriteLine(controller.Data[0]);
+            double dataInterval = _myController.Binning/800.0;
+            //System.Console.WriteLine(_myController.Data[0]);
             apdSignal.BeginUpdate();
             _pointCount++;
             double x = _pointCount*dataInterval;
-            double y = controller.Data;
+            double y = _myController.Data;
             var pointsArray = new SeriesPoint[1];
             pointsArray[0].X = x;
             pointsArray[0].Y = y;
             apdSignal.PointLineSeries[0].AddPoints(pointsArray, false);
             apdSignal.XAxis.ScrollPosition = x;
             bool foobar = true;
-            if(AutoUpdate)
+            if (AutoUpdate)
             {
-                apdSignal.YAxes[0].Fit(1, out foobar, false);    
-            }            
+                apdSignal.YAxes[0].Fit(1, out foobar, false);
+            }
             apdSignal.EndUpdate();
         }
 
         private void triggerRadioButton_CheckedChanged(object sender, EventArgs e)
         {
-        }                     
+            foreach (Control control in groupBox_Trigger.Controls)
+            {
+                if ((control is RadioButton) == false)
+                    continue;
+
+                var radio = control as RadioButton;
+
+                if (radio.Checked == false)
+                    continue;
+                
+                switch (radio.Text)
+                {
+                    case "Triggered":
+                        _myController.Run = Controller.RunType.triggered;
+                        break;
+                    case "Endless":
+                        _myController.Run = Controller.RunType.endless;
+                        break;
+                }
+            }
+        }
 
         private void apdSignal_DoubleClick(object sender, EventArgs e)
         {
@@ -227,14 +244,14 @@ namespace APDTrigger_WinForms
 
         private void saveCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            CheckBox originalSender = (CheckBox) sender;
+            var originalSender = (CheckBox) sender;
             if (originalSender.Checked)
             {
-                controller.Save = true;
+                _myController.Save = true;
             }
             else
             {
-                controller.Save = false;
+                _myController.Save = false;
             }
         }
 
@@ -242,5 +259,47 @@ namespace APDTrigger_WinForms
         {
             UpdateApdSignal(null);
         }
+
+        private void DisableAllInput()
+        {
+            start_button.Enabled = false;
+            stop_button.Enabled = false;
+            binningInput.Enabled = false;
+            thresholdInput.Enabled = false;
+            detectionInput.Enabled = false;
+            cyclesInput.Enabled = false;
+            runsInput.Enabled = false;
+            apdInput.Enabled = false;
+            acquireInput.Enabled = false;
+            radioButton_Endless.Enabled = false;
+            radioButton_triggered.Enabled = false;
+            saveCheckBox.Enabled = false;
+            radioButton_No.Enabled = false;
+            radioButton_Yes.Enabled = false;
+            apdInput.Enabled = false;
+            acquireInput.Enabled = false;
+        }
+
+        private void EnableAllInput()
+        {
+            start_button.Enabled = true;
+            stop_button.Enabled = true;
+            binningInput.Enabled = true;
+            thresholdInput.Enabled = true;
+            detectionInput.Enabled = true;
+            cyclesInput.Enabled = true;
+            runsInput.Enabled = true;
+            apdInput.Enabled = true;
+            acquireInput.Enabled = true;
+            radioButton_Endless.Enabled = true;
+            radioButton_triggered.Enabled = true;
+            saveCheckBox.Enabled = true;
+            radioButton_No.Enabled = true;
+            radioButton_Yes.Enabled = true;
+            apdInput.Enabled = true;
+            acquireInput.Enabled = true;
+        }
+
+        internal delegate void myGuiCallback(object state);
     }
 }

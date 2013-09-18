@@ -8,6 +8,13 @@ namespace APDTrigger_WinForms.Helper
 {
     public class Controller
     {
+        public enum RunType
+        {
+            triggered,
+            endless
+        };
+
+        public RunType Run = RunType.endless;
         private readonly object _listPadlock = new object();
         private readonly List<AgingDataPoint> _myDataList = new List<AgingDataPoint>();
         private string _myBaseSaveFolder = "c:\\temp\\";
@@ -84,7 +91,9 @@ namespace APDTrigger_WinForms.Helper
 
         public void Start()
         {
-            _myCounterHardware = new Counter(Threshold, DetectionBins, APDBinsize);
+            bool endless = (Run == RunType.endless);  //set endless true if run type is endless
+
+            _myCounterHardware = new Counter(Threshold, DetectionBins, APDBinsize, endless);
             _myCounterHardware.Finished += OnFinished;
             _myCounterHardware.NewData += OnNewData;
             _myWorker = new Thread(BackgroundWork);

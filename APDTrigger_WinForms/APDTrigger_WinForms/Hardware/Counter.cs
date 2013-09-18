@@ -37,7 +37,7 @@ namespace APDTrigger.Hardware
         private Timer _myTimer;
         private bool _running;
         private int _NewSample;
-        
+        private bool _endlessRun;
 
         /// <summary>
         ///     Provides the functionality of a standard ASPHERIX experiment in terms of the counter card
@@ -45,7 +45,7 @@ namespace APDTrigger.Hardware
         /// <param name="thresholdTrigger">The value from the APD above you think you have an atom in the trap</param>
         /// <param name="detectionBins">How often this value has to appear in a row before the trigger is send</param>
         /// <param name="apdBinSize">The number of original datapoints per bin (normaly we sample with 1us and want to have 10ms)</param>
-        public Counter(double thresholdTrigger, int detectionBins, int apdBinSize)
+        public Counter(double thresholdTrigger, int detectionBins, int apdBinSize, bool endlessRun)
         {
             _myThresholdTask = new Task();
             _myTriggerTask = new Task();
@@ -53,6 +53,7 @@ namespace APDTrigger.Hardware
             _thresholdTrigger = thresholdTrigger;
             _detectionBins = detectionBins;
             _apdBinSize = apdBinSize;
+            _endlessRun = endlessRun;
         }
 
         public int NewSample
@@ -144,7 +145,7 @@ namespace APDTrigger.Hardware
 
                 //Thread.Sleep(20);
 
-                Console.WriteLine("should be finished");
+                //Console.WriteLine("should be finished");
 
                 //send finishing event
                 EventHandler finished = Finished;
@@ -157,6 +158,9 @@ namespace APDTrigger.Hardware
         private void RunExperiment(object state)
         {
             ReadThresholdCounter();
+
+            if (_endlessRun == true) // just work as a monitor (no recapture) if it's a endless run 
+                return;
 
             //keeps on reading data every 10ms but only evaluates it if no other experiment is running
             if (Monitor.TryEnter(_lockExperiment))

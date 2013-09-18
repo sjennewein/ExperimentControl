@@ -70,7 +70,8 @@
             this.label11 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.apdHistogram = new Arction.LightningChartBasic.LightningChartBasic();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.ApdSignalUpdate = new System.Windows.Forms.Timer(this.components);
+            this.saveCheckBox = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -78,6 +79,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.saveCheckBox);
             this.groupBox1.Controls.Add(this.label8);
             this.groupBox1.Controls.Add(this.runsInput);
             this.groupBox1.Controls.Add(this.radioButton2);
@@ -94,7 +96,7 @@
             this.groupBox1.Controls.Add(this.binningInput);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(168, 199);
+            this.groupBox1.Size = new System.Drawing.Size(168, 231);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Trigger Settings";
@@ -118,7 +120,7 @@
             // radioButton2
             // 
             this.radioButton2.Checked = true;
-            this.radioButton2.Location = new System.Drawing.Point(96, 145);
+            this.radioButton2.Location = new System.Drawing.Point(96, 169);
             this.radioButton2.Name = "radioButton2";
             this.radioButton2.Size = new System.Drawing.Size(65, 17);
             this.radioButton2.TabIndex = 0;
@@ -130,7 +132,7 @@
             // radioButton1
             // 
             this.radioButton1.AutoSize = true;
-            this.radioButton1.Location = new System.Drawing.Point(6, 145);
+            this.radioButton1.Location = new System.Drawing.Point(6, 169);
             this.radioButton1.Name = "radioButton1";
             this.radioButton1.Size = new System.Drawing.Size(70, 17);
             this.radioButton1.TabIndex = 8;
@@ -140,7 +142,7 @@
             // 
             // stop_button
             // 
-            this.stop_button.Location = new System.Drawing.Point(103, 170);
+            this.stop_button.Location = new System.Drawing.Point(106, 200);
             this.stop_button.Name = "stop_button";
             this.stop_button.Size = new System.Drawing.Size(59, 23);
             this.stop_button.TabIndex = 7;
@@ -150,7 +152,7 @@
             // 
             // start_button
             // 
-            this.start_button.Location = new System.Drawing.Point(6, 170);
+            this.start_button.Location = new System.Drawing.Point(6, 200);
             this.start_button.Name = "start_button";
             this.start_button.Size = new System.Drawing.Size(59, 23);
             this.start_button.TabIndex = 6;
@@ -231,7 +233,7 @@
             this.groupBox2.Controls.Add(this.label7);
             this.groupBox2.Controls.Add(this.radioButton4);
             this.groupBox2.Controls.Add(this.radioButton3);
-            this.groupBox2.Location = new System.Drawing.Point(12, 217);
+            this.groupBox2.Location = new System.Drawing.Point(12, 311);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(168, 103);
             this.groupBox2.TabIndex = 1;
@@ -362,7 +364,7 @@
             this.groupBox3.Controls.Add(this.label13);
             this.groupBox3.Controls.Add(this.label11);
             this.groupBox3.Controls.Add(this.label9);
-            this.groupBox3.Location = new System.Drawing.Point(12, 660);
+            this.groupBox3.Location = new System.Drawing.Point(12, 664);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(168, 153);
             this.groupBox3.TabIndex = 3;
@@ -527,10 +529,22 @@
             this.apdHistogram.ZoomFactor = 2D;
             this.apdHistogram.ZoomRectLine = ((Arction.LightningChartBasic.LineStyle)(resources.GetObject("apdHistogram.ZoomRectLine")));
             // 
-            // timer1
+            // ApdSignalUpdate
             // 
-            this.timer1.Interval = 20;
-            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            this.ApdSignalUpdate.Interval = 20;
+            this.ApdSignalUpdate.Tick += new System.EventHandler(this.ApdSignalUpdate_Tick);
+            // 
+            // saveCheckBox
+            // 
+            this.saveCheckBox.AutoSize = true;
+            this.saveCheckBox.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.saveCheckBox.Location = new System.Drawing.Point(64, 138);
+            this.saveCheckBox.Name = "saveCheckBox";
+            this.saveCheckBox.Size = new System.Drawing.Size(57, 17);
+            this.saveCheckBox.TabIndex = 14;
+            this.saveCheckBox.Text = "Save: ";
+            this.saveCheckBox.UseVisualStyleBackColor = true;
+            this.saveCheckBox.CheckedChanged += new System.EventHandler(this.saveCheckBox_CheckedChanged);
             // 
             // MainWindow
             // 
@@ -596,7 +610,8 @@
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label9;
         private Arction.LightningChartBasic.LightningChartBasic apdHistogram;
-        private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.Timer ApdSignalUpdate;
+        private System.Windows.Forms.CheckBox saveCheckBox;
     }
 }
 

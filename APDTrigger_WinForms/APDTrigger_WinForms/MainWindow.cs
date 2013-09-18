@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using APDTrigger_WinForms.Controls;
+using APDTrigger_WinForms.Helper;
 using Arction.LightningChartBasic;
 using Arction.LightningChartBasic.Series;
 using Timer = System.Threading.Timer;
@@ -10,7 +10,11 @@ namespace APDTrigger_WinForms
 {
     public partial class MainWindow : Form
     {
-        private readonly Controlling controller = new Controlling();
+
+        internal delegate void myGuiCallback(object state);        
+        
+
+        private readonly Controller controller = new Controller();
         private Timer _myApdHistogramTimer;
         private Timer _myApdSignalTimer;
         private int _pointCount;
@@ -19,14 +23,15 @@ namespace APDTrigger_WinForms
 
         public MainWindow()
         {
+            InitializeComponent();
             controller.Binning = 10;
             controller.APDBinsize = 100;
             controller.DetectionBins = 3;
             controller.Threshold = 18000;
+            stop_button.Enabled = false;            
+            
             controller.Finished += OnFinished;
-
-
-            InitializeComponent();
+            //this.FormClosing += stop_button_Click;  //hopefully enough to close all hardware handles when closing the application            
 
             binningInput.DataBindings.Add("Text", controller, "Binning", true, DataSourceUpdateMode.OnPropertyChanged);
             thresholdInput.DataBindings.Add("Text", controller, "Threshold", true,
@@ -119,10 +124,7 @@ namespace APDTrigger_WinForms
             apdHistogram.BarViewOptions.Stacking = BarsStacking.None; 
             apdHistogram.BarViewOptions.IndexGroupingFitGroupDistance = 0;
             apdHistogram.BarViewOptions.IndexGroupingFitSideMargins = 0;
-            
-            
-            
-
+                                   
             //apdHistogram.MouseInteraction = false;
             apdHistogram.XAxis.SetRange(0,600);
             apdHistogram.YAxes[0].SetRange(0, 100);
@@ -137,15 +139,17 @@ namespace APDTrigger_WinForms
 
             //_myApdSignalTimer = new Timer(UpdateApdSignal, null, 0, 10);
             _myApdHistogramTimer = new Timer(UpdateApdHistogram, null, 0, 1000);
-            timer1.Start();
+            ApdSignalUpdate.Start();
+            stop_button.Enabled = true;
         }
 
         private void stop_button_Click(object sender, EventArgs e)
         {
             controller.Stop();
-            //_myApdSignalTimer.Dispose();
-            _myApdHistogramTimer.Dispose();
-            timer1.Stop();
+            ApdSignalUpdate.Stop();
+
+            _myApdHistogramTimer.Dispose();            
+            stop_button.Enabled = false;
         }
 
         private void OnFinished(object sender, EventArgs e)
@@ -213,23 +217,30 @@ namespace APDTrigger_WinForms
 
         private void triggerRadioButton_CheckedChanged(object sender, EventArgs e)
         {
-        }
-
-        private void timer1_Tick(object sender, EventArgs e)
-        {
-            UpdateApdSignal(null);
-        }
-
-        #region Nested type: myGuiCallback
-
-        internal delegate void myGuiCallback(object state);
-
-        #endregion
+        }                     
 
         private void apdSignal_DoubleClick(object sender, EventArgs e)
         {
             Form contextMenu = new ApdSignalContextMenu(this, apdSignal);
             contextMenu.ShowDialog();
+        }
+
+        private void saveCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            CheckBox originalSender = (CheckBox) sender;
+            if (originalSender.Checked)
+            {
+                controller.Save = true;
+            }
+            else
+            {
+                controller.Save = false;
+            }
+        }
+
+        private void ApdSignalUpdate_Tick(object sender, EventArgs e)
+        {
+            UpdateApdSignal(null);
         }
     }
 }

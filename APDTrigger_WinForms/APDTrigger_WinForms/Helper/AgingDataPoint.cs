@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows.Forms.VisualStyles;
 
-namespace APDTrigger_WinForms.Controls
+namespace APDTrigger_WinForms.Helper
 {
     public class AgingDataPoint
     {

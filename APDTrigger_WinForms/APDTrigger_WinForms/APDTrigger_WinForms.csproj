@@ -63,8 +63,8 @@
     <Compile Include="ApdSignalContextMenu.Designer.cs">
       <DependentUpon>ApdSignalContextMenu.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\AgingDataPoint.cs" />
-    <Compile Include="Controls\Controlling.cs" />
+    <Compile Include="Helper\AgingDataPoint.cs" />
+    <Compile Include="Helper\Controller.cs" />
     <Compile Include="MainWindow.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -114,12 +114,12 @@ namespace APDTrigger_WinForms
             apdHistogram.DropOldSeriesData = true;
             apdHistogram.XAxis.ValueType = XAxisValueType.Number;
 
-            apdHistogram.BarViewOptions.Grouping = BarsGrouping.ByIndex;
+            apdHistogram.BarViewOptions.Grouping = BarsGrouping.ByIndexFitWidth;
 
-            apdHistogram.BarViewOptions.BarSpacing = 5;
+            //apdHistogram.BarViewOptions.BarSpacing = 5;
 
             apdHistogram.MouseInteraction = false;
-            apdHistogram.XAxis.SetRange(0, 60);
+            apdHistogram.XAxis.SetRange(0, 600);
             apdHistogram.YAxes[0].SetRange(0, 100);
 
             apdHistogram.EndUpdate();
@@ -164,10 +164,10 @@ namespace APDTrigger_WinForms
 
                 var bs = new BarSeries(apdHistogram, apdHistogram.YAxes[0]);
                 apdHistogram.BarSeries.Add(bs);
-                bs.BarWidth = 3;
+                //bs.BarWidth = 3;
 
 
-                for (int iBucket = 0; iBucket < 60; iBucket++)
+                for (int iBucket = 0; iBucket < 600; iBucket++)
                 {
                     //barData[iBucket].Y = controller.HistogramData[iBucket];
 

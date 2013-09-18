@@ -112,14 +112,19 @@ namespace APDTrigger_WinForms
 
             apdHistogram.LegendBox.Visible = false;
             apdHistogram.DropOldSeriesData = true;
-            apdHistogram.XAxis.ValueType = XAxisValueType.Number;
+            apdHistogram.XAxis.ValueType = XAxisValueType.Number;          
+                       
+            apdHistogram.BarViewOptions.BarSpacing = 1;
+            apdHistogram.BarViewOptions.Grouping = BarsGrouping.ByXValue;
+            apdHistogram.BarViewOptions.Stacking = BarsStacking.None; 
+            apdHistogram.BarViewOptions.IndexGroupingFitGroupDistance = 0;
+            apdHistogram.BarViewOptions.IndexGroupingFitSideMargins = 0;
+            
+            
+            
 
-            apdHistogram.BarViewOptions.Grouping = BarsGrouping.ByIndexFitWidth;
-
-            //apdHistogram.BarViewOptions.BarSpacing = 5;
-
-            apdHistogram.MouseInteraction = false;
-            apdHistogram.XAxis.SetRange(0, 600);
+            //apdHistogram.MouseInteraction = false;
+            apdHistogram.XAxis.SetRange(0,600);
             apdHistogram.YAxes[0].SetRange(0, 100);
 
             apdHistogram.EndUpdate();
@@ -164,14 +169,19 @@ namespace APDTrigger_WinForms
 
                 var bs = new BarSeries(apdHistogram, apdHistogram.YAxes[0]);
                 apdHistogram.BarSeries.Add(bs);
-                //bs.BarWidth = 3;
+                bs.Shadow.Visible = false;
+                bs.Fill.GradientColor = ChartTools.CalcGradient(Color.Black, Color.Black, 10);
+                bs.Fill.Color = Color.LightGray;
+                bs.BarWidth = 0;
+              
 
 
                 for (int iBucket = 0; iBucket < 600; iBucket++)
                 {
                     //barData[iBucket].Y = controller.HistogramData[iBucket];
 
-                    bs.AddValue(iBucket, controller.HistogramData[iBucket], "", false);
+                    
+                    bs.AddValue((double)iBucket, (double) controller.HistogramData[iBucket], "", true);
                 }
 
                 bool foobar = true;
@@ -218,7 +228,7 @@ namespace APDTrigger_WinForms
 
         private void apdSignal_DoubleClick(object sender, EventArgs e)
         {
-            Form contextMenu = new ChartContextMenu(this, apdSignal);
+            Form contextMenu = new ApdSignalContextMenu(this, apdSignal);
             contextMenu.ShowDialog();
         }
     }

@@ -10,12 +10,12 @@ using Arction.LightningChartBasic;
 
 namespace APDTrigger_WinForms
 {
-    public partial class ChartContextMenu : Form
+    public partial class ApdSignalContextMenu : Form
     {
         private MainWindow _myCaller;
         private LightningChartBasic _myChart;
         private bool _myAutoUpdate;
-        public ChartContextMenu(MainWindow caller, LightningChartBasic chart)
+        public ApdSignalContextMenu(MainWindow caller, LightningChartBasic chart)
         {
             InitializeComponent();
             _myCaller = caller;
@@ -36,17 +36,7 @@ namespace APDTrigger_WinForms
 
         private void updateButton_Click(object sender, EventArgs e)
         {
-            if(_myAutoUpdate)
-            {
-                _myCaller.AutoUpdate = true;
-            }
-            else
-            {
-                _myCaller.AutoUpdate = false;      
-                _myChart.BeginUpdate();
-                _myChart.YAxes[0].SetRange(Convert.ToDouble(yMinBox.Text),Convert.ToDouble(yMaxBox.Text));
-                _myChart.EndUpdate();
-            }
+            updateChart();
         }
 
         private void autoscaleCheckbox_CheckedChanged(object sender, EventArgs e)
@@ -71,6 +61,37 @@ namespace APDTrigger_WinForms
             yMaxBox.Enabled = true;
             yMaxBox.Text = _myChart.YAxes[0].Maximum.ToString();
             yMinBox.Text = _myChart.YAxes[0].Minimum.ToString();
+        }
+
+        private void yMinBox_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                updateChart();
+            }
+        }
+
+        private void updateChart()
+        {
+            if (_myAutoUpdate)
+            {
+                _myCaller.AutoUpdate = true;
+            }
+            else
+            {
+                _myCaller.AutoUpdate = false;
+                _myChart.BeginUpdate();
+                _myChart.YAxes[0].SetRange(Convert.ToDouble(yMinBox.Text), Convert.ToDouble(yMaxBox.Text));
+                _myChart.EndUpdate();
+            }
+        }
+
+        private void yMaxBox_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                updateChart();
+            }
         }
     }
 }

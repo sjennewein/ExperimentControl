@@ -1,6 +1,6 @@
 ﻿namespace APDTrigger_WinForms
 {
-    partial class ChartContextMenu
+    partial class ApdSignalContextMenu
     {
         /// <summary>
         /// Required designer variable.
@@ -53,6 +53,7 @@
             this.yMinBox.Name = "yMinBox";
             this.yMinBox.Size = new System.Drawing.Size(64, 20);
             this.yMinBox.TabIndex = 1;
+            this.yMinBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.yMinBox_KeyUp);
             // 
             // yMaxBox
             // 
@@ -60,6 +61,7 @@
             this.yMaxBox.Name = "yMaxBox";
             this.yMaxBox.Size = new System.Drawing.Size(64, 20);
             this.yMaxBox.TabIndex = 2;
+            this.yMaxBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.yMaxBox_KeyUp);
             // 
             // label1
             // 
@@ -89,7 +91,7 @@
             this.updateButton.UseVisualStyleBackColor = true;
             this.updateButton.Click += new System.EventHandler(this.updateButton_Click);
             // 
-            // ChartContextMenu
+            // ApdSignalContextMenu
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -102,7 +104,7 @@
             this.Controls.Add(this.autoscaleCheckbox);
             this.MaximumSize = new System.Drawing.Size(143, 166);
             this.MinimumSize = new System.Drawing.Size(143, 166);
-            this.Name = "ChartContextMenu";
+            this.Name = "ApdSignalContextMenu";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "ChartContext";
             this.ResumeLayout(false);

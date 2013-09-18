@@ -57,11 +57,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ChartContextMenu.cs">
+    <Compile Include="ApdSignalContextMenu.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ChartContextMenu.Designer.cs">
-      <DependentUpon>ChartContextMenu.cs</DependentUpon>
+    <Compile Include="ApdSignalContextMenu.Designer.cs">
+      <DependentUpon>ApdSignalContextMenu.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\AgingDataPoint.cs" />
     <Compile Include="Controls\Controlling.cs" />
@@ -75,8 +75,8 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="ChartContextMenu.resx">
-      <DependentUpon>ChartContextMenu.cs</DependentUpon>
+    <EmbeddedResource Include="ApdSignalContextMenu.resx">
+      <DependentUpon>ApdSignalContextMenu.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>

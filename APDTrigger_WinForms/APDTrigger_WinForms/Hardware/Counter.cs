@@ -191,13 +191,13 @@ namespace APDTrigger.Hardware
 
         private void ReadThresholdCounter()
         {
-            var thresholdReader = new CounterReader(_myThresholdTask.Stream);
-            int[] readOutData = thresholdReader.ReadMultiSampleInt32(-1);
+            //var thresholdReader = new CounterReader(_myThresholdTask.Stream);
+            //int[] readOutData = thresholdReader.ReadMultiSampleInt32(-1); //read everything from the buffer
 
-            if (readOutData.Length >= 1)
-                _NewSample = readOutData[0];
+            //if (readOutData.Length >= 1)    
+            //    _NewSample = readOutData[0];     //use only the last value from the buffer and throw everything else away
             
-            //_NewSample = rand.Next(0,30);
+            _NewSample = 1000 + rand.Next(0,1000);
             
             EventHandler dataUpdate = NewData;
             if (null != dataUpdate)

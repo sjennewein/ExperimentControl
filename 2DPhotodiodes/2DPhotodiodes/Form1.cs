@@ -18,6 +18,7 @@ namespace _2DPhotodiodes
         private int _delay = 1000;
         private string _storageFolder = "d:\\manipe\\2ddiodes\\";
         private StreamWriter logFileWriter;
+        private string day;
              
         #region graph declaration
         private double[] x1Power = new double[samples];
@@ -311,8 +312,11 @@ namespace _2DPhotodiodes
             y2Diode.StartCtrl();
             z1Diode.StartCtrl();
             z2Diode.StartCtrl();
-            Random random = new Random();
-            logFileWriter = new StreamWriter(_storageFolder + "\\diodeLOG.txt", true);
+
+            DateTime now = DateTime.Now;
+            logFileWriter = new StreamWriter(_storageFolder + "\\diodeLOG-" + now.ToString("yy-MM-dd") + ".txt",
+                                                 true);
+            
             double[] newValues = new double[18];
             do
             {
@@ -359,14 +363,22 @@ namespace _2DPhotodiodes
             y2Diode.StopCtrl();
             z1Diode.StopCtrl();
             z2Diode.StartCtrl();
-            _collectorThread = null;
             logFileWriter.Close();
+            _collectorThread = null;
+            
         }
 
         private void WriteDataToFile()
         {
             DateTime now = DateTime.Now;
-            
+            if (day != now.ToString("yy-MM-dd"))
+            {
+                logFileWriter.Close();
+                logFileWriter = new StreamWriter(_storageFolder + "\\diodeLOG-" + now.ToString("yy-MM-dd") + ".txt",
+                                                 true);
+                day = now.ToString("yy-MM-dd");
+            }
+
             logFileWriter.WriteLine("\"" + now.ToString("MM-dd-yy::hh:mm:ss") + "\"," +
                                     x1X[samples - 1] + "," +
                                     x1Y[samples - 1] + "," +
@@ -387,6 +399,7 @@ namespace _2DPhotodiodes
                                     z1Power[samples - 1] + "," +
                                     z2Power[samples - 1] 
                 );
+
         }
 
         private void UpdateTextBoxes(int e)

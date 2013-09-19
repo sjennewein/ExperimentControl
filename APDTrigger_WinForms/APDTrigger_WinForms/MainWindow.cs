@@ -20,22 +20,36 @@ namespace APDTrigger_WinForms
             _myController.APDBinsize = 100;
             _myController.DetectionBins = 3;
             _myController.Threshold = 18000;
+            _myController.Samples2Acquire = 29000;
+            _myController.Cycles = 100;
+            _myController.Runs = 1;
             stop_button.Enabled = false;
 
             _myController.Finished += OnFinished;
-            FormClosing += OnClose;
-                //hopefully enough to close all hardware handles when closing the application            
+            this.FormClosing += OnQuit; //hopefully enough to close all hardware handles when closing the application            
 
-            binningInput.DataBindings.Add("Text", _myController, "Binning", true, DataSourceUpdateMode.OnPropertyChanged);
+            textBox_binningInput.DataBindings.Add("Text", _myController, "Binning", true, DataSourceUpdateMode.OnPropertyChanged);
             thresholdInput.DataBindings.Add("Text", _myController, "Threshold", true,
                 DataSourceUpdateMode.OnPropertyChanged);
-            detectionInput.DataBindings.Add("Text", _myController, "DetectionBins", true,
+            textBox_detectionInput.DataBindings.Add("Text", _myController, "DetectionBins", true,
                 DataSourceUpdateMode.OnPropertyChanged);
-            cyclesInput.DataBindings.Add("Text", _myController, "Cycles", true, DataSourceUpdateMode.OnPropertyChanged);
-            runsInput.DataBindings.Add("Text", _myController, "Runs", true, DataSourceUpdateMode.OnPropertyChanged);
-            apdInput.DataBindings.Add("Text", _myController, "APDBinsize", true, DataSourceUpdateMode.OnPropertyChanged);
-            acquireInput.DataBindings.Add("Text", _myController, "Samples2Acquire", true,
+            textBox_cyclesInput.DataBindings.Add("Text", _myController, "Cycles", true, DataSourceUpdateMode.OnPropertyChanged);
+            textBox_runsInput.DataBindings.Add("Text", _myController, "Runs", true, DataSourceUpdateMode.OnPropertyChanged);
+            textBox_apdInput.DataBindings.Add("Text", _myController, "APDBinsize", true, DataSourceUpdateMode.OnPropertyChanged);
+            textBox_acquireInput.DataBindings.Add("Text", _myController, "Samples2Acquire", true,
                 DataSourceUpdateMode.OnPropertyChanged);
+            textBox_totalRuns.DataBindings.Add("Text", _myController, "Runs", true,
+                DataSourceUpdateMode.OnPropertyChanged);
+            textBox_runsDone.DataBindings.Add("Text", _myController, "RunsDone", true,
+                DataSourceUpdateMode.OnPropertyChanged);
+            textBox_CyclesDone.DataBindings.Add("Text", _myController, "CyclesDone", true,
+                DataSourceUpdateMode.OnPropertyChanged);
+            textBox_RecaptureRate.DataBindings.Add("Text", _myController, "RecaptureRate", true,
+                DataSourceUpdateMode.OnPropertyChanged);
+            textBox_Atoms.DataBindings.Add("Text", _myController, "Atoms", true, DataSourceUpdateMode.OnPropertyChanged);
+            textBox_NoAtoms.DataBindings.Add("Text", _myController, "NoAtoms", true,
+                DataSourceUpdateMode.OnPropertyChanged);
+
 
             InitializeApdSignalChart();
             InitializeApdHistogram();
@@ -135,18 +149,17 @@ namespace APDTrigger_WinForms
         }
 
         private void stop_button_Click(object sender, EventArgs e)
-        {
-            _myController.Stop();
-            ApdSignalUpdate.Stop();
-            ApdHistogramUpdate.Stop();
-
-            EnableAllInputs();
-            stop_button.Enabled = false;
+        {            
+            _myController.Stop();                                   
         }
 
         private void OnFinished(object sender, EventArgs e)
         {
+            ApdSignalUpdate.Stop();
+            ApdHistogramUpdate.Stop(); 
+            EnableAllInputs();
             start_button.Enabled = true;
+            stop_button.Enabled = false;
         }
 
         private void UpdateApdHistogram()
@@ -246,43 +259,43 @@ namespace APDTrigger_WinForms
         {
             start_button.Enabled = false;
             stop_button.Enabled = false;
-            binningInput.Enabled = false;
+            textBox_binningInput.Enabled = false;
             thresholdInput.Enabled = false;
-            detectionInput.Enabled = false;
-            cyclesInput.Enabled = false;
-            runsInput.Enabled = false;
-            apdInput.Enabled = false;
-            acquireInput.Enabled = false;
+            textBox_detectionInput.Enabled = false;
+            textBox_cyclesInput.Enabled = false;
+            textBox_runsInput.Enabled = false;
+            textBox_apdInput.Enabled = false;
+            textBox_acquireInput.Enabled = false;
             radioButton_Endless.Enabled = false;
             radioButton_triggered.Enabled = false;
             saveCheckBox.Enabled = false;
             radioButton_No.Enabled = false;
             radioButton_Yes.Enabled = false;
-            apdInput.Enabled = false;
-            acquireInput.Enabled = false;
+            textBox_apdInput.Enabled = false;
+            textBox_acquireInput.Enabled = false;
         }
 
         private void EnableAllInputs()
         {
             start_button.Enabled = true;
             stop_button.Enabled = true;
-            binningInput.Enabled = true;
+            textBox_binningInput.Enabled = true;
             thresholdInput.Enabled = true;
-            detectionInput.Enabled = true;
-            cyclesInput.Enabled = true;
-            runsInput.Enabled = true;
-            apdInput.Enabled = true;
-            acquireInput.Enabled = true;
+            textBox_detectionInput.Enabled = true;
+            textBox_cyclesInput.Enabled = true;
+            textBox_runsInput.Enabled = true;
+            textBox_apdInput.Enabled = true;
+            textBox_acquireInput.Enabled = true;
             radioButton_Endless.Enabled = true;
             radioButton_triggered.Enabled = true;
             saveCheckBox.Enabled = true;
             radioButton_No.Enabled = true;
             radioButton_Yes.Enabled = true;
-            apdInput.Enabled = true;
-            acquireInput.Enabled = true;
+            textBox_apdInput.Enabled = true;
+            textBox_acquireInput.Enabled = true;
         }
 
-        private void OnClose(object sender, EventArgs e)
+        private void OnQuit(object sender, EventArgs e)
         {
             if (_myController.IsRunning)
             {
@@ -296,5 +309,29 @@ namespace APDTrigger_WinForms
         }
 
         internal delegate void myGuiCallback(object state);
+
+        private void radioButton_Recapture_CheckedChanged(object sender, EventArgs e)
+        {
+            foreach (Control control in groupBox_Recapture.Controls)
+            {
+                if ((control is RadioButton) == false)
+                    continue;
+
+                var radio = control as RadioButton;
+
+                if (radio.Checked == false)
+                    continue;
+
+                switch (radio.Text)
+                {
+                    case "Yes":
+                        _myController.Recapture = true;
+                        break;
+                    case "No":
+                        _myController.Recapture = false;
+                        break;
+                }
+            }
+        }
     }
 }

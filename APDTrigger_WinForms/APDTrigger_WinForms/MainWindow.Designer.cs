@@ -33,38 +33,38 @@
             this.groupBox_Trigger = new System.Windows.Forms.GroupBox();
             this.saveCheckBox = new System.Windows.Forms.CheckBox();
             this.label8 = new System.Windows.Forms.Label();
-            this.runsInput = new System.Windows.Forms.TextBox();
+            this.textBox_runsInput = new System.Windows.Forms.TextBox();
             this.radioButton_Endless = new System.Windows.Forms.RadioButton();
             this.radioButton_triggered = new System.Windows.Forms.RadioButton();
             this.stop_button = new System.Windows.Forms.Button();
             this.start_button = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
-            this.detectionInput = new System.Windows.Forms.TextBox();
+            this.textBox_detectionInput = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.thresholdInput = new System.Windows.Forms.TextBox();
-            this.cyclesInput = new System.Windows.Forms.TextBox();
+            this.textBox_cyclesInput = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.binningInput = new System.Windows.Forms.TextBox();
+            this.textBox_binningInput = new System.Windows.Forms.TextBox();
             this.groupBox_Recapture = new System.Windows.Forms.GroupBox();
             this.label6 = new System.Windows.Forms.Label();
-            this.acquireInput = new System.Windows.Forms.TextBox();
+            this.textBox_acquireInput = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.apdInput = new System.Windows.Forms.TextBox();
+            this.textBox_apdInput = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.radioButton_No = new System.Windows.Forms.RadioButton();
             this.radioButton_Yes = new System.Windows.Forms.RadioButton();
             this.apdSignal = new Arction.LightningChartBasic.LightningChartBasic();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.textBox13 = new System.Windows.Forms.TextBox();
+            this.textBox_NoAtoms = new System.Windows.Forms.TextBox();
             this.label16 = new System.Windows.Forms.Label();
-            this.textBox12 = new System.Windows.Forms.TextBox();
+            this.textBox_Atoms = new System.Windows.Forms.TextBox();
             this.label14 = new System.Windows.Forms.Label();
-            this.textBox11 = new System.Windows.Forms.TextBox();
+            this.textBox_RecaptureRate = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
-            this.textBox10 = new System.Windows.Forms.TextBox();
-            this.textBox9 = new System.Windows.Forms.TextBox();
-            this.textBox8 = new System.Windows.Forms.TextBox();
+            this.textBox_totalRuns = new System.Windows.Forms.TextBox();
+            this.textBox_runsDone = new System.Windows.Forms.TextBox();
+            this.textBox_CyclesDone = new System.Windows.Forms.TextBox();
             this.label15 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
@@ -82,19 +82,19 @@
             // 
             this.groupBox_Trigger.Controls.Add(this.saveCheckBox);
             this.groupBox_Trigger.Controls.Add(this.label8);
-            this.groupBox_Trigger.Controls.Add(this.runsInput);
+            this.groupBox_Trigger.Controls.Add(this.textBox_runsInput);
             this.groupBox_Trigger.Controls.Add(this.radioButton_Endless);
             this.groupBox_Trigger.Controls.Add(this.radioButton_triggered);
             this.groupBox_Trigger.Controls.Add(this.stop_button);
             this.groupBox_Trigger.Controls.Add(this.start_button);
             this.groupBox_Trigger.Controls.Add(this.label3);
-            this.groupBox_Trigger.Controls.Add(this.detectionInput);
+            this.groupBox_Trigger.Controls.Add(this.textBox_detectionInput);
             this.groupBox_Trigger.Controls.Add(this.label2);
             this.groupBox_Trigger.Controls.Add(this.label4);
             this.groupBox_Trigger.Controls.Add(this.thresholdInput);
-            this.groupBox_Trigger.Controls.Add(this.cyclesInput);
+            this.groupBox_Trigger.Controls.Add(this.textBox_cyclesInput);
             this.groupBox_Trigger.Controls.Add(this.label1);
-            this.groupBox_Trigger.Controls.Add(this.binningInput);
+            this.groupBox_Trigger.Controls.Add(this.textBox_binningInput);
             this.groupBox_Trigger.Location = new System.Drawing.Point(12, 12);
             this.groupBox_Trigger.Name = "groupBox_Trigger";
             this.groupBox_Trigger.Size = new System.Drawing.Size(168, 231);
@@ -123,12 +123,12 @@
             this.label8.TabIndex = 12;
             this.label8.Text = "Runs:";
             // 
-            // runsInput
+            // textBox_runsInput
             // 
-            this.runsInput.Location = new System.Drawing.Point(106, 112);
-            this.runsInput.Name = "runsInput";
-            this.runsInput.Size = new System.Drawing.Size(53, 20);
-            this.runsInput.TabIndex = 11;
+            this.textBox_runsInput.Location = new System.Drawing.Point(106, 112);
+            this.textBox_runsInput.Name = "textBox_runsInput";
+            this.textBox_runsInput.Size = new System.Drawing.Size(53, 20);
+            this.textBox_runsInput.TabIndex = 11;
             // 
             // radioButton_Endless
             // 
@@ -182,12 +182,12 @@
             this.label3.TabIndex = 5;
             this.label3.Text = "Detection bins:";
             // 
-            // detectionInput
+            // textBox_detectionInput
             // 
-            this.detectionInput.Location = new System.Drawing.Point(106, 64);
-            this.detectionInput.Name = "detectionInput";
-            this.detectionInput.Size = new System.Drawing.Size(53, 20);
-            this.detectionInput.TabIndex = 4;
+            this.textBox_detectionInput.Location = new System.Drawing.Point(106, 64);
+            this.textBox_detectionInput.Name = "textBox_detectionInput";
+            this.textBox_detectionInput.Size = new System.Drawing.Size(53, 20);
+            this.textBox_detectionInput.TabIndex = 4;
             // 
             // label2
             // 
@@ -214,12 +214,12 @@
             this.thresholdInput.Size = new System.Drawing.Size(53, 20);
             this.thresholdInput.TabIndex = 2;
             // 
-            // cyclesInput
+            // textBox_cyclesInput
             // 
-            this.cyclesInput.Location = new System.Drawing.Point(106, 90);
-            this.cyclesInput.Name = "cyclesInput";
-            this.cyclesInput.Size = new System.Drawing.Size(53, 20);
-            this.cyclesInput.TabIndex = 9;
+            this.textBox_cyclesInput.Location = new System.Drawing.Point(106, 90);
+            this.textBox_cyclesInput.Name = "textBox_cyclesInput";
+            this.textBox_cyclesInput.Size = new System.Drawing.Size(53, 20);
+            this.textBox_cyclesInput.TabIndex = 9;
             // 
             // label1
             // 
@@ -230,19 +230,19 @@
             this.label1.TabIndex = 1;
             this.label1.Text = "Binning (ms) :";
             // 
-            // binningInput
+            // textBox_binningInput
             // 
-            this.binningInput.Location = new System.Drawing.Point(106, 19);
-            this.binningInput.Name = "binningInput";
-            this.binningInput.Size = new System.Drawing.Size(53, 20);
-            this.binningInput.TabIndex = 0;
+            this.textBox_binningInput.Location = new System.Drawing.Point(106, 19);
+            this.textBox_binningInput.Name = "textBox_binningInput";
+            this.textBox_binningInput.Size = new System.Drawing.Size(53, 20);
+            this.textBox_binningInput.TabIndex = 0;
             // 
             // groupBox_Recapture
             // 
             this.groupBox_Recapture.Controls.Add(this.label6);
-            this.groupBox_Recapture.Controls.Add(this.acquireInput);
+            this.groupBox_Recapture.Controls.Add(this.textBox_acquireInput);
             this.groupBox_Recapture.Controls.Add(this.label5);
-            this.groupBox_Recapture.Controls.Add(this.apdInput);
+            this.groupBox_Recapture.Controls.Add(this.textBox_apdInput);
             this.groupBox_Recapture.Controls.Add(this.label7);
             this.groupBox_Recapture.Controls.Add(this.radioButton_No);
             this.groupBox_Recapture.Controls.Add(this.radioButton_Yes);
@@ -262,12 +262,12 @@
             this.label6.TabIndex = 19;
             this.label6.Text = "Samples to acquire:";
             // 
-            // acquireInput
+            // textBox_acquireInput
             // 
-            this.acquireInput.Location = new System.Drawing.Point(109, 77);
-            this.acquireInput.Name = "acquireInput";
-            this.acquireInput.Size = new System.Drawing.Size(53, 20);
-            this.acquireInput.TabIndex = 18;
+            this.textBox_acquireInput.Location = new System.Drawing.Point(109, 77);
+            this.textBox_acquireInput.Name = "textBox_acquireInput";
+            this.textBox_acquireInput.Size = new System.Drawing.Size(53, 20);
+            this.textBox_acquireInput.TabIndex = 18;
             // 
             // label5
             // 
@@ -278,12 +278,12 @@
             this.label5.TabIndex = 17;
             this.label5.Text = "APD Binsize:";
             // 
-            // apdInput
+            // textBox_apdInput
             // 
-            this.apdInput.Location = new System.Drawing.Point(109, 55);
-            this.apdInput.Name = "apdInput";
-            this.apdInput.Size = new System.Drawing.Size(53, 20);
-            this.apdInput.TabIndex = 16;
+            this.textBox_apdInput.Location = new System.Drawing.Point(109, 55);
+            this.textBox_apdInput.Name = "textBox_apdInput";
+            this.textBox_apdInput.Size = new System.Drawing.Size(53, 20);
+            this.textBox_apdInput.TabIndex = 16;
             // 
             // label7
             // 
@@ -308,6 +308,7 @@
             this.radioButton_No.Text = "No";
             this.radioButton_No.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.radioButton_No.UseVisualStyleBackColor = true;
+            this.radioButton_No.CheckedChanged += new System.EventHandler(this.radioButton_Recapture_CheckedChanged);
             // 
             // radioButton_Yes
             // 
@@ -321,6 +322,7 @@
             this.radioButton_Yes.Text = "Yes";
             this.radioButton_Yes.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.radioButton_Yes.UseVisualStyleBackColor = true;
+            this.radioButton_Yes.CheckedChanged += new System.EventHandler(this.radioButton_Recapture_CheckedChanged);
             // 
             // apdSignal
             // 
@@ -363,15 +365,15 @@
             // 
             // groupBox3
             // 
-            this.groupBox3.Controls.Add(this.textBox13);
+            this.groupBox3.Controls.Add(this.textBox_NoAtoms);
             this.groupBox3.Controls.Add(this.label16);
-            this.groupBox3.Controls.Add(this.textBox12);
+            this.groupBox3.Controls.Add(this.textBox_Atoms);
             this.groupBox3.Controls.Add(this.label14);
-            this.groupBox3.Controls.Add(this.textBox11);
+            this.groupBox3.Controls.Add(this.textBox_RecaptureRate);
             this.groupBox3.Controls.Add(this.label10);
-            this.groupBox3.Controls.Add(this.textBox10);
-            this.groupBox3.Controls.Add(this.textBox9);
-            this.groupBox3.Controls.Add(this.textBox8);
+            this.groupBox3.Controls.Add(this.textBox_totalRuns);
+            this.groupBox3.Controls.Add(this.textBox_runsDone);
+            this.groupBox3.Controls.Add(this.textBox_CyclesDone);
             this.groupBox3.Controls.Add(this.label15);
             this.groupBox3.Controls.Add(this.label12);
             this.groupBox3.Controls.Add(this.label13);
@@ -384,13 +386,13 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Statistics";
             // 
-            // textBox13
+            // textBox_NoAtoms
             // 
-            this.textBox13.Location = new System.Drawing.Point(112, 108);
-            this.textBox13.Name = "textBox13";
-            this.textBox13.ReadOnly = true;
-            this.textBox13.Size = new System.Drawing.Size(53, 20);
-            this.textBox13.TabIndex = 28;
+            this.textBox_NoAtoms.Location = new System.Drawing.Point(112, 108);
+            this.textBox_NoAtoms.Name = "textBox_NoAtoms";
+            this.textBox_NoAtoms.ReadOnly = true;
+            this.textBox_NoAtoms.Size = new System.Drawing.Size(53, 20);
+            this.textBox_NoAtoms.TabIndex = 28;
             // 
             // label16
             // 
@@ -401,13 +403,13 @@
             this.label16.TabIndex = 27;
             this.label16.Text = "No Atom:";
             // 
-            // textBox12
+            // textBox_Atoms
             // 
-            this.textBox12.Location = new System.Drawing.Point(112, 85);
-            this.textBox12.Name = "textBox12";
-            this.textBox12.ReadOnly = true;
-            this.textBox12.Size = new System.Drawing.Size(53, 20);
-            this.textBox12.TabIndex = 26;
+            this.textBox_Atoms.Location = new System.Drawing.Point(112, 85);
+            this.textBox_Atoms.Name = "textBox_Atoms";
+            this.textBox_Atoms.ReadOnly = true;
+            this.textBox_Atoms.Size = new System.Drawing.Size(53, 20);
+            this.textBox_Atoms.TabIndex = 26;
             // 
             // label14
             // 
@@ -418,13 +420,13 @@
             this.label14.TabIndex = 25;
             this.label14.Text = "Atom:";
             // 
-            // textBox11
+            // textBox_RecaptureRate
             // 
-            this.textBox11.Location = new System.Drawing.Point(112, 62);
-            this.textBox11.Name = "textBox11";
-            this.textBox11.ReadOnly = true;
-            this.textBox11.Size = new System.Drawing.Size(53, 20);
-            this.textBox11.TabIndex = 24;
+            this.textBox_RecaptureRate.Location = new System.Drawing.Point(112, 62);
+            this.textBox_RecaptureRate.Name = "textBox_RecaptureRate";
+            this.textBox_RecaptureRate.ReadOnly = true;
+            this.textBox_RecaptureRate.Size = new System.Drawing.Size(53, 20);
+            this.textBox_RecaptureRate.TabIndex = 24;
             // 
             // label10
             // 
@@ -435,29 +437,29 @@
             this.label10.TabIndex = 23;
             this.label10.Text = "Recapture Rate:";
             // 
-            // textBox10
+            // textBox_totalRuns
             // 
-            this.textBox10.Location = new System.Drawing.Point(112, 36);
-            this.textBox10.Name = "textBox10";
-            this.textBox10.ReadOnly = true;
-            this.textBox10.Size = new System.Drawing.Size(53, 20);
-            this.textBox10.TabIndex = 22;
+            this.textBox_totalRuns.Location = new System.Drawing.Point(112, 36);
+            this.textBox_totalRuns.Name = "textBox_totalRuns";
+            this.textBox_totalRuns.ReadOnly = true;
+            this.textBox_totalRuns.Size = new System.Drawing.Size(53, 20);
+            this.textBox_totalRuns.TabIndex = 22;
             // 
-            // textBox9
+            // textBox_runsDone
             // 
-            this.textBox9.Location = new System.Drawing.Point(58, 36);
-            this.textBox9.Name = "textBox9";
-            this.textBox9.ReadOnly = true;
-            this.textBox9.Size = new System.Drawing.Size(53, 20);
-            this.textBox9.TabIndex = 21;
+            this.textBox_runsDone.Location = new System.Drawing.Point(58, 36);
+            this.textBox_runsDone.Name = "textBox_runsDone";
+            this.textBox_runsDone.ReadOnly = true;
+            this.textBox_runsDone.Size = new System.Drawing.Size(53, 20);
+            this.textBox_runsDone.TabIndex = 21;
             // 
-            // textBox8
+            // textBox_CyclesDone
             // 
-            this.textBox8.Location = new System.Drawing.Point(4, 36);
-            this.textBox8.Name = "textBox8";
-            this.textBox8.ReadOnly = true;
-            this.textBox8.Size = new System.Drawing.Size(53, 20);
-            this.textBox8.TabIndex = 20;
+            this.textBox_CyclesDone.Location = new System.Drawing.Point(4, 36);
+            this.textBox_CyclesDone.Name = "textBox_CyclesDone";
+            this.textBox_CyclesDone.ReadOnly = true;
+            this.textBox_CyclesDone.Size = new System.Drawing.Size(53, 20);
+            this.textBox_CyclesDone.TabIndex = 20;
             // 
             // label15
             // 
@@ -584,32 +586,32 @@
         private System.Windows.Forms.Button stop_button;
         private System.Windows.Forms.Button start_button;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox detectionInput;
+        private System.Windows.Forms.TextBox textBox_detectionInput;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox thresholdInput;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox binningInput;
+        private System.Windows.Forms.TextBox textBox_binningInput;
         private System.Windows.Forms.RadioButton radioButton_Yes;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox cyclesInput;
+        private System.Windows.Forms.TextBox textBox_cyclesInput;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.RadioButton radioButton_No;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.TextBox runsInput;
+        private System.Windows.Forms.TextBox textBox_runsInput;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.TextBox acquireInput;
+        private System.Windows.Forms.TextBox textBox_acquireInput;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox apdInput;
+        private System.Windows.Forms.TextBox textBox_apdInput;
         private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.TextBox textBox13;
+        private System.Windows.Forms.TextBox textBox_NoAtoms;
         private System.Windows.Forms.Label label16;
-        private System.Windows.Forms.TextBox textBox12;
+        private System.Windows.Forms.TextBox textBox_Atoms;
         private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.TextBox textBox11;
+        private System.Windows.Forms.TextBox textBox_RecaptureRate;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.TextBox textBox10;
-        private System.Windows.Forms.TextBox textBox9;
-        private System.Windows.Forms.TextBox textBox8;
+        private System.Windows.Forms.TextBox textBox_totalRuns;
+        private System.Windows.Forms.TextBox textBox_runsDone;
+        private System.Windows.Forms.TextBox textBox_CyclesDone;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label13;

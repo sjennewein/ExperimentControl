@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using NationalInstruments.DAQmx;
+using SlimDX.XAudio2;
 
 namespace APDTrigger.Hardware
 {
@@ -25,35 +26,45 @@ namespace APDTrigger.Hardware
 
     public class Counter
     {
+        public enum RecaptureType
+        {
+            Captured,
+            Lost
+        };
         private readonly int _apdBinSize;
         private readonly int _detectionBins;
         private readonly object _lockExperiment = new object();
         private readonly Task _myAcquisitionTask;
         private readonly Task _myThresholdTask;
         private readonly Task _myTriggerTask;
-        private readonly double _thresholdTrigger;
+        private readonly double _threshold;
+        private readonly double _triggerBin;
         private readonly Random rand = new Random(17);
         private int _detectedBins;
         private Timer _myTimer;
         private bool _running;
         private int _NewSample;
-        private bool _endlessRun;
+        private readonly bool _endlessRun;
+        private readonly bool _myRecapture;
 
         /// <summary>
         ///     Provides the functionality of a standard ASPHERIX experiment in terms of the counter card
         /// </summary>
-        /// <param name="thresholdTrigger">The value from the APD above you think you have an atom in the trap</param>
+        /// <param name="threshold">The value from the APD above you think you have an atom in the trap</param>
         /// <param name="detectionBins">How often this value has to appear in a row before the trigger is send</param>
         /// <param name="apdBinSize">The number of original datapoints per bin (normaly we sample with 1us and want to have 10ms)</param>
-        public Counter(double thresholdTrigger, int detectionBins, int apdBinSize, bool endlessRun)
+        /// <param name="triggerBin">Measurement length for the high-frequency counter in milliseconds</param>
+        public Counter(double threshold, int detectionBins, int apdBinSize, double triggerBin, bool endlessRun, bool recapture)
         {
             _myThresholdTask = new Task();
             _myTriggerTask = new Task();
             _myAcquisitionTask = new Task();
-            _thresholdTrigger = thresholdTrigger;
+            _threshold = threshold;
             _detectionBins = detectionBins;
             _apdBinSize = apdBinSize;
+            _triggerBin = triggerBin / 1000.0;
             _endlessRun = endlessRun;
+            _myRecapture = recapture;
         }
 
         public int NewSample
@@ -76,13 +87,12 @@ namespace APDTrigger.Hardware
 
             const double minValue = 0;
             const double maxValue = 5;
-            const long divisor = 4;
-            const double measurementTime = 0.01; //10ms binning
+            const long divisor = 4;            
             const CIPeriodStartingEdge edge = CIPeriodStartingEdge.Rising;
 
             _myThresholdTask.CIChannels.CreatePeriodChannel("/Dev1/ctr1", "", minValue, maxValue, edge,
                 CIPeriodMeasurementMethod.HighFrequencyTwoCounter,
-                measurementTime, divisor,
+                _triggerBin, divisor,
                 CIPeriodUnits.Ticks);
 
             _myThresholdTask.CIChannels.All.DuplicateCountPrevention = true;
@@ -163,13 +173,15 @@ namespace APDTrigger.Hardware
             if (_endlessRun == true) // just work as a monitor (no recapture) if it's a endless run 
                 return;
 
+            
+
             //keeps on reading data every 10ms but only evaluates it if no other experiment is running
             if (Monitor.TryEnter(_lockExperiment))
             {
                 try
                 {
                     //check if the value read from the counter is bigger than the set threshold
-                    if (_NewSample >= _thresholdTrigger)
+                    if (_NewSample >= _threshold)
                         _detectedBins++;
                     else
                         _detectedBins = 0;
@@ -217,6 +229,11 @@ namespace APDTrigger.Hardware
             int[] samples = acquisitionReader.ReadMultiSampleInt32(-1);
             var derivedSamples = new int[samples.Length - 1];
 
+            CycleDone();
+            
+            if (_myRecapture == false) //leave function if no recapture is needed
+                return;
+
             //the counter spits out an integrated photon value so we have to derive this
             for (int counter = 1; counter < samples.Length; counter++)
             {
@@ -227,6 +244,14 @@ namespace APDTrigger.Hardware
             var bins = (int) Math.Ceiling(derivedSamples.Length/(double) _apdBinSize);
 
             int[] binnedData = bin(derivedSamples, bins);
+
+            RecaptureType result = RecaptureType.Lost;
+
+            if (binnedData[0] + binnedData[1] > 2*_threshold)
+                result = RecaptureType.Captured;
+            
+            RecaptureDone(result);
+
         }
 
         /// <summary>
@@ -243,6 +268,9 @@ namespace APDTrigger.Hardware
                 int tempData = 0;
                 for (int counter = 0; counter < _apdBinSize; counter++)
                 {
+                    if (binStep == 0 && counter == 0) //remove first 10 bins they might be rubbish
+                        counter += 2;
+
                     if (binStep + counter > data.Length)
                         break;
 
@@ -254,7 +282,25 @@ namespace APDTrigger.Hardware
             return binnedData;
         }
 
+        private void CycleDone()
+        {
+            EventHandler cycleFinished = CycleFinished;
+            if (null != cycleFinished)
+                cycleFinished(this, new EventArgs());
+        }
+
+        private void RecaptureDone(object recapture)
+        {
+            EventHandler recaptureDone = RecaptureMeasurementDone;
+            EventArgs e = (EventArgs) recapture;
+                       
+            if (null != recaptureDone)
+                recaptureDone(this, e);
+        }
+
         public event EventHandler Finished;
         public event EventHandler NewData;
+        public event EventHandler CycleFinished;
+        public event EventHandler RecaptureMeasurementDone;
     }
 }

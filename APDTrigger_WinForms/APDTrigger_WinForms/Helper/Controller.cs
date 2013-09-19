@@ -38,12 +38,19 @@ namespace APDTrigger_WinForms.Helper
         //Acquisition parameters
         public int Samples2Acquire { get; set; }
         public int APDBinsize { get; set; }
+        public bool Recapture { get; set; }
 
         //Results/Statistics
-
-        public int RecaptureRate { get; set; }
-        public int NoAtoms { get; set; }
-        public int Atoms { get; set; }
+        public int CyclesDone { get { return _cyclesDone; }}
+        private int _cyclesDone;
+        public int RunsDone {get { return _runsDone; }}
+        private int _runsDone;
+        public double RecaptureRate { get { return _recapturerate; } }
+        private double _recapturerate;
+        public int NoAtoms { get { return _noAtoms; } }
+        private int _noAtoms;
+        public int Atoms { get { return _atoms; } }
+        private int _atoms;
 
         public bool Save
         {
@@ -96,9 +103,10 @@ namespace APDTrigger_WinForms.Helper
         {
             bool endless = (Run == RunType.endless);  //set endless true if run type is endless
             
-            _myCounterHardware = new Counter(Threshold, DetectionBins, APDBinsize, endless);
+            _myCounterHardware = new Counter(Threshold, DetectionBins, APDBinsize, Binning, endless, Recapture);
             _myCounterHardware.Finished += OnFinished;
             _myCounterHardware.NewData += OnNewData;
+            _myCounterHardware.CycleFinished += OnCyleDone;
             _myWorker = new Thread(BackgroundWork);
             _myWorker.Name = "Worker";
             _myWorker.Start();
@@ -145,6 +153,40 @@ namespace APDTrigger_WinForms.Helper
             {
                 SaveData();
             }
+        }
+
+        private void OnCyleDone(object sender, EventArgs e)
+        {
+
+            if (_cyclesDone == Cycles)  //if cycles per run are done increment runs
+            {
+                _cyclesDone = 0;
+                _runsDone++;
+
+                if (_runsDone > Runs)  //if all runs are done stop the run
+                {
+                    Stop();
+                    return;
+                }
+            }
+
+            _cyclesDone++;
+        }
+
+        private void OnRecaptureDone(object sender, EventArgs e)
+        {
+            object intermediateObject = (object) e;
+            Counter.RecaptureType result = (Counter.RecaptureType) intermediateObject;
+            switch (result)
+            {
+                case Counter.RecaptureType.Captured:
+                    _atoms++;
+                    break;
+                case Counter.RecaptureType.Lost:
+                    _noAtoms++;
+                    break;
+            }
+            _recapturerate  = (double) _atoms/_cyclesDone;
         }
 
         private void AddHistogramData()

@@ -15,12 +15,18 @@ namespace APDTrigger_WinForms
         private MainWindow _myCaller;
         private LightningChartBasic _myChart;
         private bool _myAutoUpdate;
+        public double _myMin { get; set; }
+        public double _myMax { get; set; }
+
         public ApdSignalContextMenu(MainWindow caller, LightningChartBasic chart)
         {
             InitializeComponent();
             _myCaller = caller;
             _myChart = chart;
             _myAutoUpdate = caller.AutoUpdate;
+            yMaxBox.DataBindings.Add("Text", this, "_myMax", true, DataSourceUpdateMode.OnPropertyChanged);
+            yMinBox.DataBindings.Add("Text", this, "_myMin", true, DataSourceUpdateMode.OnPropertyChanged);
+
             if(_myAutoUpdate)
             {
                 autoscaleCheckbox.Checked = true;
@@ -59,8 +65,9 @@ namespace APDTrigger_WinForms
         {
             yMinBox.Enabled = true;
             yMaxBox.Enabled = true;
-            yMaxBox.Text = _myChart.YAxes[0].Maximum.ToString();
-            yMinBox.Text = _myChart.YAxes[0].Minimum.ToString();
+            _myMin = _myChart.YAxes[0].Minimum;
+            _myMax = _myChart.YAxes[0].Maximum;
+
         }
 
         private void yMinBox_KeyUp(object sender, KeyEventArgs e)
@@ -81,7 +88,7 @@ namespace APDTrigger_WinForms
             {
                 _myCaller.AutoUpdate = false;
                 _myChart.BeginUpdate();
-                _myChart.YAxes[0].SetRange(Convert.ToDouble(yMinBox.Text), Convert.ToDouble(yMaxBox.Text));
+                _myChart.YAxes[0].SetRange(_myMin, _myMax);
                 _myChart.EndUpdate();
             }
         }

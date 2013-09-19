@@ -4,7 +4,6 @@ using System.Windows.Forms;
 using APDTrigger_WinForms.Helper;
 using Arction.LightningChartBasic;
 using Arction.LightningChartBasic.Series;
-using Timer = System.Threading.Timer;
 
 namespace APDTrigger_WinForms
 {
@@ -12,9 +11,7 @@ namespace APDTrigger_WinForms
     {
         private readonly Controller _myController = new Controller();
         public bool AutoUpdate = false;
-        private Timer _myApdHistogramTimer;
         private int _pointCount;
-        private Random rand = new Random();
 
         public MainWindow()
         {
@@ -26,7 +23,8 @@ namespace APDTrigger_WinForms
             stop_button.Enabled = false;
 
             _myController.Finished += OnFinished;
-            //this.FormClosing += stop_button_Click;  //hopefully enough to close all hardware handles when closing the application            
+            FormClosing += OnClose;
+                //hopefully enough to close all hardware handles when closing the application            
 
             binningInput.DataBindings.Add("Text", _myController, "Binning", true, DataSourceUpdateMode.OnPropertyChanged);
             thresholdInput.DataBindings.Add("Text", _myController, "Threshold", true,
@@ -129,12 +127,10 @@ namespace APDTrigger_WinForms
 
         private void start_button_Click(object sender, EventArgs e)
         {
-            DisableAllInput();
+            DisableAllInputs();
             stop_button.Enabled = true;
             _myController.Start();
-
-            //_myApdSignalTimer = new Timer(UpdateApdSignal, null, 0, 10);
-            _myApdHistogramTimer = new Timer(UpdateApdHistogram, null, 0, 1000);
+            ApdHistogramUpdate.Start();
             ApdSignalUpdate.Start();
         }
 
@@ -142,12 +138,10 @@ namespace APDTrigger_WinForms
         {
             _myController.Stop();
             ApdSignalUpdate.Stop();
+            ApdHistogramUpdate.Stop();
 
-            _myApdHistogramTimer.Dispose();
-            EnableAllInput();
+            EnableAllInputs();
             stop_button.Enabled = false;
-
-            //reactivate all b
         }
 
         private void OnFinished(object sender, EventArgs e)
@@ -155,43 +149,31 @@ namespace APDTrigger_WinForms
             start_button.Enabled = true;
         }
 
-        private void UpdateApdHistogram(object state)
+        private void UpdateApdHistogram()
         {
-            if (InvokeRequired)
+            _myController.UpdateHistogramData();
+
+            apdHistogram.BeginUpdate();
+            apdHistogram.BarSeries.Clear();
+
+            var bs = new BarSeries(apdHistogram, apdHistogram.YAxes[0]);
+            apdHistogram.BarSeries.Add(bs);
+            bs.Shadow.Visible = false;
+            bs.Fill.GradientColor = ChartTools.CalcGradient(Color.Black, Color.Black, 10);
+            bs.Fill.Color = Color.LightGray;
+            bs.BarWidth = 0;
+
+            for (int iBucket = 0; iBucket < 600; iBucket++)
             {
-                _myController.UpdateHistogramData();
-
-                myGuiCallback callback = UpdateApdHistogram;
-                Invoke(callback, new[] {state});
+                bs.AddValue(iBucket, _myController.HistogramData[iBucket], "", true);
             }
-            else
-            {
-                apdHistogram.BeginUpdate();
-                apdHistogram.BarSeries.Clear();
 
-                var bs = new BarSeries(apdHistogram, apdHistogram.YAxes[0]);
-                apdHistogram.BarSeries.Add(bs);
-                bs.Shadow.Visible = false;
-                bs.Fill.GradientColor = ChartTools.CalcGradient(Color.Black, Color.Black, 10);
-                bs.Fill.Color = Color.LightGray;
-                bs.BarWidth = 0;
-
-
-                for (int iBucket = 0; iBucket < 600; iBucket++)
-                {
-                    //barData[iBucket].Y = _myController.HistogramData[iBucket];
-
-
-                    bs.AddValue(iBucket, _myController.HistogramData[iBucket], "", true);
-                }
-
-                bool foobar = true;
-                apdHistogram.YAxes[0].Fit(10, out foobar, false);
-                apdHistogram.EndUpdate();
-            }
+            bool foobar = true;
+            apdHistogram.YAxes[0].Fit(10, out foobar, false);
+            apdHistogram.EndUpdate();
         }
 
-        private void UpdateApdSignal(object state)
+        private void UpdateApdSignal()
         {
             double dataInterval = _myController.Binning/800.0;
             //System.Console.WriteLine(_myController.Data[0]);
@@ -223,7 +205,7 @@ namespace APDTrigger_WinForms
 
                 if (radio.Checked == false)
                     continue;
-                
+
                 switch (radio.Text)
                 {
                     case "Triggered":
@@ -236,7 +218,7 @@ namespace APDTrigger_WinForms
             }
         }
 
-        private void apdSignal_DoubleClick(object sender, EventArgs e)
+        private void apdSignalChart_DoubleClick(object sender, EventArgs e)
         {
             Form contextMenu = new ApdSignalContextMenu(this, apdSignal);
             contextMenu.ShowDialog();
@@ -257,10 +239,10 @@ namespace APDTrigger_WinForms
 
         private void ApdSignalUpdate_Tick(object sender, EventArgs e)
         {
-            UpdateApdSignal(null);
+            UpdateApdSignal();
         }
 
-        private void DisableAllInput()
+        private void DisableAllInputs()
         {
             start_button.Enabled = false;
             stop_button.Enabled = false;
@@ -280,7 +262,7 @@ namespace APDTrigger_WinForms
             acquireInput.Enabled = false;
         }
 
-        private void EnableAllInput()
+        private void EnableAllInputs()
         {
             start_button.Enabled = true;
             stop_button.Enabled = true;
@@ -298,6 +280,19 @@ namespace APDTrigger_WinForms
             radioButton_Yes.Enabled = true;
             apdInput.Enabled = true;
             acquireInput.Enabled = true;
+        }
+
+        private void OnClose(object sender, EventArgs e)
+        {
+            if (_myController.IsRunning)
+            {
+                _myController.Stop();
+            }
+        }
+
+        private void ApdHistogramUpdate_Tick(object sender, EventArgs e)
+        {
+            UpdateApdHistogram();
         }
 
         internal delegate void myGuiCallback(object state);

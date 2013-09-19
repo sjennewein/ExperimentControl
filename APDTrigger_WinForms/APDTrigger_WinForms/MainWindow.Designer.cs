@@ -72,6 +72,7 @@
             this.label9 = new System.Windows.Forms.Label();
             this.apdHistogram = new Arction.LightningChartBasic.LightningChartBasic();
             this.ApdSignalUpdate = new System.Windows.Forms.Timer(this.components);
+            this.ApdHistogramUpdate = new System.Windows.Forms.Timer(this.components);
             this.groupBox_Trigger.SuspendLayout();
             this.groupBox_Recapture.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -358,7 +359,7 @@
             this.apdSignal.YAxesLayout = Arction.LightningChartBasic.YAxesLayout.LayeredCommonXAxis;
             this.apdSignal.ZoomFactor = 2D;
             this.apdSignal.ZoomRectLine = ((Arction.LightningChartBasic.LineStyle)(resources.GetObject("apdSignal.ZoomRectLine")));
-            this.apdSignal.DoubleClick += new System.EventHandler(this.apdSignal_DoubleClick);
+            this.apdSignal.DoubleClick += new System.EventHandler(this.apdSignalChart_DoubleClick);
             // 
             // groupBox3
             // 
@@ -546,6 +547,11 @@
             this.ApdSignalUpdate.Interval = 20;
             this.ApdSignalUpdate.Tick += new System.EventHandler(this.ApdSignalUpdate_Tick);
             // 
+            // ApdHistogramUpdate
+            // 
+            this.ApdHistogramUpdate.Interval = 1000;
+            this.ApdHistogramUpdate.Tick += new System.EventHandler(this.ApdHistogramUpdate_Tick);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -557,7 +563,7 @@
             this.Controls.Add(this.groupBox_Recapture);
             this.Controls.Add(this.groupBox_Trigger);
             this.Name = "MainWindow";
-            this.Text = "Form1";
+            this.Text = "APD Trigger";
             this.groupBox_Trigger.ResumeLayout(false);
             this.groupBox_Trigger.PerformLayout();
             this.groupBox_Recapture.ResumeLayout(false);
@@ -612,6 +618,7 @@
         private Arction.LightningChartBasic.LightningChartBasic apdHistogram;
         private System.Windows.Forms.Timer ApdSignalUpdate;
         private System.Windows.Forms.CheckBox saveCheckBox;
+        private System.Windows.Forms.Timer ApdHistogramUpdate;
     }
 }
 

@@ -136,6 +136,7 @@ namespace APDTrigger.Hardware
             if (_running)
             {
                 _myTimer.Change(Timeout.Infinite, Timeout.Infinite);
+                
                 Thread.Sleep(30);  //wait until all timer processes are finished
                 _myTimer.Dispose();
                 

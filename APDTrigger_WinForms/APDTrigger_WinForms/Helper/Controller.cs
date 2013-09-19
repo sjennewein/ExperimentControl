@@ -17,13 +17,16 @@ namespace APDTrigger_WinForms.Helper
         public RunType Run = RunType.endless;
         private readonly object _listPadlock = new object();
         private readonly List<AgingDataPoint> _myDataList = new List<AgingDataPoint>();
-        private string _myBaseSaveFolder = "c:\\temp\\";
+        private const string _myBaseSaveFolder = "c:\\temp\\";
         private Counter _myCounterHardware;
         private int[] _myHistogramData = new int[600];
         private bool _mySave;
         private Thread _myWorker;
         private DateTime _today = DateTime.Now;
         private StreamWriter writer;
+        private bool _isRunning = false;
+        
+        public bool IsRunning {get { return _isRunning; }}
 
         //Trigger parameters
         public int Binning { get; set; }
@@ -92,13 +95,15 @@ namespace APDTrigger_WinForms.Helper
         public void Start()
         {
             bool endless = (Run == RunType.endless);  //set endless true if run type is endless
-
+            
             _myCounterHardware = new Counter(Threshold, DetectionBins, APDBinsize, endless);
             _myCounterHardware.Finished += OnFinished;
             _myCounterHardware.NewData += OnNewData;
             _myWorker = new Thread(BackgroundWork);
             _myWorker.Name = "Worker";
             _myWorker.Start();
+
+            _isRunning = true;
         }
 
         //initializing the card is done in a separate thread otherwise the GUI lags from time to time
@@ -107,6 +112,7 @@ namespace APDTrigger_WinForms.Helper
             _myCounterHardware.AimTrigger(Samples2Acquire);
             _myCounterHardware.PrepareAcquisition(Samples2Acquire);
             _myCounterHardware.StartMeasurement();
+            
         }
 
         public void Stop()
@@ -116,6 +122,7 @@ namespace APDTrigger_WinForms.Helper
             {
                 writer.Flush();
             }
+            _isRunning = false;
         }
 
         private void SaveData()

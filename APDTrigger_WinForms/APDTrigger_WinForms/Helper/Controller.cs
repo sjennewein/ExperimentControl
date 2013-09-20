@@ -18,6 +18,7 @@ namespace APDTrigger_WinForms.Helper
         private readonly object _listPadlock = new object();
         private readonly List<AgingDataPoint> _myDataList = new List<AgingDataPoint>();
         private const string _myBaseSaveFolder = "c:\\temp\\";
+        private string _saveFolder;
         private Counter _myCounterHardware;
         private int[] _myHistogramData = new int[600];
         private bool _mySave;
@@ -68,14 +69,18 @@ namespace APDTrigger_WinForms.Helper
                 {
                     if (writer == null)
                     {
-                        string saveFolder = _myBaseSaveFolder + _today.Year + "\\" + _today.Month + "\\" + _today.Day;
-                        Directory.CreateDirectory(saveFolder);
-                        writer = new StreamWriter(saveFolder + "\\ApdSignal.txt", true);
+                        _saveFolder = _myBaseSaveFolder + _today.Year + "\\" + _today.Month + "\\" + _today.Day + "\\";
+                        Directory.CreateDirectory(_saveFolder);
+                        writer = new StreamWriter(_saveFolder + "ApdSignal.txt", true);
                     }
                 }
                 _mySave = value;
             }
         }
+
+        public bool SaveSpectrum { get; set; }
+
+        private int[] _mySpectrum;
 
         public int Data
         {
@@ -87,15 +92,13 @@ namespace APDTrigger_WinForms.Helper
             get { return _myHistogramData; }
         }
 
-        private void UpdateWriter()
+        private void UpdateFolder()
         {
             DateTime now = DateTime.Now;
             if (_today.Date != now.Date)
-            {
-                writer.Close();
+            {                
                 _today = now;
-                string saveFolder = _myBaseSaveFolder + _today.Year + "\\" + _today.Month + "\\" + _today.Day;
-                writer = new StreamWriter(saveFolder + "\\ApdSignal.txt", true);
+                _saveFolder = _myBaseSaveFolder + _today.Year + "\\" + _today.Month + "\\" + _today.Day + "\\";                
             }
         }
 
@@ -135,7 +138,12 @@ namespace APDTrigger_WinForms.Helper
 
         private void SaveData()
         {
-            UpdateWriter();
+            if (DateTime.Now != _today.Date)
+            {
+                UpdateFolder();
+                writer.Close();
+                writer = new StreamWriter(_saveFolder + "ApdSignal.txt", true);
+            }                
             writer.WriteLine(Data);
         }
 
@@ -161,6 +169,10 @@ namespace APDTrigger_WinForms.Helper
             if (_cyclesDone == Cycles)  //if cycles per run are done increment runs
             {
                 _cyclesDone = 0;
+
+                if(SaveSpectrum)
+                    SaveRunSpectrum();
+
                 _runsDone++;
 
                 if (_runsDone > Runs)  //if all runs are done stop the run
@@ -170,7 +182,36 @@ namespace APDTrigger_WinForms.Helper
                 }
             }
 
+            AddSpectrum();
             _cyclesDone++;
+        }
+
+        private void AddSpectrum()
+        {
+            int amountOfSamples = _myCounterHardware.Spectrum.Length;
+            if(_mySpectrum == null)
+                _mySpectrum = new int[amountOfSamples];
+
+            for (int i = 0; i < amountOfSamples; i++)
+            {
+                _mySpectrum[i] += _myCounterHardware.Spectrum[i];
+            }
+        
+        }
+
+        private void SaveRunSpectrum()
+        {
+            if (DateTime.Now != _today)
+            {
+                UpdateFolder();
+            }
+            var spectrumWriter = new StreamWriter(_saveFolder + "Spectrum_" + RunsDone + ".txt", true);
+            foreach (int bin in _mySpectrum)
+            {
+                spectrumWriter.WriteLine(bin);
+            }
+            spectrumWriter.Close();
+
         }
 
         private void OnRecaptureDone(object sender, EventArgs e)

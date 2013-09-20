@@ -268,7 +268,7 @@ namespace APDTrigger_WinForms
             textBox_acquireInput.Enabled = false;
             radioButton_Endless.Enabled = false;
             radioButton_triggered.Enabled = false;
-            saveCheckBox.Enabled = false;
+            CheckBox_SaveSignal.Enabled = false;
             radioButton_No.Enabled = false;
             radioButton_Yes.Enabled = false;
             textBox_apdInput.Enabled = false;
@@ -288,7 +288,7 @@ namespace APDTrigger_WinForms
             textBox_acquireInput.Enabled = true;
             radioButton_Endless.Enabled = true;
             radioButton_triggered.Enabled = true;
-            saveCheckBox.Enabled = true;
+            CheckBox_SaveSignal.Enabled = true;
             radioButton_No.Enabled = true;
             radioButton_Yes.Enabled = true;
             textBox_apdInput.Enabled = true;
@@ -331,6 +331,19 @@ namespace APDTrigger_WinForms
                         _myController.Recapture = false;
                         break;
                 }
+            }
+        }
+
+        private void checkBox_SaveHistogram_CheckedChanged(object sender, EventArgs e)
+        {
+            var originalSender = (CheckBox)sender;
+            if (originalSender.Checked)
+            {
+                _myController.SaveSpectrum = true;
+            }
+            else
+            {
+                _myController.SaveSpectrum = false;
             }
         }
     }

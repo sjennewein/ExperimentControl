@@ -46,6 +46,17 @@ namespace APDTrigger.Hardware
         private int _NewSample;
         private readonly bool _endlessRun;
         private readonly bool _myRecapture;
+        private int[] _mySpectrum;
+
+        public int NewSample
+        {
+            get { return _NewSample; }
+        }
+
+        public int[] Spectrum
+        {
+            get { return _mySpectrum; }
+        }
 
         /// <summary>
         ///     Provides the functionality of a standard ASPHERIX experiment in terms of the counter card
@@ -67,10 +78,7 @@ namespace APDTrigger.Hardware
             _myRecapture = recapture;
         }
 
-        public int NewSample
-        {
-            get { return _NewSample; }
-        }
+        
 
         /// <summary>
         ///     Initialize the threshold measurement and the trigger which will be send if it's successful.
@@ -228,17 +236,20 @@ namespace APDTrigger.Hardware
 
             int[] samples = acquisitionReader.ReadMultiSampleInt32(-1);
             var derivedSamples = new int[samples.Length - 1];
-
-            CycleDone();
-            
-            if (_myRecapture == false) //leave function if no recapture is needed
-                return;
-
+           
             //the counter spits out an integrated photon value so we have to derive this
             for (int counter = 1; counter < samples.Length; counter++)
             {
                 derivedSamples[counter - 1] = samples[counter] - samples[counter - 1];
             }
+
+            _mySpectrum = derivedSamples;
+
+            CycleDone();
+
+            if (_myRecapture == false) //leave function if no recapture is needed
+                return;
+
 
             //1us is to fine grain for most of our stuff so we have to bin the acquired data
             var bins = (int) Math.Ceiling(derivedSamples.Length/(double) _apdBinSize);

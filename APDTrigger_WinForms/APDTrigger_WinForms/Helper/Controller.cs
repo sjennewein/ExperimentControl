@@ -15,6 +15,7 @@ namespace APDTrigger_WinForms.Helper
         };
 
         public RunType Run = RunType.endless;
+        private TcpServer test = new TcpServer();
         private readonly object _listPadlock = new object();
         private readonly List<AgingDataPoint> _myDataList = new List<AgingDataPoint>();
         private const string _myBaseSaveFolder = "c:\\temp\\";

@@ -13,6 +13,14 @@ namespace APDTrigger_WinForms
         public bool AutoUpdate = false;
         private int _pointCount;
 
+        private enum DisplayType
+        {
+            Histogram,
+            Spectrum
+        };
+
+        private DisplayType _myChart2Display = DisplayType.Histogram;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -175,11 +183,23 @@ namespace APDTrigger_WinForms
             bs.Fill.GradientColor = ChartTools.CalcGradient(Color.Black, Color.Black, 10);
             bs.Fill.Color = Color.LightGray;
             bs.BarWidth = 0;
-
-            for (int iBucket = 0; iBucket < 600; iBucket++)
+            switch(_myChart2Display)
             {
-                bs.AddValue(iBucket, _myController.HistogramData[iBucket], "", true);
+                case DisplayType.Histogram:
+                    for (int iBucket = 0; iBucket < 600; iBucket++)
+                    {
+                        bs.AddValue(iBucket, _myController.HistogramData[iBucket], "", true);
+                    }
+                    break;
+                case DisplayType.Spectrum:
+                    if(_myController.BinnedSpectrum != null)
+                        for (int iBucket = 0; iBucket < Math.Ceiling((double) _myController.Samples2Acquire / _myController.APDBinsize); iBucket++ )
+                        {
+                            bs.AddValue(iBucket, _myController.BinnedSpectrum[iBucket], "", true);
+                        }
+                    break;
             }
+            
 
             bool foobar = true;
             apdHistogram.YAxes[0].Fit(10, out foobar, false);
@@ -344,6 +364,52 @@ namespace APDTrigger_WinForms
             else
             {
                 _myController.SaveSpectrum = false;
+            }
+        }
+
+        private void radioButton_HistogramDisplay_CheckedChanged(object sender, EventArgs e)
+        {
+            foreach (Control control in groupBox_Histogram.Controls)
+            {
+                if ((control is RadioButton) == false)
+                    continue;
+
+                var radio = control as RadioButton;
+
+                if (radio.Checked == false)
+                    continue;
+
+                switch (radio.Text)
+                {
+                    case "Spectrum":
+                        apdHistogram.BeginUpdate();
+                        apdHistogram.Title.Text = "Spectrum";
+                        apdHistogram.XAxis.SetRange(0, Math.Ceiling( (double) _myController.Samples2Acquire / _myController.APDBinsize));
+                        apdHistogram.EndUpdate();
+                        _myChart2Display = DisplayType.Spectrum;                        
+                        break;
+                    case "Signal Histogram":
+                        apdHistogram.BeginUpdate();
+                        apdHistogram.Title.Text = "APD Counter Histogram";
+                        apdHistogram.XAxis.SetRange(0, 600);
+                        apdHistogram.EndUpdate();
+
+                        _myChart2Display = DisplayType.Histogram;
+                        break;
+                }
+            }
+        }
+
+        private void button_Rescale_Click(object sender, EventArgs e)
+        {
+            if(_myChart2Display == DisplayType.Histogram)
+            {
+                apdHistogram.XAxis.SetRange(0,600);
+            }
+
+            if(_myChart2Display == DisplayType.Spectrum)
+            {
+                apdHistogram.XAxis.SetRange(0, Math.Ceiling((double)_myController.Samples2Acquire / _myController.APDBinsize));
             }
         }
     }

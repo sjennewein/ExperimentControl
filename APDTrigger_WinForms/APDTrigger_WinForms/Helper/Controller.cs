@@ -51,6 +51,9 @@ namespace APDTrigger_WinForms.Helper
         public int NoAtoms { get { return _noAtoms; } }
         private int _noAtoms;
         public int Atoms { get { return _atoms; } }
+        private int[] _myBinnedSpectrum;
+        public int[] BinnedSpectrum { get { return _myBinnedSpectrum; } }
+
         private int _atoms;
 
         public bool Save
@@ -110,6 +113,7 @@ namespace APDTrigger_WinForms.Helper
             _myCounterHardware.Finished += OnFinished;
             _myCounterHardware.NewData += OnNewData;
             _myCounterHardware.CycleFinished += OnCyleDone;
+            _myCounterHardware.RecaptureMeasurementDone += OnRecaptureDone;
             _myWorker = new Thread(BackgroundWork);
             _myWorker.Name = "Worker";
             _myWorker.Start();
@@ -166,13 +170,15 @@ namespace APDTrigger_WinForms.Helper
         private void OnCyleDone(object sender, EventArgs e)
         {
 
-            if (_cyclesDone == Cycles)  //if cycles per run are done increment runs
+            if (_cyclesDone == Cycles)  //if all cycles per run are done increment runs
             {
                 _cyclesDone = 0;
 
                 if(SaveSpectrum)
                     SaveRunSpectrum();
 
+                _mySpectrum = null;
+                _myBinnedSpectrum = null;
                 _runsDone++;
 
                 if (_runsDone > Runs)  //if all runs are done stop the run
@@ -183,7 +189,14 @@ namespace APDTrigger_WinForms.Helper
             }
 
             AddSpectrum();
+            AddBinnedSpectrum();
+            
+            EventHandler cycleDone = CycleDone;
+            if (null != cycleDone)
+                cycleDone(this, new EventArgs());
+            
             _cyclesDone++;
+
         }
 
         private void AddSpectrum()
@@ -197,6 +210,18 @@ namespace APDTrigger_WinForms.Helper
                 _mySpectrum[i] += _myCounterHardware.Spectrum[i];
             }
         
+        }
+
+        private void AddBinnedSpectrum()
+        {
+            int amountOfBins = _myCounterHardware.BinnedSpectrum.Length;
+            if(_myBinnedSpectrum == null)
+                _myBinnedSpectrum = new int[amountOfBins];
+
+            for(int i = 0; i< amountOfBins; i++)
+            {
+                _myBinnedSpectrum[i] += _myCounterHardware.BinnedSpectrum[i];
+            }
         }
 
         private void SaveRunSpectrum()
@@ -275,5 +300,7 @@ namespace APDTrigger_WinForms.Helper
         public event EventHandler Finished;
 
         public event EventHandler NewData;
+
+        public event EventHandler CycleDone;
     }
 }

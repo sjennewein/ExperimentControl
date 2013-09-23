@@ -47,6 +47,7 @@ namespace APDTrigger.Hardware
         private readonly bool _endlessRun;
         private readonly bool _myRecapture;
         private int[] _mySpectrum;
+        private int[] _myBinnedSpectrum;
 
         public int NewSample
         {
@@ -56,6 +57,11 @@ namespace APDTrigger.Hardware
         public int[] Spectrum
         {
             get { return _mySpectrum; }
+        }
+
+        public int[] BinnedSpectrum
+        {
+            get { return _myBinnedSpectrum; }
         }
 
         /// <summary>
@@ -245,20 +251,24 @@ namespace APDTrigger.Hardware
 
             _mySpectrum = derivedSamples;
 
-            CycleDone();
-
-            if (_myRecapture == false) //leave function if no recapture is needed
-                return;
+            
 
 
             //1us is to fine grain for most of our stuff so we have to bin the acquired data
             var bins = (int) Math.Ceiling(derivedSamples.Length/(double) _apdBinSize);
 
-            int[] binnedData = bin(derivedSamples, bins);
+
+
+            _myBinnedSpectrum = bin(derivedSamples, bins);
+
+            CycleDone();
+
+            if (_myRecapture == false) //leave function if no recapture is needed
+                return;
 
             RecaptureType result = RecaptureType.Lost;
 
-            if (binnedData[0] + binnedData[1] > 2*_threshold)
+            if (_myBinnedSpectrum[1] + _myBinnedSpectrum[2] > 2*_threshold)
                 result = RecaptureType.Captured;
             
             RecaptureDone(result);
@@ -280,7 +290,7 @@ namespace APDTrigger.Hardware
                 for (int counter = 0; counter < _apdBinSize; counter++)
                 {
                     if (binStep == 0 && counter == 0) //remove first 10 bins they might be rubbish
-                        counter += 2;
+                        counter += 10;
 
                     if (binStep + counter > data.Length)
                         break;

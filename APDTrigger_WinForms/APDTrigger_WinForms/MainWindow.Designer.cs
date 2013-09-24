@@ -31,7 +31,8 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             this.groupBox_Trigger = new System.Windows.Forms.GroupBox();
-            this.saveCheckBox = new System.Windows.Forms.CheckBox();
+            this.checkBox_SaveHistogram = new System.Windows.Forms.CheckBox();
+            this.CheckBox_SaveSignal = new System.Windows.Forms.CheckBox();
             this.label8 = new System.Windows.Forms.Label();
             this.textBox_runsInput = new System.Windows.Forms.TextBox();
             this.radioButton_Endless = new System.Windows.Forms.RadioButton();
@@ -73,14 +74,20 @@
             this.apdHistogram = new Arction.LightningChartBasic.LightningChartBasic();
             this.ApdSignalUpdate = new System.Windows.Forms.Timer(this.components);
             this.ApdHistogramUpdate = new System.Windows.Forms.Timer(this.components);
+            this.groupBox_Histogram = new System.Windows.Forms.GroupBox();
+            this.button_Rescale = new System.Windows.Forms.Button();
+            this.radioButton2 = new System.Windows.Forms.RadioButton();
+            this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.groupBox_Trigger.SuspendLayout();
             this.groupBox_Recapture.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            this.groupBox_Histogram.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox_Trigger
             // 
-            this.groupBox_Trigger.Controls.Add(this.saveCheckBox);
+            this.groupBox_Trigger.Controls.Add(this.checkBox_SaveHistogram);
+            this.groupBox_Trigger.Controls.Add(this.CheckBox_SaveSignal);
             this.groupBox_Trigger.Controls.Add(this.label8);
             this.groupBox_Trigger.Controls.Add(this.textBox_runsInput);
             this.groupBox_Trigger.Controls.Add(this.radioButton_Endless);
@@ -97,22 +104,34 @@
             this.groupBox_Trigger.Controls.Add(this.textBox_binningInput);
             this.groupBox_Trigger.Location = new System.Drawing.Point(12, 12);
             this.groupBox_Trigger.Name = "groupBox_Trigger";
-            this.groupBox_Trigger.Size = new System.Drawing.Size(168, 231);
+            this.groupBox_Trigger.Size = new System.Drawing.Size(168, 270);
             this.groupBox_Trigger.TabIndex = 0;
             this.groupBox_Trigger.TabStop = false;
             this.groupBox_Trigger.Text = "Trigger Settings";
             // 
-            // saveCheckBox
+            // checkBox_SaveHistogram
             // 
-            this.saveCheckBox.AutoSize = true;
-            this.saveCheckBox.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.saveCheckBox.Location = new System.Drawing.Point(64, 138);
-            this.saveCheckBox.Name = "saveCheckBox";
-            this.saveCheckBox.Size = new System.Drawing.Size(57, 17);
-            this.saveCheckBox.TabIndex = 14;
-            this.saveCheckBox.Text = "Save: ";
-            this.saveCheckBox.UseVisualStyleBackColor = true;
-            this.saveCheckBox.CheckedChanged += new System.EventHandler(this.saveCheckBox_CheckedChanged);
+            this.checkBox_SaveHistogram.AutoSize = true;
+            this.checkBox_SaveHistogram.CheckAlign = System.Drawing.ContentAlignment.TopRight;
+            this.checkBox_SaveHistogram.Location = new System.Drawing.Point(10, 161);
+            this.checkBox_SaveHistogram.Name = "checkBox_SaveHistogram";
+            this.checkBox_SaveHistogram.Size = new System.Drawing.Size(130, 17);
+            this.checkBox_SaveHistogram.TabIndex = 15;
+            this.checkBox_SaveHistogram.Text = "Save APD-Spektrum: ";
+            this.checkBox_SaveHistogram.UseVisualStyleBackColor = true;
+            this.checkBox_SaveHistogram.CheckedChanged += new System.EventHandler(this.checkBox_SaveHistogram_CheckedChanged);
+            // 
+            // CheckBox_SaveSignal
+            // 
+            this.CheckBox_SaveSignal.AutoSize = true;
+            this.CheckBox_SaveSignal.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.CheckBox_SaveSignal.Location = new System.Drawing.Point(26, 138);
+            this.CheckBox_SaveSignal.Name = "CheckBox_SaveSignal";
+            this.CheckBox_SaveSignal.Size = new System.Drawing.Size(114, 17);
+            this.CheckBox_SaveSignal.TabIndex = 14;
+            this.CheckBox_SaveSignal.Text = "Save APD-Signal: ";
+            this.CheckBox_SaveSignal.UseVisualStyleBackColor = true;
+            this.CheckBox_SaveSignal.CheckedChanged += new System.EventHandler(this.saveCheckBox_CheckedChanged);
             // 
             // label8
             // 
@@ -133,7 +152,7 @@
             // radioButton_Endless
             // 
             this.radioButton_Endless.Checked = true;
-            this.radioButton_Endless.Location = new System.Drawing.Point(96, 169);
+            this.radioButton_Endless.Location = new System.Drawing.Point(96, 213);
             this.radioButton_Endless.Name = "radioButton_Endless";
             this.radioButton_Endless.Size = new System.Drawing.Size(65, 17);
             this.radioButton_Endless.TabIndex = 0;
@@ -145,7 +164,7 @@
             // radioButton_triggered
             // 
             this.radioButton_triggered.AutoSize = true;
-            this.radioButton_triggered.Location = new System.Drawing.Point(6, 169);
+            this.radioButton_triggered.Location = new System.Drawing.Point(6, 213);
             this.radioButton_triggered.Name = "radioButton_triggered";
             this.radioButton_triggered.Size = new System.Drawing.Size(70, 17);
             this.radioButton_triggered.TabIndex = 8;
@@ -155,7 +174,7 @@
             // 
             // stop_button
             // 
-            this.stop_button.Location = new System.Drawing.Point(106, 200);
+            this.stop_button.Location = new System.Drawing.Point(103, 241);
             this.stop_button.Name = "stop_button";
             this.stop_button.Size = new System.Drawing.Size(59, 23);
             this.stop_button.TabIndex = 7;
@@ -165,7 +184,7 @@
             // 
             // start_button
             // 
-            this.start_button.Location = new System.Drawing.Point(6, 200);
+            this.start_button.Location = new System.Drawing.Point(6, 241);
             this.start_button.Name = "start_button";
             this.start_button.Size = new System.Drawing.Size(59, 23);
             this.start_button.TabIndex = 6;
@@ -246,7 +265,7 @@
             this.groupBox_Recapture.Controls.Add(this.label7);
             this.groupBox_Recapture.Controls.Add(this.radioButton_No);
             this.groupBox_Recapture.Controls.Add(this.radioButton_Yes);
-            this.groupBox_Recapture.Location = new System.Drawing.Point(12, 311);
+            this.groupBox_Recapture.Location = new System.Drawing.Point(12, 288);
             this.groupBox_Recapture.Name = "groupBox_Recapture";
             this.groupBox_Recapture.Size = new System.Drawing.Size(168, 103);
             this.groupBox_Recapture.TabIndex = 1;
@@ -554,11 +573,63 @@
             this.ApdHistogramUpdate.Interval = 1000;
             this.ApdHistogramUpdate.Tick += new System.EventHandler(this.ApdHistogramUpdate_Tick);
             // 
+            // groupBox_Histogram
+            // 
+            this.groupBox_Histogram.Controls.Add(this.button_Rescale);
+            this.groupBox_Histogram.Controls.Add(this.radioButton2);
+            this.groupBox_Histogram.Controls.Add(this.radioButton1);
+            this.groupBox_Histogram.Location = new System.Drawing.Point(12, 572);
+            this.groupBox_Histogram.Name = "groupBox_Histogram";
+            this.groupBox_Histogram.Size = new System.Drawing.Size(168, 86);
+            this.groupBox_Histogram.TabIndex = 5;
+            this.groupBox_Histogram.TabStop = false;
+            this.groupBox_Histogram.Text = "Histogram";
+            // 
+            // button_Rescale
+            // 
+            this.button_Rescale.Location = new System.Drawing.Point(84, 55);
+            this.button_Rescale.Name = "button_Rescale";
+            this.button_Rescale.Size = new System.Drawing.Size(75, 23);
+            this.button_Rescale.TabIndex = 2;
+            this.button_Rescale.Text = "Rescale";
+            this.button_Rescale.UseVisualStyleBackColor = true;
+            this.button_Rescale.Click += new System.EventHandler(this.button_Rescale_Click);
+            // 
+            // radioButton2
+            // 
+            this.radioButton2.AutoSize = true;
+            this.radioButton2.CheckAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.radioButton2.Checked = true;
+            this.radioButton2.Location = new System.Drawing.Point(75, 19);
+            this.radioButton2.Name = "radioButton2";
+            this.radioButton2.Size = new System.Drawing.Size(90, 30);
+            this.radioButton2.TabIndex = 1;
+            this.radioButton2.TabStop = true;
+            this.radioButton2.Text = "Signal Histogram";
+            this.radioButton2.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.radioButton2.UseVisualStyleBackColor = true;
+            this.radioButton2.CheckedChanged += new System.EventHandler(this.radioButton_HistogramDisplay_CheckedChanged);
+            // 
+            // radioButton1
+            // 
+            this.radioButton1.AutoSize = true;
+            this.radioButton1.CheckAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.radioButton1.Location = new System.Drawing.Point(13, 19);
+            this.radioButton1.Name = "radioButton1";
+            this.radioButton1.Size = new System.Drawing.Size(56, 30);
+            this.radioButton1.TabIndex = 0;
+            this.radioButton1.TabStop = true;
+            this.radioButton1.Text = "Spectrum";
+            this.radioButton1.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.radioButton1.UseVisualStyleBackColor = true;
+            this.radioButton1.CheckedChanged += new System.EventHandler(this.radioButton_HistogramDisplay_CheckedChanged);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(728, 829);
+            this.Controls.Add(this.groupBox_Histogram);
             this.Controls.Add(this.apdHistogram);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.apdSignal);
@@ -572,6 +643,8 @@
             this.groupBox_Recapture.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            this.groupBox_Histogram.ResumeLayout(false);
+            this.groupBox_Histogram.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -619,8 +692,13 @@
         private System.Windows.Forms.Label label9;
         private Arction.LightningChartBasic.LightningChartBasic apdHistogram;
         private System.Windows.Forms.Timer ApdSignalUpdate;
-        private System.Windows.Forms.CheckBox saveCheckBox;
+        private System.Windows.Forms.CheckBox CheckBox_SaveSignal;
         private System.Windows.Forms.Timer ApdHistogramUpdate;
+        private System.Windows.Forms.CheckBox checkBox_SaveHistogram;
+        private System.Windows.Forms.GroupBox groupBox_Histogram;
+        private System.Windows.Forms.RadioButton radioButton2;
+        private System.Windows.Forms.RadioButton radioButton1;
+        private System.Windows.Forms.Button button_Rescale;
     }
 }
 

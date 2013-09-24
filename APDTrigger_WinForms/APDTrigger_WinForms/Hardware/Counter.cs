@@ -46,6 +46,23 @@ namespace APDTrigger.Hardware
         private int _NewSample;
         private readonly bool _endlessRun;
         private readonly bool _myRecapture;
+        private int[] _mySpectrum;
+        private int[] _myBinnedSpectrum;
+
+        public int NewSample
+        {
+            get { return _NewSample; }
+        }
+
+        public int[] Spectrum
+        {
+            get { return _mySpectrum; }
+        }
+
+        public int[] BinnedSpectrum
+        {
+            get { return _myBinnedSpectrum; }
+        }
 
         /// <summary>
         ///     Provides the functionality of a standard ASPHERIX experiment in terms of the counter card
@@ -67,10 +84,7 @@ namespace APDTrigger.Hardware
             _myRecapture = recapture;
         }
 
-        public int NewSample
-        {
-            get { return _NewSample; }
-        }
+        
 
         /// <summary>
         ///     Initialize the threshold measurement and the trigger which will be send if it's successful.
@@ -228,26 +242,33 @@ namespace APDTrigger.Hardware
 
             int[] samples = acquisitionReader.ReadMultiSampleInt32(-1);
             var derivedSamples = new int[samples.Length - 1];
-
-            CycleDone();
-            
-            if (_myRecapture == false) //leave function if no recapture is needed
-                return;
-
+           
             //the counter spits out an integrated photon value so we have to derive this
             for (int counter = 1; counter < samples.Length; counter++)
             {
                 derivedSamples[counter - 1] = samples[counter] - samples[counter - 1];
             }
 
+            _mySpectrum = derivedSamples;
+
+            
+
+
             //1us is to fine grain for most of our stuff so we have to bin the acquired data
             var bins = (int) Math.Ceiling(derivedSamples.Length/(double) _apdBinSize);
 
-            int[] binnedData = bin(derivedSamples, bins);
+
+
+            _myBinnedSpectrum = bin(derivedSamples, bins);
+
+            CycleDone();
+
+            if (_myRecapture == false) //leave function if no recapture is needed
+                return;
 
             RecaptureType result = RecaptureType.Lost;
 
-            if (binnedData[0] + binnedData[1] > 2*_threshold)
+            if (_myBinnedSpectrum[1] + _myBinnedSpectrum[2] > 2*_threshold)
                 result = RecaptureType.Captured;
             
             RecaptureDone(result);
@@ -269,7 +290,7 @@ namespace APDTrigger.Hardware
                 for (int counter = 0; counter < _apdBinSize; counter++)
                 {
                     if (binStep == 0 && counter == 0) //remove first 10 bins they might be rubbish
-                        counter += 2;
+                        counter += 10;
 
                     if (binStep + counter > data.Length)
                         break;

@@ -15,7 +15,7 @@ namespace APDTrigger_WinForms.Helper
         };
 
         public RunType Run = RunType.endless;
-        private TcpServer test = new TcpServer();
+        //private TcpServer test = new TcpServer();
         private readonly object _listPadlock = new object();
         private readonly List<AgingDataPoint> _myDataList = new List<AgingDataPoint>();
 
@@ -113,7 +113,7 @@ namespace APDTrigger_WinForms.Helper
         {
             bool endless = (Run == RunType.endless);  //set endless true if run type is endless
             
-            _myCounterHardware = new Counter(Threshold, DetectionBins, APDBinsize, Binning, endless, Recapture);
+            _myCounterHardware = new Counter(Threshold, DetectionBins, APDBinsize, Binning, endless, Recapture, Samples2Acquire);
             _myCounterHardware.Finished += OnFinished;
             _myCounterHardware.NewData += OnNewData;
             _myCounterHardware.CycleFinished += OnCyleDone;
@@ -128,8 +128,8 @@ namespace APDTrigger_WinForms.Helper
         //initializing the card is done in a separate thread otherwise the GUI lags from time to time
         private void BackgroundWork()
         {
-            _myCounterHardware.AimTrigger(Samples2Acquire);
-            _myCounterHardware.PrepareAcquisition(Samples2Acquire);
+            _myCounterHardware.AimTrigger();
+            _myCounterHardware.PrepareAcquisition();
             _myCounterHardware.StartMeasurement();
             
         }
@@ -245,14 +245,14 @@ namespace APDTrigger_WinForms.Helper
 
         private void OnRecaptureDone(object sender, EventArgs e)
         {
-            object intermediateObject = (object) e;
-            Counter.RecaptureType result = (Counter.RecaptureType) intermediateObject;
-            switch (result)
+            EventData result = (EventData) e;
+            
+            switch (result.Data)
             {
-                case Counter.RecaptureType.Captured:
+                case EventData.RecaptureType.Captured:
                     _atoms++;
                     break;
-                case Counter.RecaptureType.Lost:
+                case EventData.RecaptureType.Lost:
                     _noAtoms++;
                     break;
             }

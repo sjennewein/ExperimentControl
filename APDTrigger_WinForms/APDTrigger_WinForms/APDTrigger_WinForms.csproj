@@ -65,6 +65,7 @@
     </Compile>
     <Compile Include="Helper\AgingDataPoint.cs" />
     <Compile Include="Helper\Controller.cs" />
+    <Compile Include="Helper\EventData.cs" />
     <Compile Include="Helper\TcpServer.cs" />
     <Compile Include="MainWindow.cs">
       <SubType>Form</SubType>

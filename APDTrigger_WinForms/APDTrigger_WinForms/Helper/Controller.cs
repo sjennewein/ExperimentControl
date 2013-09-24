@@ -17,7 +17,7 @@ namespace APDTrigger_WinForms.Helper
         public RunType Run = RunType.endless;
         private readonly object _listPadlock = new object();
         private readonly List<AgingDataPoint> _myDataList = new List<AgingDataPoint>();
-        private const string _myBaseSaveFolder = "c:\\temp\\";
+        private const string _myBaseSaveFolder = "d:\\Manipe\\APD\\";
         private Counter _myCounterHardware;
         private int[] _myHistogramData = new int[600];
         private bool _mySave;

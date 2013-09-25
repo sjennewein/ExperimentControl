@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -10,25 +11,55 @@ namespace APDTrigger_WinForms.Helper
 {
     public class TcpServer
     {
-        private static TcpListener listener;
-        private Thread listenThread;
+        private TcpListener _listener;
+        private readonly List<TcpClient> _myTcpClients = new List<TcpClient>();
+        private Controller _myController;
 
-        public TcpServer()
+        public TcpServer(Controller controller)
         {
-            listener = new TcpListener(IPAddress.Any, 9898);
-            listenThread = new Thread(new ThreadStart(ListenForClients));
+            _myController = controller;
+            controller.RunDone += sendRunData;
+            _listener = new TcpListener(IPAddress.Any, 9898);
+            Thread listenThread = new Thread(ListenForClients);
             listenThread.Start();
         }
 
         private void ListenForClients()
         {
-            listener.Start();
-            TcpClient client = listener.AcceptTcpClient();
-            Thread clientThread = new Thread(new ParameterizedThreadStart(HandleClientComm));
-            clientThread.Start(client);
-
+            _listener.Start();
+            try
+            {
+                TcpClient client = _listener.AcceptTcpClient();
+                _myTcpClients.Add(client);
+                Thread clientThread = new Thread(HandleClientComm);
+                clientThread.Start(client);
+            }
+            catch(Exception e)
+            {
+                //dirty hack to surpress the thrown exception
+                //we are killing a blocking function here which is not nice
+                System.Console.WriteLine("EVIL: " + e);
+            }
+            finally
+            {
+                _listener.Stop();
+                //_listener = null;
+            }
+                       
         }
 
+        public void Stop()
+        {
+            foreach(TcpClient client in _myTcpClients )
+            {
+                client.GetStream().Close();
+                client.Close();
+            }
+
+            _listener.Stop();
+            
+        }
+        
         private void HandleClientComm(object client)
         {
             TcpClient tcpClient = (TcpClient) client;
@@ -44,7 +75,7 @@ namespace APDTrigger_WinForms.Helper
                 try
                 {
                     //blocks until a client sends a message
-                    bytesRead = clientStream.Read(message, 0, 4096);
+                    bytesRead = clientStream.Read(message, 0, 4096);                    
                 }
                 catch
                 {

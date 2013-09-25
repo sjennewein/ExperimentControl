@@ -17,7 +17,7 @@ namespace APDTrigger_WinForms.Helper
         };
 
         public RunType Run = RunType.Monitor;
-        //private TcpServer test = new TcpServer();
+        private TcpServer _myTcpServer;
         private readonly object _listPadlock = new object();
         private readonly List<AgingDataPoint> _myDataList = new List<AgingDataPoint>();
 
@@ -99,6 +99,7 @@ namespace APDTrigger_WinForms.Helper
         {
             _myGUI = gui;
             _saveFolder = _myBaseSaveFolder + _today.Year + "\\" + _today.Month + "\\" + _today.Day + "\\";
+            _myTcpServer =  new TcpServer(this);
         }
 
         private void UpdateFolder()
@@ -149,6 +150,14 @@ namespace APDTrigger_WinForms.Helper
                 writer.Flush();
             }            
             _isRunning = false;
+        }
+
+        public void Quit()
+        {
+            if(IsRunning)
+                Stop();
+
+            _myTcpServer.Stop();
         }
 
         private void SaveApdData()
@@ -202,6 +211,14 @@ namespace APDTrigger_WinForms.Helper
                 
                 _runsDone++;
                 OnPropertyChanged("RunsDone");
+
+                EventHandler runDone = RunDone;
+                if(null != runDone)
+                {
+                    var runData = new RunEventData(_runsDone, _recapturerate, _atoms, _noAtoms);
+                    runDone(this, runData);
+                }
+                    
 
                 if (_runsDone > Runs )  //if all runs are done stop the run
                 {
@@ -266,14 +283,14 @@ namespace APDTrigger_WinForms.Helper
 
         private void OnRecaptureDone(object sender, EventArgs e)
         {
-            EventData result = (EventData) e;
+            CycleEventData result = (CycleEventData) e;
             
             switch (result.Data)
             {
-                case EventData.RecaptureType.Captured:
+                case CycleEventData.RecaptureType.Captured:
                     _atoms++;
                     break;
-                case EventData.RecaptureType.Lost:
+                case CycleEventData.RecaptureType.Lost:
                     _noAtoms++;
                     break;
             }
@@ -346,9 +363,11 @@ namespace APDTrigger_WinForms.Helper
 
         public event EventHandler Finished;
 
-        public event EventHandler NewData;
+        //public event EventHandler NewData;
 
         public event EventHandler CycleDone;
+
+        public event EventHandler RunDone;
 
         public event PropertyChangedEventHandler PropertyChanged;
     }

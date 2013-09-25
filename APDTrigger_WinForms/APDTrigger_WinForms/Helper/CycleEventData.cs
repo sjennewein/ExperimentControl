@@ -5,7 +5,7 @@ using System.Text;
 
 namespace APDTrigger_WinForms.Helper
 {
-    public class EventData : EventArgs
+    public class CycleEventData : EventArgs
     {
         public enum RecaptureType
         {

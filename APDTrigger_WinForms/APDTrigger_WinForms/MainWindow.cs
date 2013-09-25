@@ -329,10 +329,9 @@ namespace APDTrigger_WinForms
 
         private void OnQuit(object sender, EventArgs e)
         {
-            if (_myController.IsRunning)
-            {
-                _myController.Stop();
-            }
+            
+                _myController.Quit();
+            
         }
 
         private void ApdHistogramUpdate_Tick(object sender, EventArgs e)

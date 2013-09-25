@@ -28,11 +28,10 @@ namespace APDTrigger.Hardware
     {
         private readonly int _apdBinSize;
         private readonly int _detectionBins;
-        private readonly bool _endlessRun;
         private readonly object _lockExperiment = new object();
+        private readonly bool _monitor;
         private readonly Task _myAcquisitionTask;
         private readonly int _myClockEdges;
-        private readonly Task _myClockTask;
         private readonly bool _myRecapture;
         private readonly Task _myThresholdTask;
         private readonly Task _myTriggerTask;
@@ -54,18 +53,17 @@ namespace APDTrigger.Hardware
         /// <param name="detectionBins">How often this value has to appear in a row before the trigger is send</param>
         /// <param name="apdBinSize">The number of original datapoints per bin (normaly we sample with 1us and want to have 10ms)</param>
         /// <param name="triggerBin">Measurement length for the high-frequency counter in milliseconds</param>
-        public Counter(double threshold, int detectionBins, int apdBinSize, double triggerBin, bool endlessRun,
-            bool recapture, int clockEdges)
+        public Counter(double threshold, int detectionBins, int apdBinSize, double triggerBin, bool monitor,
+                       bool recapture, int clockEdges)
         {
             _myThresholdTask = new Task();
             _myTriggerTask = new Task();
             _myAcquisitionTask = new Task();
-            _myClockTask = new Task();
             _threshold = threshold;
             _detectionBins = detectionBins;
             _apdBinSize = apdBinSize;
             _triggerBin = triggerBin/1000.0;
-            _endlessRun = endlessRun;
+            _monitor = monitor;
             _myRecapture = recapture;
             _myClockEdges = clockEdges;
         }
@@ -105,9 +103,9 @@ namespace APDTrigger.Hardware
             const CIPeriodStartingEdge edge = CIPeriodStartingEdge.Rising;
 
             _myThresholdTask.CIChannels.CreatePeriodChannel("/Dev1/ctr1", "", minValue, maxValue, edge,
-                CIPeriodMeasurementMethod.HighFrequencyTwoCounter,
-                _triggerBin, divisor,
-                CIPeriodUnits.Ticks);
+                                                            CIPeriodMeasurementMethod.HighFrequencyTwoCounter,
+                                                            _triggerBin, divisor,
+                                                            CIPeriodUnits.Ticks);
 
             _myThresholdTask.CIChannels.All.DuplicateCountPrevention = true;
             _myThresholdTask.Timing.ConfigureImplicit(SampleQuantityMode.ContinuousSamples, _myClockEdges);
@@ -130,20 +128,13 @@ namespace APDTrigger.Hardware
             const CICountEdgesActiveEdge edge = CICountEdgesActiveEdge.Rising;
             const CICountEdgesCountDirection countDirection = CICountEdgesCountDirection.Up;
             const SampleClockActiveEdge clockActiveEdge = SampleClockActiveEdge.Rising;
-            //var test = DaqSystem.Local.GetPhysicalChannels(PhysicalChannelTypes.DILine, PhysicalChannelAccess.External);
-
-            // _myClockTask.DIChannels.CreateChannel("Dev1/Port0/line0", "", ChannelLineGrouping.OneChannelForEachLine);
-            _myClockTask.COChannels.CreatePulseChannelFrequency("/Dev1/ctr3", "1MHzInternalClock",
-                COPulseFrequencyUnits.Hertz, COPulseIdleState.Low, 0.0, 1000000, 0.5);
-            //_myTask.ExportSignals.ExportHardwareSignal(ExportSignal.SampleClock, "PXI_Trig7");
-            
 
             _myAcquisitionTask.CIChannels.CreateCountEdgesChannel("/Dev1/ctr0", "", edge, 0, countDirection);
 
             _myAcquisitionTask.CIChannels.All.DuplicateCountPrevention = true;
 
-            _myAcquisitionTask.Timing.ConfigureSampleClock("/Dev1/Ctr3InternalOutput", 1000000.0, clockActiveEdge,
-                SampleQuantityMode.FiniteSamples, _myClockEdges);
+            _myAcquisitionTask.Timing.ConfigureSampleClock("/Dev1/PFI0", 1000000.0, clockActiveEdge,
+                                                           SampleQuantityMode.FiniteSamples, _myClockEdges);
         }
 
         /// <summary>
@@ -153,7 +144,6 @@ namespace APDTrigger.Hardware
         {
             if (_running == false)
             {
-                _myClockTask.Start();
                 _myTimer = new Timer(RunExperiment, null, 0, 10);
 
                 _running = true;
@@ -172,14 +162,9 @@ namespace APDTrigger.Hardware
                 Thread.Sleep(30); //wait until all timer processes are finished
                 _myTimer.Dispose();
 
-                _myClockTask.Stop();
                 _myTriggerTask.Stop();
                 _myThresholdTask.Stop();
                 _myAcquisitionTask.Stop();
-
-                //Thread.Sleep(20);
-
-                //Console.WriteLine("should be finished");
 
                 //send finishing event
                 EventHandler finished = Finished;
@@ -191,42 +176,37 @@ namespace APDTrigger.Hardware
 
         private void RunExperiment(object state)
         {
+            
+
             //keeps on reading data every 10ms but only evaluates it if no other experiment is running
             if (Monitor.TryEnter(_lockExperiment))
             {
                 try
                 {
-                    ReadThresholdCounter();
+                    ReadThresholdCounter();                    
+                    
+                    if (_monitor) //if we only monitor then ignore all fancy measurement functions
+                        return;
 
-
-                    if (_endlessRun)
-                    {
-                        PerformAcquisition();
-                    }
+                    //check if the value read from the counter is bigger than the set threshold
+                    if (_NewSample >= _threshold)
+                        _detectedBins++;
                     else
+                        _detectedBins = 0;
+
+                    //check if enough bins have been over the threshold => atom in the trap
+                    if (_detectedBins >= _detectionBins)
                     {
-                        //check if the value read from the counter is bigger than the set threshold
-                        if (_NewSample >= _threshold)
-                            _detectedBins++;
-                        else
-                            _detectedBins = 0;
+                        _myThresholdTask.Stop();
 
-                        //check if enough bins have been over the threshold => atom in the trap
-                        if (_detectedBins >= _detectionBins)
-                        {
-                            _myThresholdTask.Stop();
+                        _detectedBins = 0;
 
-                            _detectedBins = 0;
+                        //send a trigger to the digital output card
+                        _myTriggerTask.Start();
+                        _myTriggerTask.Stop();
 
-                            //send a trigger to the digital output card
-                            _myTriggerTask.Start();
-                            _myTriggerTask.Stop();
-
-                            PerformAcquisition();
-                            EvaluateRecapture();
-
-                            //_myThresholdTask.Start();
-                        }
+                        PerformAcquisition();
+                        EvaluateRecapture();                        
                     }
                 }
                 finally
@@ -240,15 +220,15 @@ namespace APDTrigger.Hardware
         {
             _myThresholdTask.Start();
             var thresholdReader = new CounterReader(_myThresholdTask.Stream);
-            int[] readOutData = thresholdReader.ReadMultiSampleInt32(2); //read everything from the buffer
+            int[] readOutData = thresholdReader.ReadMultiSampleInt32(2); //read 2 elements because the first one is mostly zero   
             _myThresholdTask.Stop();
 
             if (readOutData.Length >= 1)
             {
                 _NewSample = readOutData[1]; //use only the last value from the buffer and throw everything else away
-                //in endless mode the 0st element in the array is mostly zero so we use the 1st
-                for (int i = 0; i < readOutData.Length; i++)
-                    Console.WriteLine(i + ": " + readOutData[i]);
+                                             //in Monitor mode the 0st element in the array is mostly zero so we use the 1st
+                //for (int i = 0; i < readOutData.Length; i++)
+                //    Console.WriteLine(i + ": " + readOutData[i]);
 
                 EventHandler dataUpdate = NewData;
                 if (null != dataUpdate)
@@ -261,34 +241,38 @@ namespace APDTrigger.Hardware
 
         private void PerformAcquisition()
         {
-            //_myClockTask.Start();
             _myAcquisitionTask.Start();
             var acquisitionReader = new CounterReader(_myAcquisitionTask.Stream);
-            //int[] output = acquisitionReader.ReadMultiSampleInt32(_myClockEdges);
+            var data = new int[_myClockEdges];
+            int readOutSamples = 0;
+            acquisitionReader.MemoryOptimizedReadMultiSampleInt32(_myClockEdges, ref data,
+                                                                  ReallocationPolicy.DoNotReallocate, out readOutSamples);
+            
             _myAcquisitionTask.Stop();
-            //_myClockTask.Stop();
+            _myAcquiredData = data;
 
-            //var derivedSamples = new int[_myAcquiredData.Length - 1];
 
-            ////the counter spits out an integrated photon value so we have to derive this
-            //for (int counter = 1; counter < _myAcquiredData.Length; counter++)
-            //{
-            //    derivedSamples[counter - 1] = _myAcquiredData[counter] - _myAcquiredData[counter - 1];
-            //}
+            var derivedSamples = new int[_myAcquiredData.Length - 1];
 
-            //_mySpectrum = derivedSamples;
+            //the counter spits out an integrated photon value so we have to derive this
+            for (int counter = 1; counter < _myAcquiredData.Length; counter++)
+            {
+                derivedSamples[counter - 1] = _myAcquiredData[counter] - _myAcquiredData[counter - 1];
+            }
 
-            ////1us is to fine grain for most of our stuff so we have to bin the acquired data
-            //var bins = (int) Math.Ceiling(derivedSamples.Length/(double) _apdBinSize);
+            _mySpectrum = derivedSamples;
 
-            //_myBinnedSpectrum = bin(derivedSamples, bins);
+            //1us is to fine grain for most of our stuff so we have to bin the acquired data
+            var bins = (int)Math.Ceiling(derivedSamples.Length / (double)_apdBinSize);
 
-            //CycleDone();
+            _myBinnedSpectrum = bin(derivedSamples, bins);
+
+            CycleDone();
         }
 
         private void EvaluateRecapture()
         {
-            var result = EventData.RecaptureType.Lost;
+            EventData.RecaptureType result = EventData.RecaptureType.Lost;
 
             if (_myBinnedSpectrum[1] + _myBinnedSpectrum[2] > 2*_threshold)
                 result = EventData.RecaptureType.Captured;

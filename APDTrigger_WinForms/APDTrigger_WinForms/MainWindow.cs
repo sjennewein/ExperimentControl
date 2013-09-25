@@ -241,11 +241,11 @@ namespace APDTrigger_WinForms
 
                 switch (radio.Text)
                 {
-                    case "Triggered":
-                        _myController.Run = Controller.RunType.triggered;
+                    case "Measurement":
+                        _myController.Run = Controller.RunType.Measurement;
                         break;
-                    case "Endless":
-                        _myController.Run = Controller.RunType.endless;
+                    case "Monitor":
+                        _myController.Run = Controller.RunType.Monitor;
                         break;
                 }
             }

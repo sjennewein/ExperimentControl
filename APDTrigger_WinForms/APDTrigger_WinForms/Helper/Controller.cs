@@ -10,11 +10,11 @@ namespace APDTrigger_WinForms.Helper
     {
         public enum RunType
         {
-            triggered,
-            endless
+            Measurement,
+            Monitor
         };
 
-        public RunType Run = RunType.endless;
+        public RunType Run = RunType.Monitor;
         //private TcpServer test = new TcpServer();
         private readonly object _listPadlock = new object();
         private readonly List<AgingDataPoint> _myDataList = new List<AgingDataPoint>();
@@ -111,7 +111,7 @@ namespace APDTrigger_WinForms.Helper
 
         public void Start()
         {
-            bool endless = (Run == RunType.endless);  //set endless true if run type is endless
+            bool endless = (Run == RunType.Monitor);  //set Monitor true if run type is Monitor
             
             _myCounterHardware = new Counter(Threshold, DetectionBins, APDBinsize, Binning, endless, Recapture, Samples2Acquire);
             _myCounterHardware.Finished += OnFinished;

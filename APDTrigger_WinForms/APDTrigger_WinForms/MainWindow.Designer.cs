@@ -157,7 +157,7 @@
             this.radioButton_Endless.Size = new System.Drawing.Size(65, 17);
             this.radioButton_Endless.TabIndex = 0;
             this.radioButton_Endless.TabStop = true;
-            this.radioButton_Endless.Text = "Endless";
+            this.radioButton_Endless.Text = "Monitor";
             this.radioButton_Endless.UseVisualStyleBackColor = true;
             this.radioButton_Endless.CheckedChanged += new System.EventHandler(this.triggerRadioButton_CheckedChanged);
             // 
@@ -166,9 +166,9 @@
             this.radioButton_triggered.AutoSize = true;
             this.radioButton_triggered.Location = new System.Drawing.Point(6, 213);
             this.radioButton_triggered.Name = "radioButton_triggered";
-            this.radioButton_triggered.Size = new System.Drawing.Size(70, 17);
+            this.radioButton_triggered.Size = new System.Drawing.Size(89, 17);
             this.radioButton_triggered.TabIndex = 8;
-            this.radioButton_triggered.Text = "Triggered";
+            this.radioButton_triggered.Text = "Measurement";
             this.radioButton_triggered.UseVisualStyleBackColor = true;
             this.radioButton_triggered.CheckedChanged += new System.EventHandler(this.triggerRadioButton_CheckedChanged);
             // 
@@ -311,7 +311,7 @@
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(60, 13);
             this.label7.TabIndex = 15;
-            this.label7.Text = "Recaputre:";
+            this.label7.Text = "Recapture:";
             // 
             // radioButton_No
             // 

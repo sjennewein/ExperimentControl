@@ -47,16 +47,18 @@ namespace APDTrigger_WinForms
 
         private void autoscaleCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            if (_myAutoUpdate)
-            {
-                _myAutoUpdate = false;                
-                activateTextboxes();
-            }
-            else
+            var checkBox = (CheckBox) sender;
+            if (checkBox.Checked)
             {
                 _myAutoUpdate = true;
                 yMaxBox.Enabled = false;
                 yMinBox.Enabled = false;
+            }
+            else
+            {
+                _myAutoUpdate = false;
+                activateTextboxes();
+                
             }
            
         }

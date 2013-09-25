@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Threading;
+using System.Windows.Forms;
 using APDTrigger.Hardware;
 
 namespace APDTrigger_WinForms.Helper
 {
-    public class Controller
+    public class Controller : INotifyPropertyChanged
     {
         public enum RunType
         {
@@ -22,10 +24,11 @@ namespace APDTrigger_WinForms.Helper
         private const string _myBaseSaveFolder = "d:\\Manipe\\APD\\";
 
         private string _saveFolder;
+        private Control _myGUI;
 
         private Counter _myCounterHardware;
         private int[] _myHistogramData = new int[600];
-        private bool _mySave;
+        private bool _mySaveApdSignal;
         private Thread _myWorker;
         private DateTime _today = DateTime.Now;
         private StreamWriter writer;
@@ -49,7 +52,7 @@ namespace APDTrigger_WinForms.Helper
         public int CyclesDone { get { return _cyclesDone; }}
         private int _cyclesDone;
         public int RunsDone {get { return _runsDone; }}
-        private int _runsDone;
+        private int _runsDone = 1;
         public double RecaptureRate { get { return _recapturerate; } }
         private double _recapturerate;
         public int NoAtoms { get { return _noAtoms; } }
@@ -60,9 +63,9 @@ namespace APDTrigger_WinForms.Helper
 
         private int _atoms;
 
-        public bool Save
+        public bool SaveApdSignal
         {
-            get { return _mySave; }
+            get { return _mySaveApdSignal; }
             set
             {
                 if (value == false)
@@ -70,18 +73,11 @@ namespace APDTrigger_WinForms.Helper
                     if (writer != null)
                     {
                         writer.Close();
+                        writer = null;
                     }
                 }
-                else
-                {
-                    if (writer == null)
-                    {
-                        _saveFolder = _myBaseSaveFolder + _today.Year + "\\" + _today.Month + "\\" + _today.Day + "\\";
-                        Directory.CreateDirectory(_saveFolder);
-                        writer = new StreamWriter(_saveFolder + "ApdSignal.txt", true);
-                    }
-                }
-                _mySave = value;
+                
+                _mySaveApdSignal = value;
             }
         }
 
@@ -99,6 +95,12 @@ namespace APDTrigger_WinForms.Helper
             get { return _myHistogramData; }
         }
 
+        public Controller(Control gui)
+        {
+            _myGUI = gui;
+            _saveFolder = _myBaseSaveFolder + _today.Year + "\\" + _today.Month + "\\" + _today.Day + "\\";
+        }
+
         private void UpdateFolder()
         {
             DateTime now = DateTime.Now;
@@ -111,9 +113,14 @@ namespace APDTrigger_WinForms.Helper
 
         public void Start()
         {
-            bool endless = (Run == RunType.Monitor);  //set Monitor true if run type is Monitor
-            
-            _myCounterHardware = new Counter(Threshold, DetectionBins, APDBinsize, Binning, endless, Recapture, Samples2Acquire);
+            bool monitorMode = (Run == RunType.Monitor);  //set endless true if run type is endless
+            _atoms = 0;
+            _noAtoms = 0;
+            _recapturerate = 0;
+            _runsDone = 1;
+            _cyclesDone = 0;
+
+            _myCounterHardware = new Counter(Threshold, DetectionBins, APDBinsize, Binning, monitorMode, Recapture, Samples2Acquire);
             _myCounterHardware.Finished += OnFinished;
             _myCounterHardware.NewData += OnNewData;
             _myCounterHardware.CycleFinished += OnCyleDone;
@@ -137,21 +144,29 @@ namespace APDTrigger_WinForms.Helper
         public void Stop()
         {
             _myCounterHardware.StopMeasurement();
-            if (_mySave)
+            if (_mySaveApdSignal)
             {
                 writer.Flush();
-            }
+            }            
             _isRunning = false;
         }
 
-        private void SaveData()
+        private void SaveApdData()
         {
             if (DateTime.Now != _today.Date)
             {
                 UpdateFolder();
                 writer.Close();
+                writer = null;
+            }               
+
+            if(writer == null)
+            {
+                System.IO.Directory.CreateDirectory(_saveFolder);
                 writer = new StreamWriter(_saveFolder + "ApdSignal.txt", true);
-            }                
+            }
+                
+
             writer.WriteLine(Data);
         }
 
@@ -165,9 +180,9 @@ namespace APDTrigger_WinForms.Helper
         private void OnNewData(object sender, EventArgs e)
         {
             AddHistogramData();
-            if (Save)
+            if (SaveApdSignal)
             {
-                SaveData();
+                SaveApdData();
             }
         }
 
@@ -177,15 +192,18 @@ namespace APDTrigger_WinForms.Helper
             if (_cyclesDone == Cycles)  //if all cycles per run are done increment runs
             {
                 _cyclesDone = 0;
+                
 
                 if(SaveSpectrum)
                     SaveRunSpectrum();
 
                 _mySpectrum = null;
                 _myBinnedSpectrum = null;
+                
                 _runsDone++;
+                OnPropertyChanged("RunsDone");
 
-                if (_runsDone > Runs)  //if all runs are done stop the run
+                if (_runsDone > Runs )  //if all runs are done stop the run
                 {
                     Stop();
                     return;
@@ -200,6 +218,7 @@ namespace APDTrigger_WinForms.Helper
                 cycleDone(this, new EventArgs());
             
             _cyclesDone++;
+            OnPropertyChanged("CyclesDone");
 
         }
 
@@ -234,7 +253,9 @@ namespace APDTrigger_WinForms.Helper
             {
                 UpdateFolder();
             }
-            var spectrumWriter = new StreamWriter(_saveFolder + "Spectrum_" + RunsDone + ".txt", true);
+            var now = DateTime.Now;
+            System.IO.Directory.CreateDirectory(_saveFolder);
+            var spectrumWriter = new StreamWriter(_saveFolder + "Spectrum_" + now.Hour + "-" + now.Minute + "-" + now.Second + "_Run_" + RunsDone + ".txt", true);
             foreach (int bin in _mySpectrum)
             {
                 spectrumWriter.WriteLine(bin);
@@ -257,6 +278,9 @@ namespace APDTrigger_WinForms.Helper
                     break;
             }
             _recapturerate  = (double) _atoms/_cyclesDone;
+            OnPropertyChanged("Atoms");
+            OnPropertyChanged("NoAtoms");
+            OnPropertyChanged("RecaptureRate");
         }
 
         private void AddHistogramData()
@@ -301,10 +325,31 @@ namespace APDTrigger_WinForms.Helper
             _myHistogramData = buckets;
         }
 
+        private void OnPropertyChanged(string propertyName)
+        {            
+            if(_myGUI.InvokeRequired)
+            {
+                GuiUpdate callback = OnPropertyChanged;
+                _myGUI.Invoke(callback, propertyName);
+            }
+            else
+            {
+                PropertyChangedEventHandler propertyChanged = PropertyChanged;
+                if (null != propertyChanged)
+                    propertyChanged(this, new PropertyChangedEventArgs(propertyName));    
+            }
+            
+        }
+
+        private delegate void GuiUpdate(string propertyName);
+ 
+
         public event EventHandler Finished;
 
         public event EventHandler NewData;
 
         public event EventHandler CycleDone;
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

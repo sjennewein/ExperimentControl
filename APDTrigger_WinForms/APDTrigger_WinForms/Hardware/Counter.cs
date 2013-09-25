@@ -177,14 +177,14 @@ namespace APDTrigger.Hardware
         private void RunExperiment(object state)
         {
             
-
             //keeps on reading data every 10ms but only evaluates it if no other experiment is running
             if (Monitor.TryEnter(_lockExperiment))
             {
                 try
                 {
                     ReadThresholdCounter();                    
-                    
+                    PerformAcquisition();
+
                     if (_monitor) //if we only monitor then ignore all fancy measurement functions
                         return;
 
@@ -208,6 +208,8 @@ namespace APDTrigger.Hardware
                         PerformAcquisition();
                         EvaluateRecapture();                        
                     }
+
+                    Thread.Sleep(20);
                 }
                 finally
                 {

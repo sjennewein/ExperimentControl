@@ -9,7 +9,7 @@ namespace APDTrigger_WinForms
 {
     public partial class MainWindow : Form
     {
-        private readonly Controller _myController = new Controller();
+        private readonly Controller _myController;
         public bool AutoUpdate = false;
         private int _pointCount;
 
@@ -23,6 +23,7 @@ namespace APDTrigger_WinForms
 
         public MainWindow()
         {
+            _myController = new Controller(this);
             InitializeComponent();
             _myController.Binning = 10;
             _myController.APDBinsize = 100;
@@ -163,11 +164,20 @@ namespace APDTrigger_WinForms
 
         private void OnFinished(object sender, EventArgs e)
         {
-            ApdSignalUpdate.Stop();
-            ApdHistogramUpdate.Stop(); 
-            EnableAllInputs();
-            start_button.Enabled = true;
-            stop_button.Enabled = false;
+            if(InvokeRequired)
+            {
+                GuiUpdate callback = OnFinished;
+                Invoke(callback, new object[] {sender,e});
+            }
+            else
+            {
+                ApdSignalUpdate.Stop();
+                ApdHistogramUpdate.Stop();
+                EnableAllInputs();
+                start_button.Enabled = true;
+                stop_button.Enabled = false;    
+            }
+            
         }
 
         private void UpdateApdHistogram()
@@ -262,11 +272,11 @@ namespace APDTrigger_WinForms
             var originalSender = (CheckBox) sender;
             if (originalSender.Checked)
             {
-                _myController.Save = true;
+                _myController.SaveApdSignal = true;
             }
             else
             {
-                _myController.Save = false;
+                _myController.SaveApdSignal = false;
             }
         }
 
@@ -293,6 +303,7 @@ namespace APDTrigger_WinForms
             radioButton_Yes.Enabled = false;
             textBox_apdInput.Enabled = false;
             textBox_acquireInput.Enabled = false;
+            checkBox_SaveHistogram.Enabled = false;
         }
 
         private void EnableAllInputs()
@@ -313,6 +324,7 @@ namespace APDTrigger_WinForms
             radioButton_Yes.Enabled = true;
             textBox_apdInput.Enabled = true;
             textBox_acquireInput.Enabled = true;
+            checkBox_SaveHistogram.Enabled = true;
         }
 
         private void OnQuit(object sender, EventArgs e)
@@ -412,5 +424,7 @@ namespace APDTrigger_WinForms
                 apdHistogram.XAxis.SetRange(0, Math.Ceiling((double)_myController.Samples2Acquire / _myController.APDBinsize));
             }
         }
+
+        private delegate void GuiUpdate(object sender, EventArgs e);
     }
 }

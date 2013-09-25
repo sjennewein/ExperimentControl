@@ -274,10 +274,10 @@ namespace APDTrigger.Hardware
 
         private void EvaluateRecapture()
         {
-            EventData.RecaptureType result = EventData.RecaptureType.Lost;
+            CycleEventData.RecaptureType result = CycleEventData.RecaptureType.Lost;
 
             if (_myBinnedSpectrum[1] + _myBinnedSpectrum[2] > 2*_threshold)
-                result = EventData.RecaptureType.Captured;
+                result = CycleEventData.RecaptureType.Captured;
 
             RecaptureDone(result);
         }
@@ -317,10 +317,10 @@ namespace APDTrigger.Hardware
                 cycleFinished(this, new EventArgs());
         }
 
-        private void RecaptureDone(EventData.RecaptureType recapture)
+        private void RecaptureDone(CycleEventData.RecaptureType recapture)
         {
             EventHandler recaptureDone = RecaptureMeasurementDone;
-            var e = new EventData();
+            var e = new CycleEventData();
             e.Data = recapture;
 
             if (null != recaptureDone)

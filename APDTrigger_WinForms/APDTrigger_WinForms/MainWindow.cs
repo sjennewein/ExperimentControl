@@ -11,15 +11,9 @@ namespace APDTrigger_WinForms
     {
         private readonly Controller _myController;
         public bool AutoUpdate = false;
-        private int _pointCount;
-
-        private enum DisplayType
-        {
-            Histogram,
-            Spectrum
-        };
 
         private DisplayType _myChart2Display = DisplayType.Histogram;
+        private int _pointCount;
 
         public MainWindow()
         {
@@ -28,36 +22,41 @@ namespace APDTrigger_WinForms
             _myController.Binning = 10;
             _myController.APDBinsize = 100;
             _myController.DetectionBins = 3;
-            _myController.Threshold = 18000;
-            _myController.Samples2Acquire = 29000;
+            _myController.Threshold = 400;
+            _myController.Samples2Acquire = 50000;
             _myController.Cycles = 100;
             _myController.Runs = 1;
             stop_button.Enabled = false;
 
             _myController.Finished += OnFinished;
-            this.FormClosing += OnQuit; //hopefully enough to close all hardware handles when closing the application            
+            FormClosing += OnQuit;
+                //hopefully enough to close all hardware handles when closing the application            
 
-            textBox_binningInput.DataBindings.Add("Text", _myController, "Binning", true, DataSourceUpdateMode.OnPropertyChanged);
+            textBox_binningInput.DataBindings.Add("Text", _myController, "Binning", true,
+                                                  DataSourceUpdateMode.OnPropertyChanged);
             thresholdInput.DataBindings.Add("Text", _myController, "Threshold", true,
-                DataSourceUpdateMode.OnPropertyChanged);
+                                            DataSourceUpdateMode.OnPropertyChanged);
             textBox_detectionInput.DataBindings.Add("Text", _myController, "DetectionBins", true,
-                DataSourceUpdateMode.OnPropertyChanged);
-            textBox_cyclesInput.DataBindings.Add("Text", _myController, "Cycles", true, DataSourceUpdateMode.OnPropertyChanged);
-            textBox_runsInput.DataBindings.Add("Text", _myController, "Runs", true, DataSourceUpdateMode.OnPropertyChanged);
-            textBox_apdInput.DataBindings.Add("Text", _myController, "APDBinsize", true, DataSourceUpdateMode.OnPropertyChanged);
+                                                    DataSourceUpdateMode.OnPropertyChanged);
+            textBox_cyclesInput.DataBindings.Add("Text", _myController, "Cycles", true,
+                                                 DataSourceUpdateMode.OnPropertyChanged);
+            textBox_runsInput.DataBindings.Add("Text", _myController, "Runs", true,
+                                               DataSourceUpdateMode.OnPropertyChanged);
+            textBox_apdInput.DataBindings.Add("Text", _myController, "APDBinsize", true,
+                                              DataSourceUpdateMode.OnPropertyChanged);
             textBox_acquireInput.DataBindings.Add("Text", _myController, "Samples2Acquire", true,
-                DataSourceUpdateMode.OnPropertyChanged);
+                                                  DataSourceUpdateMode.OnPropertyChanged);
             textBox_totalRuns.DataBindings.Add("Text", _myController, "Runs", true,
-                DataSourceUpdateMode.OnPropertyChanged);
+                                               DataSourceUpdateMode.OnPropertyChanged);
             textBox_runsDone.DataBindings.Add("Text", _myController, "RunsDone", true,
-                DataSourceUpdateMode.OnPropertyChanged);
+                                              DataSourceUpdateMode.OnPropertyChanged);
             textBox_CyclesDone.DataBindings.Add("Text", _myController, "CyclesDone", true,
-                DataSourceUpdateMode.OnPropertyChanged);
+                                                DataSourceUpdateMode.OnPropertyChanged);
             textBox_RecaptureRate.DataBindings.Add("Text", _myController, "RecaptureRate", true,
-                DataSourceUpdateMode.OnPropertyChanged);
+                                                   DataSourceUpdateMode.OnPropertyChanged);
             textBox_Atoms.DataBindings.Add("Text", _myController, "Atoms", true, DataSourceUpdateMode.OnPropertyChanged);
             textBox_NoAtoms.DataBindings.Add("Text", _myController, "NoAtoms", true,
-                DataSourceUpdateMode.OnPropertyChanged);
+                                             DataSourceUpdateMode.OnPropertyChanged);
 
 
             InitializeApdSignalChart();
@@ -158,16 +157,16 @@ namespace APDTrigger_WinForms
         }
 
         private void stop_button_Click(object sender, EventArgs e)
-        {            
-            _myController.Stop();                                   
+        {
+            _myController.Stop();
         }
 
         private void OnFinished(object sender, EventArgs e)
         {
-            if(InvokeRequired)
+            if (InvokeRequired)
             {
                 GuiUpdate callback = OnFinished;
-                Invoke(callback, new object[] {sender,e});
+                Invoke(callback, new[] {sender, e});
             }
             else
             {
@@ -175,9 +174,8 @@ namespace APDTrigger_WinForms
                 ApdHistogramUpdate.Stop();
                 EnableAllInputs();
                 start_button.Enabled = true;
-                stop_button.Enabled = false;    
+                stop_button.Enabled = false;
             }
-            
         }
 
         private void UpdateApdHistogram()
@@ -193,7 +191,7 @@ namespace APDTrigger_WinForms
             bs.Fill.GradientColor = ChartTools.CalcGradient(Color.Black, Color.Black, 10);
             bs.Fill.Color = Color.LightGray;
             bs.BarWidth = 0;
-            switch(_myChart2Display)
+            switch (_myChart2Display)
             {
                 case DisplayType.Histogram:
                     for (int iBucket = 0; iBucket < 600; iBucket++)
@@ -202,14 +200,16 @@ namespace APDTrigger_WinForms
                     }
                     break;
                 case DisplayType.Spectrum:
-                    if(_myController.BinnedSpectrum != null)
-                        for (int iBucket = 0; iBucket < Math.Ceiling((double) _myController.Samples2Acquire / _myController.APDBinsize); iBucket++ )
+                    if (_myController.BinnedSpectrum != null)
+                        for (int iBucket = 0;
+                             iBucket < Math.Ceiling((double) _myController.Samples2Acquire/_myController.APDBinsize);
+                             iBucket++)
                         {
                             bs.AddValue(iBucket, _myController.BinnedSpectrum[iBucket], "", true);
                         }
                     break;
             }
-            
+
 
             bool foobar = true;
             apdHistogram.YAxes[0].Fit(10, out foobar, false);
@@ -329,17 +329,13 @@ namespace APDTrigger_WinForms
 
         private void OnQuit(object sender, EventArgs e)
         {
-            
-                _myController.Quit();
-            
+            _myController.Quit();
         }
 
         private void ApdHistogramUpdate_Tick(object sender, EventArgs e)
         {
             UpdateApdHistogram();
         }
-
-        internal delegate void myGuiCallback(object state);
 
         private void radioButton_Recapture_CheckedChanged(object sender, EventArgs e)
         {
@@ -367,7 +363,7 @@ namespace APDTrigger_WinForms
 
         private void checkBox_SaveHistogram_CheckedChanged(object sender, EventArgs e)
         {
-            var originalSender = (CheckBox)sender;
+            var originalSender = (CheckBox) sender;
             if (originalSender.Checked)
             {
                 _myController.SaveSpectrum = true;
@@ -395,9 +391,11 @@ namespace APDTrigger_WinForms
                     case "Spectrum":
                         apdHistogram.BeginUpdate();
                         apdHistogram.Title.Text = "Spectrum";
-                        apdHistogram.XAxis.SetRange(0, Math.Ceiling( (double) _myController.Samples2Acquire / _myController.APDBinsize));
+                        apdHistogram.XAxis.SetRange(0,
+                                                    Math.Ceiling((double) _myController.Samples2Acquire/
+                                                                 _myController.APDBinsize));
                         apdHistogram.EndUpdate();
-                        _myChart2Display = DisplayType.Spectrum;                        
+                        _myChart2Display = DisplayType.Spectrum;
                         break;
                     case "Signal Histogram":
                         apdHistogram.BeginUpdate();
@@ -413,17 +411,38 @@ namespace APDTrigger_WinForms
 
         private void button_Rescale_Click(object sender, EventArgs e)
         {
-            if(_myChart2Display == DisplayType.Histogram)
+            if (_myChart2Display == DisplayType.Histogram)
             {
-                apdHistogram.XAxis.SetRange(0,600);
+                apdHistogram.XAxis.SetRange(0, 600);
             }
 
-            if(_myChart2Display == DisplayType.Spectrum)
+            if (_myChart2Display == DisplayType.Spectrum)
             {
-                apdHistogram.XAxis.SetRange(0, Math.Ceiling((double)_myController.Samples2Acquire / _myController.APDBinsize));
+                apdHistogram.XAxis.SetRange(0,
+                                            Math.Ceiling((double) _myController.Samples2Acquire/_myController.APDBinsize));
             }
         }
 
+        #region Nested type: DisplayType
+
+        private enum DisplayType
+        {
+            Histogram,
+            Spectrum
+        };
+
+        #endregion
+
+        #region Nested type: GuiUpdate
+
         private delegate void GuiUpdate(object sender, EventArgs e);
+
+        #endregion
+
+        #region Nested type: myGuiCallback
+
+        internal delegate void myGuiCallback(object state);
+
+        #endregion
     }
 }

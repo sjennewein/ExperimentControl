@@ -157,7 +157,9 @@ namespace APDTrigger.Hardware
         {
             if (_running)
             {
+                _running = false;
                 _myTimer.Change(Timeout.Infinite, Timeout.Infinite);
+                
 
                 Thread.Sleep(30); //wait until all timer processes are finished
                 _myTimer.Dispose();
@@ -170,20 +172,21 @@ namespace APDTrigger.Hardware
                 EventHandler finished = Finished;
                 if (null != finished)
                     finished(this, new EventArgs());
-                _running = false;
+                
             }
         }
 
         private void RunExperiment(object state)
         {
-            
+            if (!_running)
+                return;
+
             //keeps on reading data every 10ms but only evaluates it if no other experiment is running
             if (Monitor.TryEnter(_lockExperiment))
             {
                 try
                 {
-                    ReadThresholdCounter();                    
-                    PerformAcquisition();
+                    ReadThresholdCounter();                                        
 
                     if (_monitor) //if we only monitor then ignore all fancy measurement functions
                         return;
@@ -245,10 +248,16 @@ namespace APDTrigger.Hardware
         {
             _myAcquisitionTask.Start();
             var acquisitionReader = new CounterReader(_myAcquisitionTask.Stream);
-            var data = new int[_myClockEdges];
+            int[] data = new int[_myClockEdges];
             int readOutSamples = 0;
-            acquisitionReader.MemoryOptimizedReadMultiSampleInt32(_myClockEdges, ref data,
-                                                                  ReallocationPolicy.DoNotReallocate, out readOutSamples);
+            try
+            {
+                acquisitionReader.MemoryOptimizedReadMultiSampleInt32(_myClockEdges, ref data, out readOutSamples);    
+            }
+            catch
+            {
+                //StopMeasurement();
+            }
             
             _myAcquisitionTask.Stop();
             _myAcquiredData = data;
@@ -274,7 +283,7 @@ namespace APDTrigger.Hardware
 
         private void EvaluateRecapture()
         {
-            CycleEventData.RecaptureType result = CycleEventData.RecaptureType.Lost;
+            CycleEventData.RecaptureType result = CycleEventData.RecaptureType.Lost;            
 
             if (_myBinnedSpectrum[1] + _myBinnedSpectrum[2] > 2*_threshold)
                 result = CycleEventData.RecaptureType.Captured;
@@ -331,5 +340,6 @@ namespace APDTrigger.Hardware
         public event EventHandler NewData;
         public event EventHandler CycleFinished;
         public event EventHandler RecaptureMeasurementDone;
+        public event EventHandler EmergencyStop;
     }
 }

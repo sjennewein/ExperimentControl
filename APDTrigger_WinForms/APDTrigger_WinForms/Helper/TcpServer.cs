@@ -18,7 +18,7 @@ namespace APDTrigger_WinForms.Helper
         public TcpServer(Controller controller)
         {
             _myController = controller;
-            controller.RunDone += sendRunData;
+            //controller.RunDone += sendRunData;
             _listener = new TcpListener(IPAddress.Any, 9898);
             Thread listenThread = new Thread(ListenForClients);
             listenThread.Start();

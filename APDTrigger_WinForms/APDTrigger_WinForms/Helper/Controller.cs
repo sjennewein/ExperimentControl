@@ -126,6 +126,8 @@ namespace APDTrigger_WinForms.Helper
             _myCounterHardware.NewData += OnNewData;
             _myCounterHardware.CycleFinished += OnCyleDone;
             _myCounterHardware.RecaptureMeasurementDone += OnRecaptureDone;
+            //_myCounterHardware.EmergencyStop += OnEmergencyStop;
+
             _myWorker = new Thread(BackgroundWork);
             _myWorker.Name = "Worker";
             _myWorker.Start();
@@ -162,7 +164,7 @@ namespace APDTrigger_WinForms.Helper
 
         private void SaveApdData()
         {
-            if (DateTime.Now != _today.Date)
+            if (DateTime.Now != _today)
             {
                 UpdateFolder();
                 writer.Close();
@@ -340,7 +342,7 @@ namespace APDTrigger_WinForms.Helper
                 }
             }
             _myHistogramData = buckets;
-        }
+        }        
 
         private void OnPropertyChanged(string propertyName)
         {            

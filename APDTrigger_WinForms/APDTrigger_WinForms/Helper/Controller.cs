@@ -10,37 +10,58 @@ namespace APDTrigger_WinForms.Helper
 {
     public class Controller : INotifyPropertyChanged
     {
+        #region RunType enum
+
         public enum RunType
         {
             Measurement,
             Monitor
         };
 
-        public RunType Run = RunType.Monitor;
-        private TcpServer _myTcpServer;
-        private readonly object _listPadlock = new object();
-        private readonly List<AgingDataPoint> _myDataList = new List<AgingDataPoint>();
+        #endregion
 
         private const string _myBaseSaveFolder = "d:\\Manipe\\APD\\";
 
-        private string _saveFolder;
-        private Control _myGUI;
+        private readonly object _listPadlock = new object();
+        private readonly List<AgingDataPoint> _myDataList = new List<AgingDataPoint>();
+
+        private readonly Control _myGUI;
+        public RunType Run = RunType.Monitor;
+        private int _atoms;
+        private int _cyclesDone = 1;
+        private bool _isRunning;
+        private int[] _myBinnedSpectrum;
 
         private Counter _myCounterHardware;
         private int[] _myHistogramData = new int[600];
         private bool _mySaveApdSignal;
+        private int[] _mySpectrum;
+        private TcpDataTrigger _myTcpDataTrigger;
         private Thread _myWorker;
+        private int _noAtoms;
+        private double _recapturerate;
+        private int _runsDone = 1;
+        private string _saveFolder;
         private DateTime _today = DateTime.Now;
         private StreamWriter writer;
-        private bool _isRunning = false;
-        
-        public bool IsRunning {get { return _isRunning; }}
+
+        public Controller(Control gui)
+        {
+            _myGUI = gui;
+            _saveFolder = _myBaseSaveFolder + _today.Year + "\\" + _today.Month + "\\" + _today.Day + "\\";
+            _myTcpDataTrigger = new TcpDataTrigger();
+        }
+
+        public bool IsRunning
+        {
+            get { return _isRunning; }
+        }
 
         //Trigger parameters
         public int Binning { get; set; }
         public int DetectionBins { get; set; }
         public int Threshold { get; set; }
-        public int Runs { get; set; }
+        public int TotalRuns { get; set; }
         public int Cycles { get; set; }
 
         //Acquisition parameters
@@ -49,19 +70,35 @@ namespace APDTrigger_WinForms.Helper
         public bool Recapture { get; set; }
 
         //Results/Statistics
-        public int CyclesDone { get { return _cyclesDone; }}
-        private int _cyclesDone;
-        public int RunsDone {get { return _runsDone; }}
-        private int _runsDone = 1;
-        public double RecaptureRate { get { return _recapturerate; } }
-        private double _recapturerate;
-        public int NoAtoms { get { return _noAtoms; } }
-        private int _noAtoms;
-        public int Atoms { get { return _atoms; } }
-        private int[] _myBinnedSpectrum;
-        public int[] BinnedSpectrum { get { return _myBinnedSpectrum; } }
+        public int CyclesDone
+        {
+            get { return _cyclesDone; }
+        }
 
-        private int _atoms;
+        public int RunsDone
+        {
+            get { return _runsDone; }
+        }
+
+        public double RecaptureRate
+        {
+            get { return _recapturerate; }
+        }
+
+        public int NoAtoms
+        {
+            get { return _noAtoms; }
+        }
+
+        public int Atoms
+        {
+            get { return _atoms; }
+        }
+
+        public int[] BinnedSpectrum
+        {
+            get { return _myBinnedSpectrum; }
+        }
 
         public bool SaveApdSignal
         {
@@ -76,14 +113,12 @@ namespace APDTrigger_WinForms.Helper
                         writer = null;
                     }
                 }
-                
+
                 _mySaveApdSignal = value;
             }
         }
 
         public bool SaveSpectrum { get; set; }
-
-        private int[] _mySpectrum;
 
         public int Data
         {
@@ -95,33 +130,33 @@ namespace APDTrigger_WinForms.Helper
             get { return _myHistogramData; }
         }
 
-        public Controller(Control gui)
-        {
-            _myGUI = gui;
-            _saveFolder = _myBaseSaveFolder + _today.Year + "\\" + _today.Month + "\\" + _today.Day + "\\";
-            _myTcpServer =  new TcpServer(this);
-        }
+        #region INotifyPropertyChanged Members
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        #endregion
 
         private void UpdateFolder()
         {
             DateTime now = DateTime.Now;
             if (_today.Date != now.Date)
-            {                
+            {
                 _today = now;
-                _saveFolder = _myBaseSaveFolder + _today.Year + "\\" + _today.Month + "\\" + _today.Day + "\\";                
+                _saveFolder = _myBaseSaveFolder + _today.Year + "\\" + _today.Month + "\\" + _today.Day + "\\";
             }
         }
 
         public void Start()
         {
-            bool monitorMode = (Run == RunType.Monitor);  //set endless true if run type is endless
+            bool monitorMode = (Run == RunType.Monitor); //set endless true if run type is endless
             _atoms = 0;
             _noAtoms = 0;
             _recapturerate = 0;
             _runsDone = 1;
             _cyclesDone = 0;
 
-            _myCounterHardware = new Counter(Threshold, DetectionBins, APDBinsize, Binning, monitorMode, Recapture, Samples2Acquire);
+            _myCounterHardware = new Counter(Threshold, DetectionBins, APDBinsize, Binning, monitorMode, Recapture,
+                                             Samples2Acquire);
             _myCounterHardware.Finished += OnFinished;
             _myCounterHardware.NewData += OnNewData;
             _myCounterHardware.CycleFinished += OnCyleDone;
@@ -141,7 +176,6 @@ namespace APDTrigger_WinForms.Helper
             _myCounterHardware.AimTrigger();
             _myCounterHardware.PrepareAcquisition();
             _myCounterHardware.StartMeasurement();
-            
         }
 
         public void Stop()
@@ -150,16 +184,16 @@ namespace APDTrigger_WinForms.Helper
             if (_mySaveApdSignal)
             {
                 writer.Flush();
-            }            
+            }
             _isRunning = false;
         }
 
         public void Quit()
         {
-            if(IsRunning)
+            if (IsRunning)
                 Stop();
 
-            _myTcpServer.Stop();
+            //_myTcpTrigger.Stop();
         }
 
         private void SaveApdData()
@@ -169,15 +203,13 @@ namespace APDTrigger_WinForms.Helper
                 UpdateFolder();
                 writer.Close();
                 writer = null;
-            }               
+            }
 
-            if(writer == null)
+            if (writer == null)
             {
-                System.IO.Directory.CreateDirectory(_saveFolder);
+                Directory.CreateDirectory(_saveFolder);
                 writer = new StreamWriter(_saveFolder + "ApdSignal.txt", true);
             }
-                
-
             writer.WriteLine(Data);
         }
 
@@ -199,30 +231,29 @@ namespace APDTrigger_WinForms.Helper
 
         private void OnCyleDone(object sender, EventArgs e)
         {
-
-            if (_cyclesDone == Cycles)  //if all cycles per run are done increment runs
+            if (_cyclesDone > Cycles) //if all cycles per run are done increment runs
             {
                 _cyclesDone = 0;
-                
 
-                if(SaveSpectrum)
+
+                if (SaveSpectrum)
                     SaveRunSpectrum();
 
                 _mySpectrum = null;
                 _myBinnedSpectrum = null;
-                
+
                 _runsDone++;
                 OnPropertyChanged("RunsDone");
 
                 EventHandler runDone = RunDone;
-                if(null != runDone)
+                if (null != runDone)
                 {
                     var runData = new RunEventData(_runsDone, _recapturerate, _atoms, _noAtoms);
                     runDone(this, runData);
                 }
-                    
 
-                if (_runsDone > Runs )  //if all runs are done stop the run
+
+                if (_runsDone > TotalRuns) //if all runs are done stop the run
                 {
                     Stop();
                     return;
@@ -231,36 +262,37 @@ namespace APDTrigger_WinForms.Helper
 
             AddSpectrum();
             AddBinnedSpectrum();
-            
+
             EventHandler cycleDone = CycleDone;
             if (null != cycleDone)
                 cycleDone(this, new EventArgs());
-            
+
+
+            _myTcpDataTrigger.Data = new NetworkData(_atoms, _noAtoms, _cyclesDone, _runsDone, TotalRuns, _recapturerate );
+
             _cyclesDone++;
             OnPropertyChanged("CyclesDone");
-
         }
 
         private void AddSpectrum()
         {
             int amountOfSamples = _myCounterHardware.Spectrum.Length;
-            if(_mySpectrum == null)
+            if (_mySpectrum == null)
                 _mySpectrum = new int[amountOfSamples];
 
             for (int i = 0; i < amountOfSamples; i++)
             {
                 _mySpectrum[i] += _myCounterHardware.Spectrum[i];
             }
-        
         }
 
         private void AddBinnedSpectrum()
         {
             int amountOfBins = _myCounterHardware.BinnedSpectrum.Length;
-            if(_myBinnedSpectrum == null)
+            if (_myBinnedSpectrum == null)
                 _myBinnedSpectrum = new int[amountOfBins];
 
-            for(int i = 0; i< amountOfBins; i++)
+            for (int i = 0; i < amountOfBins; i++)
             {
                 _myBinnedSpectrum[i] += _myCounterHardware.BinnedSpectrum[i];
             }
@@ -272,21 +304,23 @@ namespace APDTrigger_WinForms.Helper
             {
                 UpdateFolder();
             }
-            var now = DateTime.Now;
-            System.IO.Directory.CreateDirectory(_saveFolder);
-            var spectrumWriter = new StreamWriter(_saveFolder + "Spectrum_" + now.Hour + "-" + now.Minute + "-" + now.Second + "_Run_" + RunsDone + ".txt", true);
+            DateTime now = DateTime.Now;
+            Directory.CreateDirectory(_saveFolder);
+            var spectrumWriter =
+                new StreamWriter(
+                    _saveFolder + "Spectrum_" + now.Hour + "-" + now.Minute + "-" + now.Second + "_Run_" + RunsDone +
+                    ".txt", true);
             foreach (int bin in _mySpectrum)
             {
                 spectrumWriter.WriteLine(bin);
             }
             spectrumWriter.Close();
-
         }
 
         private void OnRecaptureDone(object sender, EventArgs e)
         {
-            CycleEventData result = (CycleEventData) e;
-            
+            var result = (CycleEventData) e;
+
             switch (result.Data)
             {
                 case CycleEventData.RecaptureType.Captured:
@@ -296,7 +330,7 @@ namespace APDTrigger_WinForms.Helper
                     _noAtoms++;
                     break;
             }
-            _recapturerate  = (double) _atoms/_cyclesDone;
+            _recapturerate = (double) _atoms/_cyclesDone;
             OnPropertyChanged("Atoms");
             OnPropertyChanged("NoAtoms");
             OnPropertyChanged("RecaptureRate");
@@ -342,11 +376,11 @@ namespace APDTrigger_WinForms.Helper
                 }
             }
             _myHistogramData = buckets;
-        }        
+        }
 
         private void OnPropertyChanged(string propertyName)
-        {            
-            if(_myGUI.InvokeRequired)
+        {
+            if (_myGUI.InvokeRequired)
             {
                 GuiUpdate callback = OnPropertyChanged;
                 _myGUI.Invoke(callback, propertyName);
@@ -355,13 +389,10 @@ namespace APDTrigger_WinForms.Helper
             {
                 PropertyChangedEventHandler propertyChanged = PropertyChanged;
                 if (null != propertyChanged)
-                    propertyChanged(this, new PropertyChangedEventArgs(propertyName));    
+                    propertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
-            
         }
 
-        private delegate void GuiUpdate(string propertyName);
- 
 
         public event EventHandler Finished;
 
@@ -371,6 +402,10 @@ namespace APDTrigger_WinForms.Helper
 
         public event EventHandler RunDone;
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        #region Nested type: GuiUpdate
+
+        private delegate void GuiUpdate(string propertyName);
+
+        #endregion
     }
 }

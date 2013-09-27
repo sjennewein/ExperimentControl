@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Drawing;
+using System.Globalization;
+using System.Threading;
 using System.Windows.Forms;
 using APDTrigger_WinForms.Helper;
 using Arction.LightningChartBasic;
@@ -14,9 +16,11 @@ namespace APDTrigger_WinForms
 
         private DisplayType _myChart2Display = DisplayType.Histogram;
         private int _pointCount;
-
+        
         public MainWindow()
         {
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-US");
             _myController = new Controller(this);
             InitializeComponent();
             _myController.Binning = 10;
@@ -25,7 +29,7 @@ namespace APDTrigger_WinForms
             _myController.Threshold = 400;
             _myController.Samples2Acquire = 50000;
             _myController.Cycles = 100;
-            _myController.Runs = 1;
+            _myController.TotalRuns = 1;
             stop_button.Enabled = false;
 
             _myController.Finished += OnFinished;
@@ -40,13 +44,13 @@ namespace APDTrigger_WinForms
                                                     DataSourceUpdateMode.OnPropertyChanged);
             textBox_cyclesInput.DataBindings.Add("Text", _myController, "Cycles", true,
                                                  DataSourceUpdateMode.OnPropertyChanged);
-            textBox_runsInput.DataBindings.Add("Text", _myController, "Runs", true,
+            textBox_runsInput.DataBindings.Add("Text", _myController, "TotalRuns", true,
                                                DataSourceUpdateMode.OnPropertyChanged);
             textBox_apdInput.DataBindings.Add("Text", _myController, "APDBinsize", true,
                                               DataSourceUpdateMode.OnPropertyChanged);
             textBox_acquireInput.DataBindings.Add("Text", _myController, "Samples2Acquire", true,
                                                   DataSourceUpdateMode.OnPropertyChanged);
-            textBox_totalRuns.DataBindings.Add("Text", _myController, "Runs", true,
+            textBox_totalRuns.DataBindings.Add("Text", _myController, "TotalRuns", true,
                                                DataSourceUpdateMode.OnPropertyChanged);
             textBox_runsDone.DataBindings.Add("Text", _myController, "RunsDone", true,
                                               DataSourceUpdateMode.OnPropertyChanged);

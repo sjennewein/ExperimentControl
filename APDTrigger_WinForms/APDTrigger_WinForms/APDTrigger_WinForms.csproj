@@ -36,6 +36,9 @@
   <ItemGroup>
     <Reference Include="Arction.Licensing, Version=1.5.0.44, Culture=neutral, PublicKeyToken=b4f2397119a83f22" />
     <Reference Include="Arction.LightningChartBasic, Version=1.5.0.43, Culture=neutral, PublicKeyToken=72f55fbd6901f0e5" />
+    <Reference Include="fastJSON">
+      <HintPath>external_Library\fastJSON\fastJSON.dll</HintPath>
+    </Reference>
     <Reference Include="NationalInstruments.Common, Version=13.0.35.190, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\National Instruments\MeasurementStudioVS2008\DotNET\Assemblies\Current\NationalInstruments.Common.dll</HintPath>
@@ -64,10 +67,11 @@
       <DependentUpon>ApdSignalContextMenu.cs</DependentUpon>
     </Compile>
     <Compile Include="Helper\AgingDataPoint.cs" />
+    <Compile Include="Helper\NetworkData.cs" />
+    <Compile Include="Helper\TcpDataTrigger.cs" />
     <Compile Include="Helper\Controller.cs" />
     <Compile Include="Helper\CycleEventData.cs" />
     <Compile Include="Helper\RunEventData.cs" />
-    <Compile Include="Helper\TcpServer.cs" />
     <Compile Include="MainWindow.cs">
       <SubType>Form</SubType>
     </Compile>

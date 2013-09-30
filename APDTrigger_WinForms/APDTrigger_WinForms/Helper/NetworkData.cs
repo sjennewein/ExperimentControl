@@ -23,7 +23,11 @@ namespace APDTrigger_WinForms.Helper
 
         public string Serialize()
         {
-            return JSON.Instance.ToJSON(this);
+
+            var parameter = new JSONParameters();
+            parameter.UseExtensions = false;
+            return JSON.Instance.ToJSON(this, parameter);
+
         }
     }
 }

@@ -180,6 +180,7 @@ namespace APDTrigger_WinForms.Helper
 
         public void Stop()
         {
+            
             _myCounterHardware.StopMeasurement();
             if (_mySaveApdSignal)
             {
@@ -192,8 +193,8 @@ namespace APDTrigger_WinForms.Helper
         {
             if (IsRunning)
                 Stop();
-
-            //_myTcpTrigger.Stop();
+            _myTcpDataTrigger.Stop();
+            
         }
 
         private void SaveApdData()

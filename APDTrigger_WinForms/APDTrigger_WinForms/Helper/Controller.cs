@@ -286,7 +286,7 @@ namespace APDTrigger_WinForms.Helper
 
                 OnRunDone();
 
-                
+                _myTcpDataTrigger.Data = new NetworkData(_atoms, _noAtoms, _cyclesDone, _runsDone, TotalRuns, _recapturerate);
 
                 //stop the counter for a certain amount of time
                 _myCounterHardware.Pause();

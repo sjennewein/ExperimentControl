@@ -48,7 +48,7 @@ namespace APDTrigger_WinForms.Helper
             _myClientGate.Set();
         }
 
-        public void Trigger()
+        public void Launch()
         {
             _myTriggerGate.Set();
         }
@@ -109,7 +109,7 @@ namespace APDTrigger_WinForms.Helper
                             w.Flush();
                             break;
                         case "TRIGGER!":
-                            //_myTriggerGate.WaitOne();
+                            _myTriggerGate.WaitOne();
                             w.Write("GO!");                            
                             break;
                     }

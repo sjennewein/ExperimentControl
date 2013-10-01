@@ -61,12 +61,17 @@ namespace APDTrigger_WinForms
             textBox_Atoms.DataBindings.Add("Text", _myController, "Atoms", true, DataSourceUpdateMode.OnPropertyChanged);
             textBox_NoAtoms.DataBindings.Add("Text", _myController, "NoAtoms", true,
                                              DataSourceUpdateMode.OnPropertyChanged);
+            textBox_TimeBetweenRun.DataBindings.Add("Text", _myController, "TimeBetweenRuns", true,
+                                               DataSourceUpdateMode.OnPropertyChanged);
 
 
             InitializeApdSignalChart();
             InitializeApdHistogram();
         }
 
+        /// <summary>
+        /// Initializes the signal chart 
+        /// </summary>
         private void InitializeApdSignalChart()
         {
             apdSignal.BeginUpdate();
@@ -108,6 +113,9 @@ namespace APDTrigger_WinForms
             apdSignal.EndUpdate();
         }
 
+        /// <summary>
+        /// Initializes the histogram
+        /// </summary>
         private void InitializeApdHistogram()
         {
             apdHistogram.BeginUpdate();
@@ -151,6 +159,11 @@ namespace APDTrigger_WinForms
             apdHistogram.EndUpdate();
         }
 
+        /// <summary>
+        /// Starts the experiment
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void start_button_Click(object sender, EventArgs e)
         {
             DisableAllInputs();
@@ -160,11 +173,21 @@ namespace APDTrigger_WinForms
             ApdSignalUpdate.Start();
         }
 
+        /// <summary>
+        /// Stops the experiment
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void stop_button_Click(object sender, EventArgs e)
         {
             _myController.Stop();
         }
 
+        /// <summary>
+        /// Callback function for when the experiment finishes
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnFinished(object sender, EventArgs e)
         {
             if (InvokeRequired)
@@ -182,6 +205,9 @@ namespace APDTrigger_WinForms
             }
         }
 
+        /// <summary>
+        /// Callback function to update the histogram
+        /// </summary>
         private void UpdateApdHistogram()
         {
             _myController.UpdateHistogramData();
@@ -220,6 +246,9 @@ namespace APDTrigger_WinForms
             apdHistogram.EndUpdate();
         }
 
+        /// <summary>
+        /// Callback function to update the apd signal chart
+        /// </summary>
         private void UpdateApdSignal()
         {
             double dataInterval = _myController.Binning/800.0;
@@ -241,6 +270,11 @@ namespace APDTrigger_WinForms
             apdSignal.EndUpdate();
         }
 
+        /// <summary>
+        /// checks which radio button for the run type is checked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void triggerRadioButton_CheckedChanged(object sender, EventArgs e)
         {
             foreach (Control control in groupBox_Trigger.Controls)
@@ -265,12 +299,22 @@ namespace APDTrigger_WinForms
             }
         }
 
+        /// <summary>
+        /// callback for double clicking the apd signal chart
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void apdSignalChart_DoubleClick(object sender, EventArgs e)
         {
             Form contextMenu = new ApdSignalContextMenu(this, apdSignal);
             contextMenu.ShowDialog();
         }
 
+        /// <summary>
+        /// saves if apd signal data should be saved or not
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void saveCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             var originalSender = (CheckBox) sender;
@@ -284,11 +328,19 @@ namespace APDTrigger_WinForms
             }
         }
 
+        /// <summary>
+        /// Callback function for the timer that updates the APD signal chart
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ApdSignalUpdate_Tick(object sender, EventArgs e)
         {
             UpdateApdSignal();
         }
 
+        /// <summary>
+        /// Disables all user inputs that are important for a run
+        /// </summary>
         private void DisableAllInputs()
         {
             start_button.Enabled = false;
@@ -308,8 +360,12 @@ namespace APDTrigger_WinForms
             textBox_apdInput.Enabled = false;
             textBox_acquireInput.Enabled = false;
             checkBox_SaveHistogram.Enabled = false;
+            textBox_TimeBetweenRun.Enabled = false;
         }
 
+        /// <summary>
+        /// Enables all user inputs that are important for a run
+        /// </summary>
         private void EnableAllInputs()
         {
             start_button.Enabled = true;
@@ -329,18 +385,34 @@ namespace APDTrigger_WinForms
             textBox_apdInput.Enabled = true;
             textBox_acquireInput.Enabled = true;
             checkBox_SaveHistogram.Enabled = true;
+            textBox_TimeBetweenRun.Enabled = true;
         }
 
+        /// <summary>
+        /// Callback function when the program is closed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnQuit(object sender, EventArgs e)
         {
             _myController.Quit();
         }
 
+        /// <summary>
+        /// Callback function for the timer that updates the histogram
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ApdHistogramUpdate_Tick(object sender, EventArgs e)
         {
             UpdateApdHistogram();
         }
 
+        /// <summary>
+        /// Callback function that checks which radiobutton for the recapture measurement is checked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void radioButton_Recapture_CheckedChanged(object sender, EventArgs e)
         {
             foreach (Control control in groupBox_Recapture.Controls)

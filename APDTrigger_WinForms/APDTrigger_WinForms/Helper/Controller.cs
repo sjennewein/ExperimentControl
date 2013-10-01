@@ -167,6 +167,9 @@ namespace APDTrigger_WinForms.Helper
             _recapturerate = 0;
             _runsDone = 0;
             _cyclesDone = 0;
+            _mySpectrum = null;
+            _myBinnedSpectrum = null;
+            _myHistogramData = new int[600];
 
             _myCounterHardware = new Counter(Threshold, DetectionBins, APDBinsize, Binning, monitorMode, Recapture,
                                              Samples2Acquire);
@@ -225,7 +228,7 @@ namespace APDTrigger_WinForms.Helper
         /// </summary>
         private void SaveApdData()
         {
-            if (DateTime.Now != _today)
+            if (DateTime.Now.Date != _today.Date)
             {
                 UpdateFolder();
                 writer.Close();
@@ -359,7 +362,7 @@ namespace APDTrigger_WinForms.Helper
         /// </summary>
         private void SaveRunSpectrum()
         {
-            if (DateTime.Now != _today)
+            if (DateTime.Now.Date != _today.Date)
             {
                 UpdateFolder();
             }

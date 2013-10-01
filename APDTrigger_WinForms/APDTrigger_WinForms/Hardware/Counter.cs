@@ -47,7 +47,7 @@ namespace APDTrigger.Hardware
         private int[] _mySpectrum;
         private Timer _myTimer;
         private bool _running;
-        private readonly ManualResetEvent _pauseCycling = new ManualResetEvent(false);
+        private readonly ManualResetEvent _pauseCycling = new ManualResetEvent(true);
 
         /// <summary>
         ///     Provides the functionality of a standard ASPHERIX experiment in terms of the counter card
@@ -59,9 +59,9 @@ namespace APDTrigger.Hardware
         public Counter(double threshold, int detectionBins, int apdBinSize, double triggerBin, bool monitor,
                        bool recapture, int clockEdges)
         {
-            _myThresholdTask = new Task();
-            _myTriggerTask = new Task();
-            _myAcquisitionTask = new Task();
+            _myThresholdTask = new Task("ThresholdTask");
+            _myTriggerTask = new Task("TriggerTask");
+            _myAcquisitionTask = new Task("AcquisitionTask");
             _threshold = threshold;
             _detectionBins = detectionBins;
             _apdBinSize = apdBinSize;
@@ -135,6 +135,9 @@ namespace APDTrigger.Hardware
             _myAcquisitionTask.CIChannels.CreateCountEdgesChannel("/Dev1/ctr0", "", edge, 0, countDirection);
 
             _myAcquisitionTask.CIChannels.All.DuplicateCountPrevention = true;
+                
+            _myAcquisitionTask.CIChannels.All.DataTransferMechanism = CIDataTransferMechanism.Dma;
+            
 
             _myAcquisitionTask.Timing.ConfigureSampleClock("/Dev1/PFI0", 1000000.0, clockActiveEdge,
                                                            SampleQuantityMode.FiniteSamples, _myClockEdges);
@@ -148,7 +151,7 @@ namespace APDTrigger.Hardware
             if (_running == false)
             {
                 _myTimer = new Timer(RunExperiment, null, 0, 10);
-
+                
                 _running = true;
             }
         }
@@ -166,10 +169,15 @@ namespace APDTrigger.Hardware
 
                 Thread.Sleep(30); //wait until all timer processes are finished
                 _myTimer.Dispose();
-
+                
                 _myTriggerTask.Stop();
+                _myTriggerTask.Dispose();
+                
                 _myThresholdTask.Stop();
+                _myThresholdTask.Dispose();
+
                 _myAcquisitionTask.Stop();
+                _myAcquisitionTask.Dispose();
 
                 //send finishing event
                 EventHandler finished = Finished;
@@ -195,8 +203,10 @@ namespace APDTrigger.Hardware
                 {
                     //used for pausing between runs signaled from the controller
                     _pauseCycling.WaitOne();
-
-                    ReadThresholdCounter();                                        
+                    
+                        ReadThresholdCounter();
+                    
+                                                            
 
                     if (_monitor) //if we only monitor then ignore all fancy measurement functions
                         return;
@@ -217,15 +227,10 @@ namespace APDTrigger.Hardware
                         _myTriggerTask.Start();
                         _myTriggerTask.Stop();
 
-                        try
-                        {
+                        
                             PerformAcquisition();
                             EvaluateRecapture();
-                        }
-                        catch(Exception e)
-                        {
-                           Trace.WriteLine(e.Message);
-                        }
+                        
                                                
                     }
 
@@ -243,10 +248,21 @@ namespace APDTrigger.Hardware
         /// </summary>
         private void ReadThresholdCounter()
         {
-            _myThresholdTask.Start();
-            var thresholdReader = new CounterReader(_myThresholdTask.Stream);
-            int[] readOutData = thresholdReader.ReadMultiSampleInt32(2); //read 2 elements because the first one is mostly zero   
-            _myThresholdTask.Stop();
+            int[] readOutData;
+            try
+            {
+                _myThresholdTask.Start();
+                var thresholdReader = new CounterReader(_myThresholdTask.Stream);
+                //read 2 elements because the first one is mostly zero   
+                readOutData = thresholdReader.ReadMultiSampleInt32(2);
+                
+            }
+            finally
+            {
+                _myThresholdTask.Stop();
+            }
+                
+            
 
             if (readOutData.Length >= 1)
             {
@@ -282,14 +298,24 @@ namespace APDTrigger.Hardware
         /// </summary>
         private void PerformAcquisition()
         {
-            _myAcquisitionTask.Start();
-            var acquisitionReader = new CounterReader(_myAcquisitionTask.Stream);
             int[] data = new int[_myClockEdges];
             int readOutSamples = 0;
-            acquisitionReader.MemoryOptimizedReadMultiSampleInt32(_myClockEdges, ref data, out readOutSamples);    
+            try
+            {
+                _myAcquisitionTask.Start();
+                CounterReader acquisitionReader = new CounterReader(_myAcquisitionTask.Stream);
+                acquisitionReader.MemoryOptimizedReadMultiSampleInt32(_myClockEdges, ref data, out readOutSamples);                                    
+            }
+            catch(DaqException e)
+            {                    
+                return;
+            }
+            finally
+            { 
+                _myAcquisitionTask.Stop(); 
+            }
+                        
             
-            
-            _myAcquisitionTask.Stop();
             _myAcquiredData = data;
 
 

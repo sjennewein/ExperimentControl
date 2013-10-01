@@ -78,10 +78,14 @@
             this.button_Rescale = new System.Windows.Forms.Button();
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.radioButton1 = new System.Windows.Forms.RadioButton();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label17 = new System.Windows.Forms.Label();
+            this.textBox_TimeBetweenRun = new System.Windows.Forms.TextBox();
             this.groupBox_Trigger.SuspendLayout();
             this.groupBox_Recapture.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox_Histogram.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox_Trigger
@@ -624,11 +628,39 @@
             this.radioButton1.UseVisualStyleBackColor = true;
             this.radioButton1.CheckedChanged += new System.EventHandler(this.radioButton_HistogramDisplay_CheckedChanged);
             // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.label17);
+            this.groupBox1.Controls.Add(this.textBox_TimeBetweenRun);
+            this.groupBox1.Location = new System.Drawing.Point(13, 397);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(167, 94);
+            this.groupBox1.TabIndex = 6;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Network Settings";
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(-1, 22);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(100, 13);
+            this.label17.TabIndex = 17;
+            this.label17.Text = "Time between runs:";
+            // 
+            // textBox_TimeBetweenRun
+            // 
+            this.textBox_TimeBetweenRun.Location = new System.Drawing.Point(107, 19);
+            this.textBox_TimeBetweenRun.Name = "textBox_TimeBetweenRun";
+            this.textBox_TimeBetweenRun.Size = new System.Drawing.Size(53, 20);
+            this.textBox_TimeBetweenRun.TabIndex = 16;
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(728, 829);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.groupBox_Histogram);
             this.Controls.Add(this.apdHistogram);
             this.Controls.Add(this.groupBox3);
@@ -645,6 +677,8 @@
             this.groupBox3.PerformLayout();
             this.groupBox_Histogram.ResumeLayout(false);
             this.groupBox_Histogram.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -699,6 +733,9 @@
         private System.Windows.Forms.RadioButton radioButton2;
         private System.Windows.Forms.RadioButton radioButton1;
         private System.Windows.Forms.Button button_Rescale;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.TextBox textBox_TimeBetweenRun;
     }
 }
 

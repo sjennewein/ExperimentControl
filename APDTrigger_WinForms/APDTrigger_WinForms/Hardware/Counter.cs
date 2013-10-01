@@ -38,6 +38,7 @@ namespace APDTrigger.Hardware
         private readonly double _threshold;
         private readonly double _triggerBin;
         private readonly Random rand = new Random(17);
+        //private readonly 
         private int _NewSample;
         private int _detectedBins;
         private int[] _myAcquiredData;

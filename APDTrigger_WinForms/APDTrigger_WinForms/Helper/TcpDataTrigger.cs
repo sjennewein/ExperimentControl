@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -10,12 +11,12 @@ namespace APDTrigger_WinForms.Helper
     {
         private readonly TcpListener _listener;
         private readonly AutoResetEvent _myClientGate = new AutoResetEvent(false);
-        private readonly AutoResetEvent _myTriggerGate = new AutoResetEvent(false);
+        private readonly AutoResetEvent _myTriggerGate = new AutoResetEvent(false);        
         public NetworkData Data;
         private bool _run = true;
 
         public TcpDataTrigger()
-        {
+        {                       
             var triggerThread = new Thread(StartTcp);
             _listener = new TcpListener(IPAddress.Any, 51111);
             triggerThread.Start();
@@ -56,23 +57,24 @@ namespace APDTrigger_WinForms.Helper
         {
             var listener = (TcpListener) result.AsyncState;
             TcpClient client;
+            //catch exception when the server is closed
             try
             {
                 client = listener.EndAcceptTcpClient(result);
             }
             catch (Exception)
             {
+                //when something happens just return and do nothing
                 return;
             }
             finally
             {
                 _myClientGate.Set();
-            }
-
+            }            
 
             client.NoDelay = true;
             client.Client.NoDelay = true;
-            //Data = new NetworkData(0, 2, 23, 921, 23, 2.1);
+            
             try
             {
                 // get the stream to talk to the client over
@@ -86,13 +88,10 @@ namespace APDTrigger_WinForms.Helper
                     // handshaking
                     w.Write("HELLO!");
                     w.Flush();
-                    Console.WriteLine("trying to shake hands");
-
-                    // var test = ReceiveMessage(ns);
-                    string test = r.ReadString();
-                    if (test != "HELLO!")
+                                                            
+                    if (r.ReadString() != "HELLO!")
                         throw new Exception("Wrong handshake message!");
-                    Console.WriteLine("handshake successful");
+                    
 
                     w.Write("DATA/TRIGGER!");
                     w.Flush();
@@ -110,8 +109,8 @@ namespace APDTrigger_WinForms.Helper
                             w.Flush();
                             break;
                         case "TRIGGER!":
-                            _myTriggerGate.WaitOne();
-                            w.Write("GO!");
+                            //_myTriggerGate.WaitOne();
+                            w.Write("GO!");                            
                             break;
                     }
 
@@ -124,10 +123,11 @@ namespace APDTrigger_WinForms.Helper
 
 
                     ns.Close();
-                }
+                }                
             }
-            catch
+            catch(Exception e)
             {
+                Trace.WriteLine(e.Message);                
             }
             finally
             {

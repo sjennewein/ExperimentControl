@@ -75,6 +75,9 @@ namespace APDTrigger_WinForms.Helper
 
         public int TimeBetweenRuns { get; set; }
         
+        //FrequencyGenerator
+        public double Frequency { get; set; }
+
         //Results/Statistics
         public int CyclesDone
         {
@@ -159,7 +162,7 @@ namespace APDTrigger_WinForms.Helper
         /// <summary>
         /// Initializes the counter with the parameters from the GUI and starts the counter
         /// </summary>
-        public void Start()
+        public void Start(bool runFrequencyGenerator = false)
         {
             bool monitorMode = (Run == RunType.Monitor); //set endless true if run type is endless
             _atoms = 0;
@@ -172,7 +175,7 @@ namespace APDTrigger_WinForms.Helper
             _myHistogramData = new int[600];
 
             _myCounterHardware = new Counter(Threshold, DetectionBins, APDBinsize, Binning, monitorMode, Recapture,
-                                             Samples2Acquire);
+                                             Samples2Acquire, Frequency);
             _myCounterHardware.Finished += OnFinished;
             _myCounterHardware.NewData += OnNewData;
             _myCounterHardware.CycleFinished += OnCyleDone;
@@ -182,6 +185,9 @@ namespace APDTrigger_WinForms.Helper
             _myWorker = new Thread(BackgroundWork);
             _myWorker.Name = "Worker";
             _myWorker.Start();
+
+            if(runFrequencyGenerator)
+                _myCounterHardware.StartFrequencyGenerator();
 
             _isRunning = true;
         }

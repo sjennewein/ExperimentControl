@@ -30,6 +30,7 @@ namespace APDTrigger_WinForms
             _myController.Samples2Acquire = 50000;
             _myController.Cycles = 100;
             _myController.TotalRuns = 1;
+            _myController.Frequency = 0.5;
             stop_button.Enabled = false;
 
             _myController.Finished += OnFinished;
@@ -63,7 +64,8 @@ namespace APDTrigger_WinForms
                                              DataSourceUpdateMode.OnPropertyChanged);
             textBox_TimeBetweenRun.DataBindings.Add("Text", _myController, "TimeBetweenRuns", true,
                                                DataSourceUpdateMode.OnPropertyChanged);
-
+            textBox_Frequency.DataBindings.Add("Text", _myController, "Frequency", true,
+                                               DataSourceUpdateMode.OnPropertyChanged);
 
             InitializeApdSignalChart();
             InitializeApdHistogram();
@@ -232,7 +234,7 @@ namespace APDTrigger_WinForms
                 case DisplayType.Spectrum:
                     if (_myController.BinnedSpectrum != null)
                         for (int iBucket = 0;
-                             iBucket < Math.Ceiling((double) _myController.Samples2Acquire/_myController.APDBinsize);
+                             iBucket < _myController.BinnedSpectrum.Length;
                              iBucket++)
                         {
                             bs.AddValue(iBucket, _myController.BinnedSpectrum[iBucket], "", true);
@@ -352,8 +354,8 @@ namespace APDTrigger_WinForms
             textBox_runsInput.Enabled = false;
             textBox_apdInput.Enabled = false;
             textBox_acquireInput.Enabled = false;
-            radioButton_Endless.Enabled = false;
-            radioButton_triggered.Enabled = false;
+            radioButton_Monitor.Enabled = false;
+            radioButton_Measurement.Enabled = false;
             CheckBox_SaveSignal.Enabled = false;
             radioButton_No.Enabled = false;
             radioButton_Yes.Enabled = false;
@@ -361,6 +363,9 @@ namespace APDTrigger_WinForms
             textBox_acquireInput.Enabled = false;
             checkBox_SaveHistogram.Enabled = false;
             textBox_TimeBetweenRun.Enabled = false;
+            button_StartFrequency.Enabled = false;
+            button_StopFrequency.Enabled = false;
+            textBox_Frequency.Enabled = false;
         }
 
         /// <summary>
@@ -377,8 +382,8 @@ namespace APDTrigger_WinForms
             textBox_runsInput.Enabled = true;
             textBox_apdInput.Enabled = true;
             textBox_acquireInput.Enabled = true;
-            radioButton_Endless.Enabled = true;
-            radioButton_triggered.Enabled = true;
+            radioButton_Monitor.Enabled = true;
+            radioButton_Measurement.Enabled = true;
             CheckBox_SaveSignal.Enabled = true;
             radioButton_No.Enabled = true;
             radioButton_Yes.Enabled = true;
@@ -386,6 +391,10 @@ namespace APDTrigger_WinForms
             textBox_acquireInput.Enabled = true;
             checkBox_SaveHistogram.Enabled = true;
             textBox_TimeBetweenRun.Enabled = true;
+            button_StartFrequency.Enabled = true;
+            button_StopFrequency.Enabled = true;
+            textBox_Frequency.Enabled = true;
+
         }
 
         /// <summary>
@@ -520,5 +529,20 @@ namespace APDTrigger_WinForms
         internal delegate void myGuiCallback(object state);
 
         #endregion
+
+        private void button_StartFrequency_Click(object sender, EventArgs e)
+        {
+            radioButton_Monitor.Checked = true;
+            _myController.Start(true);
+            DisableAllInputs();
+            button_StopFrequency.Enabled = true;
+            ApdHistogramUpdate.Start();
+            ApdSignalUpdate.Start();
+        }
+
+        private void button_StopFrequency_Click(object sender, EventArgs e)
+        {
+            _myController.Stop();            
+        }
     }
 }

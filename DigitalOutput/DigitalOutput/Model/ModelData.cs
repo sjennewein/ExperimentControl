@@ -8,7 +8,7 @@
 
     public class ModelData
     {
-        public double Value;
+        public int Value;
         public readonly DataType Type;
 
         public ModelData(DataType type)

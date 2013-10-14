@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace DigitalOutput.Model
+﻿namespace DigitalOutput.Model
 {
     public class ModelFabric
     {
@@ -13,23 +8,24 @@ namespace DigitalOutput.Model
             const int steps = 20;
             const int patterns = 10;
 
-            ModelCard newCard = new ModelCard(patterns);
+            var newCard = new ModelCard(patterns);            
 
-            for (int iPattern = 0; iPattern < patterns; iPattern++ )
+            for (int iPattern = 0; iPattern < patterns; iPattern++)
             {
-                ModelPattern newPattern = new ModelPattern(channels);
+                var newPattern = new ModelPattern(steps);
+                newPattern.Name = "Pattern" + iPattern;
                 newCard.Patterns[iPattern] = newPattern;
 
-                for(int iChannel = 0; iChannel < channels; iChannel++)
+                for (int iSteps = 0; iSteps < steps; iSteps++)
                 {
-                    ModelChannel newChannel = new ModelChannel(steps);
-                    newPattern.Channels[iChannel] = newChannel;
+                    var newStep = new ModelStep(channels);
+                    newPattern.Step[iSteps] = newStep;
 
-                    for(int iSteps = 0; iSteps < steps; iSteps++)
+                    for (int iChannels = 0; iChannels < steps; iChannels++)
                     {
-                        newChannel.Steps[iSteps] = new ModelStep();
+                        newStep.Channels[iChannels] = new ModelData(DataType.Data);
                     }
-                }                
+                }
             }
 
             return newCard;

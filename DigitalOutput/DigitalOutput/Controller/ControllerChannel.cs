@@ -1,24 +1,37 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Drawing;
+using System.Windows.Forms;
 using DigitalOutput.Model;
 
 namespace DigitalOutput.Controller
 {
     public class ControllerChannel
     {
-        private ModelChannel _model;
-        public ControllerStep[] Steps;
+        private readonly ModelData _model;
 
-        public ControllerChannel(ModelChannel model)
+        public ControllerChannel(ModelData model)
         {
             _model = model;
-            Steps = new ControllerStep[_model.Steps.Length];
-            for(int iSteps = 0; iSteps < _model.Steps.Length; iSteps++)
+        }
+
+        public int Value
+        {
+            get { return _model.Value; }
+            set { _model.Value = value; }
+        }
+
+        public void ChangeValue(object sender, EventArgs e)
+        {
+            var checkBox = (CheckBox) sender;
+            if(checkBox.Checked)
             {
-                var modelStep = _model.Steps[iSteps];
-                Steps[iSteps] = new ControllerStep(modelStep);
+                Value = 1;
+                checkBox.BackColor = Color.GreenYellow;
+            }
+            else
+            {
+                Value = 0;
+                checkBox.BackColor = Color.Red;
             }
         }
     }

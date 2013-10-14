@@ -11,13 +11,22 @@ using DigitalOutput.Model;
 
 namespace DigitalOutput
 {
-    public partial class Form1 : Form
+    public partial class DigitalMainwindow : Form
     {
-        public Form1()
+        private ControllerCard test;
+        public DigitalMainwindow()
         {
             InitializeComponent();
             //ModelCard test = ModelFabric.GenerateCard();
-            ControllerCard test = ControllerFabric.GenerateCard();
+            test = ControllerFabric.GenerateCard();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {        
+            
+                GUI.Helper.GenerateTabView(tabControl1, test);    
+            
+            
         }
     }
 }

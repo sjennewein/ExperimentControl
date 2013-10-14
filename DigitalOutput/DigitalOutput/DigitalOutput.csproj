@@ -51,22 +51,23 @@
     <Compile Include="Controller\ControllerFabric.cs" />
     <Compile Include="Controller\ControllerPattern.cs" />
     <Compile Include="Controller\ControllerStep.cs" />
+    <Compile Include="GUI\Helper.cs" />
     <Compile Include="Model\ModelCard.cs" />
-    <Compile Include="Model\ModelChannel.cs" />
     <Compile Include="Model\ModelFabric.cs" />
     <Compile Include="Model\ModelPattern.cs" />
     <Compile Include="Model\ModelData.cs" />
-    <Compile Include="Form1.cs">
+    <Compile Include="DigitalMainwindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="DigitalMainwindow.Designer.cs">
+      <DependentUpon>DigitalMainwindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Model\ModelStep.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="Translator\Interpreter.cs" />
+    <EmbeddedResource Include="DigitalMainwindow.resx">
+      <DependentUpon>DigitalMainwindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -87,9 +88,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Translator\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

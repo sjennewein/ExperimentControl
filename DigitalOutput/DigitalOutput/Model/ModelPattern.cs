@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace DigitalOutput.Model
+﻿namespace DigitalOutput.Model
 {
     public class ModelPattern
     {
-        public ModelChannel[] Channels;
+        public ModelStep[] Step;
+        public string Name;
 
-        public ModelPattern(int channels)
+        public ModelPattern(int steps)
         {
-            Channels = new ModelChannel[channels];
+            Step = new ModelStep[steps];
         }
     }
 }

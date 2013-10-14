@@ -1,27 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using DigitalOutput.Model;
+﻿using DigitalOutput.Model;
 
 namespace DigitalOutput.Controller
 {
     public class ControllerPattern
     {
         private readonly ModelPattern _model;
-        public ControllerChannel[] Channels;
+        public ControllerStep[] Steps;
+
+        public string Name { get { return _model.Name; } }
 
         public ControllerPattern(ModelPattern model)
-        {            
+        {
             _model = model;
-            Channels = new ControllerChannel[model.Channels.Length];
-            for(int iChannels = 0; iChannels < _model.Channels.Length; iChannels++)
+            Steps = new ControllerStep[model.Step.Length];
+            for (int iSteps = 0; iSteps < _model.Step.Length; iSteps++)
             {
-                var channelModel = _model.Channels[iChannels];
-                Channels[iChannels] = new ControllerChannel(channelModel);
+                ModelStep stepModel = _model.Step[iSteps];
+                Steps[iSteps] = new ControllerStep(stepModel);
             }
         }
-
-
     }
 }

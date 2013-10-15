@@ -7,9 +7,9 @@ namespace DigitalOutput.Translator
         public static int[,] PatternToArray(ModelPattern input, int frequency)
         {
             int length = 0;
-            int channels = input.Step[0].Channels.Length;
+            int channels = input.Steps[0].Channels.Length;
 
-            foreach (ModelStep step in input.Step)
+            foreach (ModelStep step in input.Steps)
             {
                 length += step.Duration.Value;
             }
@@ -19,9 +19,9 @@ namespace DigitalOutput.Translator
             var output = new int[length,channels];
 
             int offset = 0;
-            for (int iStep = 0; iStep < input.Step.Length; iStep++)
+            for (int iStep = 0; iStep < input.Steps.Length; iStep++)
             {
-                ModelStep step = input.Step[iStep];
+                ModelStep step = input.Steps[iStep];
 
                 for (int iChannels = 0; iChannels < step.Channels.Length; iChannels++)
                 {

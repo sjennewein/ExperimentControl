@@ -12,10 +12,10 @@ namespace DigitalOutput.Controller
         public ControllerPattern(ModelPattern model)
         {
             _model = model;
-            Steps = new ControllerStep[model.Steps.Length];
-            for (int iSteps = 0; iSteps < _model.Steps.Length; iSteps++)
+            Steps = new ControllerStep[model.Step.Length];
+            for (int iSteps = 0; iSteps < _model.Step.Length; iSteps++)
             {
-                ModelStep stepModel = _model.Steps[iSteps];
+                ModelStep stepModel = _model.Step[iSteps];
                 Steps[iSteps] = new ControllerStep(stepModel);
             }
         }

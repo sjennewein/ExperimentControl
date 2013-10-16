@@ -8,17 +8,17 @@ namespace AnalogOutput.Controller
 {
     public class ControllerStep
     {
-        private ModelData _model;
+        private ModelStep _model;
 
-        public ControllerStep(ModelData model)
+        public ControllerStep(ModelStep model)
         {
             _model = model;
         }
 
         public double Value
         {
-            get { return _model.Value; }
-            set { _model.Value = value; }
+            get { return _model.Value.Value; }
+            set { _model.Value.Value = value; }
         }
     }
 }

@@ -24,7 +24,11 @@ namespace DigitalOutput
         private void button1_Click(object sender, EventArgs e)
         {        
             
+            SuspendLayout();
+            
                 GUI.Helper.GenerateTabView(tabControl1, test);    
+                        
+            ResumeLayout();
             
             
         }

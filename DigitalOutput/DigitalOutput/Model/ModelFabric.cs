@@ -6,7 +6,7 @@
         {
             const int channels = 32;
             const int steps = 20;
-            const int patterns = 10;
+            const int patterns = 5;
 
             var newCard = new ModelCard(patterns);            
 
@@ -21,7 +21,7 @@
                     var newStep = new ModelStep(channels);
                     newPattern.Step[iSteps] = newStep;
 
-                    for (int iChannels = 0; iChannels < steps; iChannels++)
+                    for (int iChannels = 0; iChannels < channels; iChannels++)
                     {
                         newStep.Channels[iChannels] = new ModelData(DataType.Data);
                     }

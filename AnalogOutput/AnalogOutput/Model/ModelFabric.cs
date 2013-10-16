@@ -27,6 +27,7 @@
                     }
                 }
             }
+            return newCard;
         }
     }
 }

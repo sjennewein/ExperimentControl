@@ -1,6 +1,6 @@
 ﻿namespace AnalogOutput
 {
-    partial class Form1
+    partial class AnalogMainwindow
     {
         /// <summary>
         /// Required designer variable.

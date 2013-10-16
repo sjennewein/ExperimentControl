@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using DigitalOutput.Controller;
+using System.Diagnostics;
 
 namespace DigitalOutput.GUI
 {
@@ -12,40 +14,52 @@ namespace DigitalOutput.GUI
             var columns = pattern.Steps.Length;
             var rows = pattern.Steps[0].Channels.Length;
             var newTab = new TabPage(pattern.Name);
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            newTab.SuspendLayout();
+            
+            Label[] newElements = new Label[columns * rows];
+            //for (int iElement = 0; iElement < newElements.Length; iElement++ )
+            //{
+            //    newElements[iElement] = new Label();
+            //}
+            newTab.Controls.AddRange(newElements);
 
-            var newPanel = new TableLayoutPanel();
-
-
-            newPanel.Dock = DockStyle.Fill;
-
+            int counter = 0;
             for (int iStep = 0; iStep < pattern.Steps.Length; iStep++)
             {
                 ControllerStep step = pattern.Steps[iStep];
-                CheckBox[] newStep = new CheckBox[step.Channels.Length];
+
 
                 for (int iChannel = 0; iChannel < step.Channels.Length; iChannel++)
                 {
                     var channel = step.Channels[iChannel];
-                    var newCheckbox = new CheckBox();
-                    newCheckbox.Appearance = Appearance.Button;
-                    newCheckbox.Size = new Size(50, 20);
-                    newCheckbox.Margin = new Padding(0);
-                    newCheckbox.Click += channel.ChangeValue;
-                    newStep[iChannel] = newCheckbox;
+                    var newLabel = new Label {Size = new Size(49, 19), Margin = new Padding(0), Location = new Point(iStep * 50, iChannel * 20)};
+                    //newLabel.Click += channel.ChangeValue;
+                    newLabel.BackColor = channel.Value == 1 ? channel.OnColor : channel.OffColor;
+
+                    //newLabel.Location = new Point(iStep * 50, iChannel * 20);
+                    newElements[counter] = newLabel;
+
+                    counter++;
                 }
-                newPanel.Controls.AddRange(newStep);                    
+
             }
             
-            newTab.Controls.Add(newPanel);
-
+            
+            newTab.ResumeLayout(false);
+            sw.Stop();
+            Console.WriteLine(sw.ElapsedMilliseconds);
             return newTab;
         }
 
         public static void GenerateTabView(TabControl tab, ControllerCard card)
         {
+            
+            tab.SuspendLayout();
 
             TabPage[] newPages = new TabPage[card.Patterns.Length];
-
+            
             for (int iPattern = 0; iPattern < card.Patterns.Length; iPattern++)
             {
                 var pattern = card.Patterns[iPattern];
@@ -53,6 +67,7 @@ namespace DigitalOutput.GUI
             }
 
             tab.Controls.AddRange(newPages);
+            tab.ResumeLayout();
         }
 
         public static void ColorPicker(int line)

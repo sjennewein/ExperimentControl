@@ -6,16 +6,16 @@ namespace DigitalOutput.Controller
     {
         private readonly ModelStep _model;
 
-        public ControllerChannel[] Channels;
+        public ControllerChannel[] Channels;        
 
         public ControllerStep(ModelStep model)
         {
             _model = model;
             Channels = new ControllerChannel[_model.Channels.Length];
-            for (int iChannels = 0; iChannels < _model.Channels.Length; iChannels++)
+            for (int iChannel = 0; iChannel < _model.Channels.Length; iChannel++)
             {
-                ModelData channelModel = _model.Channels[iChannels];
-                Channels[iChannels] = new ControllerChannel(channelModel);
+                ModelData channelModel = _model.Channels[iChannel];
+                Channels[iChannel] = new ControllerChannel(channelModel, iChannel);
             }
         }
 

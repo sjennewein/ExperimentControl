@@ -3,6 +3,8 @@
     public class ModelPattern
     {
         public ModelStep[] Step;
+        
+
         public string Name;
 
         public ModelPattern(int steps)

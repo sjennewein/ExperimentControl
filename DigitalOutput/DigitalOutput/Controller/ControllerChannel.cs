@@ -18,7 +18,11 @@ namespace DigitalOutput.Controller
         public int Value
         {
             get { return _model.Value; }
-            set { _model.Value = value; }
+            set
+            {
+                //Console.WriteLine(value);
+                _model.Value = value;
+            }
         }
 
         public Color OnColor { get; set; }

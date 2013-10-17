@@ -17,5 +17,11 @@ namespace DigitalOutput.Controller
                 Patterns[iPattern] = new ControllerPattern(modelPattern);
             }
         }
+
+        //public string[] Description
+        //{
+        //    get { return _model.ChannelDescription; }
+        //    set { _model.ChannelDescription = value; }
+        //}
     }
 }

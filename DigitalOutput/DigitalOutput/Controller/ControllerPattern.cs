@@ -1,13 +1,13 @@
-﻿using DigitalOutput.Model;
+﻿using System.ComponentModel;
+using DigitalOutput.Model;
 
 namespace DigitalOutput.Controller
 {
-    public class ControllerPattern
+    public class ControllerPattern : INotifyPropertyChanged
     {
         private readonly ModelPattern _model;
+        public Description[] Descriptions;
         public ControllerStep[] Steps;
-
-        public string Name { get { return _model.Name; } }
 
         public ControllerPattern(ModelPattern model)
         {
@@ -18,6 +18,35 @@ namespace DigitalOutput.Controller
                 ModelStep stepModel = _model.Step[iSteps];
                 Steps[iSteps] = new ControllerStep(stepModel);
             }
+        }
+
+        public string Name
+        {
+            get { return _model.Name; }
+        }
+
+        #region INotifyPropertyChanged Members
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        #endregion
+    }
+
+    public class Description
+    {
+        private readonly string[] _descriptions;
+        private readonly int _element;
+
+        public Description(string[] descriptions, int element)
+        {
+            _descriptions = descriptions;
+            _element = element;
+        }
+
+        public string Text
+        {
+            get { return _descriptions[_element]; }
+            set { _descriptions[_element] = value; }
         }
     }
 }

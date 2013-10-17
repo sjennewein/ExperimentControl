@@ -13,24 +13,18 @@ namespace DigitalOutput
 {
     public partial class DigitalMainwindow : Form
     {
-        private ControllerCard test;
+        private ControllerCard card;
         public DigitalMainwindow()
         {
             InitializeComponent();
-            //ModelCard test = ModelFabric.GenerateCard();
-            test = ControllerFabric.GenerateCard();
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {        
-            
+            WindowState = FormWindowState.Maximized;
+            //ModelCard card = ModelFabric.GenerateCard();
+            Console.WriteLine(Width);
+            card = ControllerFabric.GenerateCard();
             SuspendLayout();
-            
-                GUI.Helper.GenerateTabView(tabControl1, test);    
-                        
+            GUI.Helper.GenerateTabView(General, card);
             ResumeLayout();
-            
-            
         }
+       
     }
 }

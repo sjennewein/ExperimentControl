@@ -4,6 +4,7 @@
     {
         public ModelPattern[] Patterns;
         public int SampleRate; //in Hz
+        public string[] ChannelDescription;
 
         public ModelCard(int patterns)
         {

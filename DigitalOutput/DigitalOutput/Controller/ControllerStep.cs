@@ -6,7 +6,7 @@ namespace DigitalOutput.Controller
     {
         private readonly ModelStep _model;
 
-        public ControllerChannel[] Channels;        
+        public ControllerChannel[] Channels;
 
         public ControllerStep(ModelStep model)
         {
@@ -17,6 +17,12 @@ namespace DigitalOutput.Controller
                 ModelData channelModel = _model.Channels[iChannel];
                 Channels[iChannel] = new ControllerChannel(channelModel, iChannel);
             }
+        }
+
+        public string Description
+        {
+            get { return _model.Description; }
+            set { _model.Description = value; }
         }
 
         public int Duration { get; set; }

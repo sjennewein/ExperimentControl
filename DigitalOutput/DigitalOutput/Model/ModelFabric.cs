@@ -8,13 +8,21 @@
             const int steps = 20;
             const int patterns = 5;
 
-            var newCard = new ModelCard(patterns);            
+            var newCard = new ModelCard(patterns);
+
+            newCard.ChannelDescription = new string[channels];
+
+
+            for (int iChannels = 0; iChannels < channels; iChannels++)
+            {
+                newCard.ChannelDescription[iChannels] = "";
+            }
 
             for (int iPattern = 0; iPattern < patterns; iPattern++)
             {
                 var newPattern = new ModelPattern(steps);
                 newPattern.Name = "Pattern" + iPattern;
-                newCard.Patterns[iPattern] = newPattern;
+                
 
                 for (int iSteps = 0; iSteps < steps; iSteps++)
                 {
@@ -26,6 +34,7 @@
                         newStep.Channels[iChannels] = new ModelData(DataType.Data);
                     }
                 }
+                newCard.Patterns[iPattern] = newPattern;
             }
 
             return newCard;

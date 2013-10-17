@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows.Forms;
 using DigitalOutput.Controller;
-using System.Diagnostics;
 
 namespace DigitalOutput.GUI
 {
@@ -11,58 +8,89 @@ namespace DigitalOutput.GUI
     {
         private static TabPage GenerateTabPage(ControllerPattern pattern)
         {
-            var columns = pattern.Steps.Length;
-            var rows = pattern.Steps[0].Channels.Length;
-            var newTab = new TabPage(pattern.Name);
-            //Stopwatch sw = new Stopwatch();
-            //sw.Start();
-            newTab.SuspendLayout();
-            
-            Control[] newElements = new Control[columns * rows];            
+            int columns = pattern.Steps.Length;
+            int rows = pattern.Steps[0].Channels.Length;
+            int channelDescription = pattern.Descriptions.Length;
+            int stepDescription = pattern.Steps.Length;
 
-            int counter = 0;
+            var newElements = new Control[columns*rows + channelDescription + stepDescription];
+
+            int elementCounter = 0;
+            int xOffset = 0;
+            int yOffset = 0;
+
+            //generate channel description text boxes
+            for (int iChannelDescription = 0; iChannelDescription < pattern.Descriptions.Length; iChannelDescription++)
+            {
+                
+                const int yOffsetLocal = 20;
+                
+                var newDescriptionTextBox = new TextBox
+                    {Location = new Point(0, iChannelDescription*20 + yOffsetLocal), Size = new Size(100, 19)};
+                newDescriptionTextBox.DataBindings.Add("Text", pattern.Descriptions[iChannelDescription],
+                                                       "Text", true, DataSourceUpdateMode.OnPropertyChanged);
+                newElements[elementCounter] = newDescriptionTextBox;
+                
+                elementCounter++;
+                xOffset = newDescriptionTextBox.Size.Width;
+            }
+            
+
+            //generate step description text boxes
+            for (int iStepDescription = 0; iStepDescription < pattern.Steps.Length; iStepDescription++)
+            {
+                const int xOffsetLocal = 100;
+                var newDescriptionTextBox = new TextBox
+                    {Location = new Point(xOffsetLocal + iStepDescription * 55, 0), Size = new Size(54, 19)};
+                newDescriptionTextBox.DataBindings.Add("Text", pattern.Steps[iStepDescription], "Description", true,
+                                                       DataSourceUpdateMode.OnPropertyChanged);
+                newElements[elementCounter] = newDescriptionTextBox;
+
+                elementCounter++;
+                yOffset = newDescriptionTextBox.Size.Height;
+            }
+
+
+            //generate the labels for channels and steps
             for (int iStep = 0; iStep < pattern.Steps.Length; iStep++)
             {
                 ControllerStep step = pattern.Steps[iStep];
 
+
                 for (int iChannel = 0; iChannel < step.Channels.Length; iChannel++)
                 {
-                    var channel = step.Channels[iChannel];
+                    ControllerChannel channel = step.Channels[iChannel];
 
                     var newLabel = new Label
-                    {
-                        Size = new Size(49, 19),
-                        Margin = new Padding(0),
-                        Location = new Point(iStep*50, iChannel*20),
-                        BackColor = channel.Value == 1 ? channel.OnColor : channel.OffColor
-                    };
+                        {
+                            Size = new Size(54, 19),
+                            Margin = new Padding(0),
+                            Location = new Point(iStep * 55 + xOffset, iChannel * 20 + yOffset),
+                            BackColor = channel.Value == 1 ? channel.OnColor : channel.OffColor
+                        };
 
-                    newLabel.MouseClick += channel.ChangeValue;             
-                    //newLabel.Click += channel.ChangeValue;             
-                    newElements[counter] = newLabel;
+                    newLabel.MouseClick += channel.ChangeValue;
+                    newElements[elementCounter] = newLabel;
 
-                    counter++;
+                    elementCounter++;
                 }
-
             }
+
+            var newTab = new TabPage(pattern.Name);
             newTab.Controls.AddRange(newElements);
-            
-            newTab.ResumeLayout(false);
-            //sw.Stop();
-            //Console.WriteLine(sw.ElapsedMilliseconds);
+
             return newTab;
         }
 
         public static void GenerateTabView(TabControl tab, ControllerCard card)
         {
-            
             tab.SuspendLayout();
 
-            TabPage[] newPages = new TabPage[card.Patterns.Length];
-            
+            var newPages = new TabPage[card.Patterns.Length];
+
             for (int iPattern = 0; iPattern < card.Patterns.Length; iPattern++)
             {
-                var pattern = card.Patterns[iPattern];
+                ControllerPattern pattern = card.Patterns[iPattern];
                 newPages[iPattern] = GenerateTabPage(pattern);
             }
 
@@ -72,7 +100,6 @@ namespace DigitalOutput.GUI
 
         public static void ColorPicker(int line)
         {
-
         }
     }
 }

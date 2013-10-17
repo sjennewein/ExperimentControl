@@ -14,42 +14,42 @@ namespace DigitalOutput.GUI
             var columns = pattern.Steps.Length;
             var rows = pattern.Steps[0].Channels.Length;
             var newTab = new TabPage(pattern.Name);
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
+            //Stopwatch sw = new Stopwatch();
+            //sw.Start();
             newTab.SuspendLayout();
             
-            Label[] newElements = new Label[columns * rows];
-            //for (int iElement = 0; iElement < newElements.Length; iElement++ )
-            //{
-            //    newElements[iElement] = new Label();
-            //}
-            newTab.Controls.AddRange(newElements);
+            Control[] newElements = new Control[columns * rows];            
 
             int counter = 0;
             for (int iStep = 0; iStep < pattern.Steps.Length; iStep++)
             {
                 ControllerStep step = pattern.Steps[iStep];
 
-
                 for (int iChannel = 0; iChannel < step.Channels.Length; iChannel++)
                 {
                     var channel = step.Channels[iChannel];
-                    var newLabel = new Label {Size = new Size(49, 19), Margin = new Padding(0), Location = new Point(iStep * 50, iChannel * 20)};
-                    //newLabel.Click += channel.ChangeValue;
-                    newLabel.BackColor = channel.Value == 1 ? channel.OnColor : channel.OffColor;
 
-                    //newLabel.Location = new Point(iStep * 50, iChannel * 20);
+                    var newLabel = new Label
+                    {
+                        Size = new Size(49, 19),
+                        Margin = new Padding(0),
+                        Location = new Point(iStep*50, iChannel*20),
+                        BackColor = channel.Value == 1 ? channel.OnColor : channel.OffColor
+                    };
+
+                    newLabel.MouseClick += channel.ChangeValue;             
+                    //newLabel.Click += channel.ChangeValue;             
                     newElements[counter] = newLabel;
 
                     counter++;
                 }
 
             }
-            
+            newTab.Controls.AddRange(newElements);
             
             newTab.ResumeLayout(false);
-            sw.Stop();
-            Console.WriteLine(sw.ElapsedMilliseconds);
+            //sw.Stop();
+            //Console.WriteLine(sw.ElapsedMilliseconds);
             return newTab;
         }
 

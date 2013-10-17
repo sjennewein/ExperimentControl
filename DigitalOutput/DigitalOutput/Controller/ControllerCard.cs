@@ -1,4 +1,6 @@
-﻿using DigitalOutput.Model;
+﻿using System.IO;
+using DigitalOutput.Model;
+using fastJSON;
 
 namespace DigitalOutput.Controller
 {
@@ -18,10 +20,16 @@ namespace DigitalOutput.Controller
             }
         }
 
-        //public string[] Description
-        //{
-        //    get { return _model.ChannelDescription; }
-        //    set { _model.ChannelDescription = value; }
-        //}
+        public void Save(Stream fileStream)
+        {
+            
+            string json = JSON.Instance.ToJSON(_model);
+
+            using (var writer = new StreamWriter(fileStream))
+            {
+                writer.Write(json);
+                writer.Close();
+            }
+        }
     }
 }

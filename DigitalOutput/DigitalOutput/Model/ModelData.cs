@@ -9,11 +9,6 @@
     public class ModelData
     {
         public int Value;
-        public readonly DataType Type;
-
-        public ModelData(DataType type)
-        {
-            Type = type;
-        }
+        public DataType Type;       
     }
 }

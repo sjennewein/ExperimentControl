@@ -8,9 +8,8 @@
             const int steps = 20;
             const int patterns = 5;
 
-            var newCard = new ModelCard(patterns);
-
-            newCard.ChannelDescription = new string[channels];
+            var newCard = new ModelCard
+                {Patterns = new ModelPattern[patterns], ChannelDescription = new string[channels]};
 
 
             for (int iChannels = 0; iChannels < channels; iChannels++)
@@ -20,18 +19,18 @@
 
             for (int iPattern = 0; iPattern < patterns; iPattern++)
             {
-                var newPattern = new ModelPattern(steps);
+                var newPattern = new ModelPattern(){Steps = new ModelStep[steps]};
                 newPattern.Name = "Pattern" + iPattern;
                 
 
                 for (int iSteps = 0; iSteps < steps; iSteps++)
                 {
-                    var newStep = new ModelStep(channels);
-                    newPattern.Step[iSteps] = newStep;
+                    var newStep = new ModelStep(){Channels =  new ModelData[channels]};
+                    newPattern.Steps[iSteps] = newStep;
 
                     for (int iChannels = 0; iChannels < channels; iChannels++)
                     {
-                        newStep.Channels[iChannels] = new ModelData(DataType.Data);
+                        newStep.Channels[iChannels] = new ModelData(){Type = DataType.Data};
                     }
                 }
                 newCard.Patterns[iPattern] = newPattern;

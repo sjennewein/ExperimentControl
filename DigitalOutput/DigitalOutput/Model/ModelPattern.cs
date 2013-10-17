@@ -2,14 +2,7 @@
 {
     public class ModelPattern
     {
-        public ModelStep[] Step;
-        
-
+        public ModelStep[] Steps;
         public string Name;
-
-        public ModelPattern(int steps)
-        {
-            Step = new ModelStep[steps];
-        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
 using DigitalOutput.Controller;
 
@@ -6,7 +7,9 @@ namespace DigitalOutput.GUI
 {
     public class Helper
     {
-        private static TabPage GenerateTabPage(ControllerPattern pattern)
+        private static readonly List<TabPage> GeneratedPages = new List<TabPage>();
+
+        private static void GenerateTabPage(ControllerPattern pattern)
         {
             int columns = pattern.Steps.Length;
             int rows = pattern.Steps[0].Channels.Length;
@@ -22,26 +25,25 @@ namespace DigitalOutput.GUI
             //generate channel description text boxes
             for (int iChannelDescription = 0; iChannelDescription < pattern.Descriptions.Length; iChannelDescription++)
             {
-                
                 const int yOffsetLocal = 20;
-                
+
                 var newDescriptionTextBox = new TextBox
                     {Location = new Point(0, iChannelDescription*20 + yOffsetLocal), Size = new Size(100, 19)};
                 newDescriptionTextBox.DataBindings.Add("Text", pattern.Descriptions[iChannelDescription],
                                                        "Text", true, DataSourceUpdateMode.OnPropertyChanged);
                 newElements[elementCounter] = newDescriptionTextBox;
-                
+
                 elementCounter++;
                 xOffset = newDescriptionTextBox.Size.Width;
             }
-            
+
 
             //generate step description text boxes
             for (int iStepDescription = 0; iStepDescription < pattern.Steps.Length; iStepDescription++)
             {
                 const int xOffsetLocal = 100;
                 var newDescriptionTextBox = new TextBox
-                    {Location = new Point(xOffsetLocal + iStepDescription * 55, 0), Size = new Size(54, 19)};
+                    {Location = new Point(xOffsetLocal + iStepDescription*55, 0), Size = new Size(54, 19)};
                 newDescriptionTextBox.DataBindings.Add("Text", pattern.Steps[iStepDescription], "Description", true,
                                                        DataSourceUpdateMode.OnPropertyChanged);
                 newElements[elementCounter] = newDescriptionTextBox;
@@ -65,7 +67,7 @@ namespace DigitalOutput.GUI
                         {
                             Size = new Size(54, 19),
                             Margin = new Padding(0),
-                            Location = new Point(iStep * 55 + xOffset, iChannel * 20 + yOffset),
+                            Location = new Point(iStep*55 + xOffset, iChannel*20 + yOffset),
                             BackColor = channel.Value == 1 ? channel.OnColor : channel.OffColor
                         };
 
@@ -79,27 +81,41 @@ namespace DigitalOutput.GUI
             var newTab = new TabPage(pattern.Name);
             newTab.Controls.AddRange(newElements);
 
-            return newTab;
+            GeneratedPages.Add(newTab);
         }
 
         public static void GenerateTabView(TabControl tab, ControllerCard card)
         {
             tab.SuspendLayout();
 
-            var newPages = new TabPage[card.Patterns.Length];
+            //var newPages = new TabPage[card.Patterns.Length];
 
             for (int iPattern = 0; iPattern < card.Patterns.Length; iPattern++)
             {
                 ControllerPattern pattern = card.Patterns[iPattern];
-                newPages[iPattern] = GenerateTabPage(pattern);
+                GenerateTabPage(pattern);
             }
-
-            tab.Controls.AddRange(newPages);
+            tab.Controls.AddRange(GeneratedPages.ToArray());
+            //tab.Controls.AddRange(newPages);
             tab.ResumeLayout();
         }
 
-        public static void ColorPicker(int line)
+        public static void DisposeTabs(TabControl tab)
         {
+            int pages = GeneratedPages.Count;
+            var toDelete = new List<TabPage>();
+
+            foreach (TabPage page in GeneratedPages)
+            {
+                if(tab.Controls.Contains(page))
+                    toDelete.Add(page);
+            }
+
+            foreach (TabPage page in toDelete)
+            {
+                GeneratedPages.Remove(page);
+                tab.Controls.Remove(page);
+            }
         }
     }
 }

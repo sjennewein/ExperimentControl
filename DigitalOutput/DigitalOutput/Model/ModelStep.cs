@@ -3,12 +3,7 @@
     public class ModelStep
     {
         public ModelData[] Channels;
-        public ModelData Duration = new ModelData(DataType.Time);
+        public ModelData Duration = new ModelData(){Type = DataType.Time};
         public string Description = "";
-
-        public ModelStep(int channels)
-        {
-            Channels = new ModelData[channels];
-        }
     }
 }

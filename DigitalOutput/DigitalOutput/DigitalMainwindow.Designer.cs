@@ -28,35 +28,23 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.General = new System.Windows.Forms.TabControl();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.TabPanel = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.General.SuspendLayout();
+            this.button_Start = new System.Windows.Forms.Button();
+            this.button_Stop = new System.Windows.Forms.Button();
+            this.button_Save = new System.Windows.Forms.Button();
+            this.button_Load = new System.Windows.Forms.Button();
+            this.TabPanel.SuspendLayout();
             this.SuspendLayout();
             // 
-            // General
+            // TabPanel
             // 
-            this.General.Controls.Add(this.tabPage1);
-            this.General.Location = new System.Drawing.Point(12, 146);
-            this.General.Name = "General";
-            this.General.SelectedIndex = 0;
-            this.General.Size = new System.Drawing.Size(1260, 704);
-            this.General.TabIndex = 0;
-            // 
-            // tableLayoutPanel1
-            // 
-            this.tableLayoutPanel1.ColumnCount = 4;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 329F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 250F));
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 12);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 2;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1160, 128);
-            this.tableLayoutPanel1.TabIndex = 3;
+            this.TabPanel.Controls.Add(this.tabPage1);
+            this.TabPanel.Location = new System.Drawing.Point(12, 146);
+            this.TabPanel.Name = "TabPanel";
+            this.TabPanel.SelectedIndex = 0;
+            this.TabPanel.Size = new System.Drawing.Size(1260, 704);
+            this.TabPanel.TabIndex = 0;
             // 
             // tabPage1
             // 
@@ -68,25 +56,69 @@
             this.tabPage1.Text = "General";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // button_Start
+            // 
+            this.button_Start.Location = new System.Drawing.Point(1193, 12);
+            this.button_Start.Name = "button_Start";
+            this.button_Start.Size = new System.Drawing.Size(75, 23);
+            this.button_Start.TabIndex = 1;
+            this.button_Start.Text = "Start";
+            this.button_Start.UseVisualStyleBackColor = true;
+            // 
+            // button_Stop
+            // 
+            this.button_Stop.Location = new System.Drawing.Point(1193, 41);
+            this.button_Stop.Name = "button_Stop";
+            this.button_Stop.Size = new System.Drawing.Size(75, 23);
+            this.button_Stop.TabIndex = 2;
+            this.button_Stop.Text = "Stop";
+            this.button_Stop.UseVisualStyleBackColor = true;
+            // 
+            // button_Save
+            // 
+            this.button_Save.Location = new System.Drawing.Point(1193, 70);
+            this.button_Save.Name = "button_Save";
+            this.button_Save.Size = new System.Drawing.Size(75, 23);
+            this.button_Save.TabIndex = 3;
+            this.button_Save.Text = "Save";
+            this.button_Save.UseVisualStyleBackColor = true;
+            this.button_Save.Click += new System.EventHandler(this.button_Save_Click);
+            // 
+            // button_Load
+            // 
+            this.button_Load.Location = new System.Drawing.Point(1193, 99);
+            this.button_Load.Name = "button_Load";
+            this.button_Load.Size = new System.Drawing.Size(75, 23);
+            this.button_Load.TabIndex = 4;
+            this.button_Load.Text = "Load";
+            this.button_Load.UseVisualStyleBackColor = true;
+            this.button_Load.Click += new System.EventHandler(this.button_Load_Click);
+            // 
             // DigitalMainwindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1184, 862);
-            this.Controls.Add(this.tableLayoutPanel1);
-            this.Controls.Add(this.General);
+            this.ClientSize = new System.Drawing.Size(1284, 862);
+            this.Controls.Add(this.button_Load);
+            this.Controls.Add(this.button_Save);
+            this.Controls.Add(this.button_Stop);
+            this.Controls.Add(this.button_Start);
+            this.Controls.Add(this.TabPanel);
             this.Name = "DigitalMainwindow";
             this.Text = "DigitalOutput";
-            this.General.ResumeLayout(false);
+            this.TabPanel.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.TabControl General;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.TabControl TabPanel;
         private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.Button button_Start;
+        private System.Windows.Forms.Button button_Stop;
+        private System.Windows.Forms.Button button_Save;
+        private System.Windows.Forms.Button button_Load;
     }
 }
 

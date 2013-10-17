@@ -28,8 +28,11 @@ namespace DigitalOutput.Controller
         public Color OnColor { get; set; }
         public Color OffColor { get; set; }
 
-        public void ChangeValue(object sender, EventArgs e)
+        public void ChangeValue(object sender, MouseEventArgs e)
         {
+            if (e.Button != MouseButtons.Left)
+                return;
+
             var checkBox = (Label) sender;
             if(Value == 0)
             {

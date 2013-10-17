@@ -71,5 +71,13 @@ namespace DigitalOutput
             ResumeLayout();
 
         }
+
+        private void button_Synchronize_Click(object sender, EventArgs e)
+        {
+
+        }
+
+       
+
     }
 }

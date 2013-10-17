@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using DigitalOutput.Hardware;
 using DigitalOutput.Model;
 using fastJSON;
 
@@ -8,6 +9,7 @@ namespace DigitalOutput.Controller
     {
         private readonly ModelCard _model;
         public ControllerPattern[] Patterns;
+        private Buffer _hardwareBuffer = new Buffer();
 
         public ControllerCard(ModelCard model)
         {
@@ -30,6 +32,12 @@ namespace DigitalOutput.Controller
                 writer.Write(json);
                 writer.Close();
             }
+        }
+
+        public void CopyToBuffer()
+        {
+            string data = JSON.Instance.ToJSON(_model);
+            _hardwareBuffer.UpdateData(data);
         }
     }
 }

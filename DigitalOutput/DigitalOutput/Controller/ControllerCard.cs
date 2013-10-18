@@ -7,9 +7,9 @@ namespace DigitalOutput.Controller
 {
     public class ControllerCard
     {
+        private readonly Buffer _hardwareBuffer = new Buffer();
         private readonly ModelCard _model;
         public ControllerPattern[] Patterns;
-        private Buffer _hardwareBuffer = new Buffer();
 
         public ControllerCard(ModelCard model)
         {
@@ -22,9 +22,14 @@ namespace DigitalOutput.Controller
             }
         }
 
+        public string Flow
+        {
+            get { return _model.Flow; }
+            set { _model.Flow = value; }
+        }
+
         public void Save(Stream fileStream)
         {
-            
             string json = JSON.Instance.ToJSON(_model);
 
             using (var writer = new StreamWriter(fileStream))

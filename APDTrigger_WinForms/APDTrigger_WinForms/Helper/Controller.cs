@@ -161,7 +161,7 @@ namespace APDTrigger_WinForms.Helper
         /// </summary>
         public void Start()
         {
-            bool monitorMode = (Run == RunType.Monitor); //set endless true if run type is endless
+            bool monitorMode = (Run == RunType.Monitor); //enable monitor mode if user selected that
             _atoms = 0;
             _noAtoms = 0;
             _recapturerate = 0;

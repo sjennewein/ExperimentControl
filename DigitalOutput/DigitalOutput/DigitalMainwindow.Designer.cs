@@ -30,6 +30,9 @@
         {
             this.TabPanel = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.groupBox_ProgramFlow = new System.Windows.Forms.GroupBox();
+            this.button_Update = new System.Windows.Forms.Button();
+            this.textBox_Flow = new System.Windows.Forms.TextBox();
             this.button_Start = new System.Windows.Forms.Button();
             this.button_Stop = new System.Windows.Forms.Button();
             this.button_Save = new System.Windows.Forms.Button();
@@ -50,6 +53,8 @@
             this.textBox_Ip1 = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.TabPanel.SuspendLayout();
+            this.tabPage1.SuspendLayout();
+            this.groupBox_ProgramFlow.SuspendLayout();
             this.groupBox_Buffer.SuspendLayout();
             this.groupBox_Network.SuspendLayout();
             this.SuspendLayout();
@@ -65,6 +70,7 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.groupBox_ProgramFlow);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
@@ -72,6 +78,34 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "General";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // groupBox_ProgramFlow
+            // 
+            this.groupBox_ProgramFlow.Controls.Add(this.button_Update);
+            this.groupBox_ProgramFlow.Controls.Add(this.textBox_Flow);
+            this.groupBox_ProgramFlow.Location = new System.Drawing.Point(18, 89);
+            this.groupBox_ProgramFlow.Name = "groupBox_ProgramFlow";
+            this.groupBox_ProgramFlow.Size = new System.Drawing.Size(274, 484);
+            this.groupBox_ProgramFlow.TabIndex = 2;
+            this.groupBox_ProgramFlow.TabStop = false;
+            this.groupBox_ProgramFlow.Text = "Program flow:";
+            // 
+            // button_Update
+            // 
+            this.button_Update.Location = new System.Drawing.Point(188, 455);
+            this.button_Update.Name = "button_Update";
+            this.button_Update.Size = new System.Drawing.Size(75, 23);
+            this.button_Update.TabIndex = 1;
+            this.button_Update.Text = "Update";
+            this.button_Update.UseVisualStyleBackColor = true;
+            // 
+            // textBox_Flow
+            // 
+            this.textBox_Flow.Location = new System.Drawing.Point(6, 39);
+            this.textBox_Flow.Multiline = true;
+            this.textBox_Flow.Name = "textBox_Flow";
+            this.textBox_Flow.Size = new System.Drawing.Size(176, 439);
+            this.textBox_Flow.TabIndex = 0;
             // 
             // button_Start
             // 
@@ -287,6 +321,9 @@
             this.Name = "DigitalMainwindow";
             this.Text = "DigitalOutput";
             this.TabPanel.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
+            this.groupBox_ProgramFlow.ResumeLayout(false);
+            this.groupBox_ProgramFlow.PerformLayout();
             this.groupBox_Buffer.ResumeLayout(false);
             this.groupBox_Buffer.PerformLayout();
             this.groupBox_Network.ResumeLayout(false);
@@ -318,6 +355,9 @@
         private System.Windows.Forms.CheckBox checkBox_Network;
         private System.Windows.Forms.Label label_Server;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox textBox_Flow;
+        private System.Windows.Forms.GroupBox groupBox_ProgramFlow;
+        private System.Windows.Forms.Button button_Update;
     }
 }
 

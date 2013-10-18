@@ -26,12 +26,10 @@
 
         #endregion
 
-        private double _frequency;
+        public double _frequency;
 
         public void SetFrequency(double digits, Frequency unit)
-        {
-            
-
+        {           
             _frequency = digits*GetFrequencyBase(unit);
         }
 

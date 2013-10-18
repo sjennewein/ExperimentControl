@@ -5,7 +5,7 @@
         public static ModelCard GenerateCard()
         {
             const int channels = 32;
-            const int steps = 20;
+            const int steps = 15;
             const int patterns = 5;
             var sampleRate = new Timing();
             sampleRate.SetFrequency(1,Timing.Frequency.MHz);

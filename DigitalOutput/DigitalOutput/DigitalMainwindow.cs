@@ -20,6 +20,7 @@ namespace DigitalOutput
             WindowState = FormWindowState.Maximized;            
             Console.WriteLine(Width);
             _card = ControllerFabric.GenerateCard();
+            textBox_Flow.DataBindings.Add("Text", _card, "Flow", false, DataSourceUpdateMode.OnPropertyChanged);
             SuspendLayout();
             Helper.GenerateTabView(TabPanel, _card);
             ResumeLayout();
@@ -67,9 +68,10 @@ namespace DigitalOutput
             _card = ControllerFabric.GenerateCard(loadedCard);
             SuspendLayout();
             Helper.DisposeTabs(TabPanel);                        
-            Helper.GenerateTabView(TabPanel,_card);
+            Helper.GenerateTabView(TabPanel,_card);            
             ResumeLayout();
-
+            textBox_Flow.DataBindings.RemoveAt(0);
+            textBox_Flow.DataBindings.Add("Text", _card, "Flow", false, DataSourceUpdateMode.OnPropertyChanged);
         }
 
         private void button_Synchronize_Click(object sender, EventArgs e)

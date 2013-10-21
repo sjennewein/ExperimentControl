@@ -11,7 +11,7 @@ namespace DigitalOutput.GUI
 
         private static void GenerateTabPage(ControllerPattern pattern)
         {
-            const int columnWidth = 54;
+            const int columnWidth = 64;
             const int rowHeight = 19;
 
             int columns = pattern.Steps.Length;
@@ -86,8 +86,7 @@ namespace DigitalOutput.GUI
                             Margin = new Padding(0),
                             Location = new Point(iStep*(columnWidth+1) + xOffset, iChannel*(rowHeight+1) + yOffset),
                             BackColor = channel.Value == 1 ? channel.OnColor : channel.OffColor
-                        };
-
+                        };                                            
                     newLabel.MouseClick += channel.ChangeValue;
                     newElements[elementCounter] = newLabel;
 

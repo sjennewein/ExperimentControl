@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
@@ -62,7 +63,6 @@ namespace DigitalOutput
                    }
                 fileStream.Close();
             }
-
             
             ModelCard loadedCard = (ModelCard) fastJSON.JSON.Instance.ToObject(input);
             _card = ControllerFabric.GenerateCard(loadedCard);
@@ -76,17 +76,27 @@ namespace DigitalOutput
 
         private void button_Synchronize_Click(object sender, EventArgs e)
         {
-
+            label_Buffer.BackColor = Color.FromArgb(127, 210, 21);
+            _card.CopyToBuffer();
+            _card.StoreSyncedValues();            
         }
 
         private void button_Start_Click(object sender, EventArgs e)
         {
-            if (String.Equals(_card.Flow, String.Empty))
+            if (String.Equals(_card.Flow, String.Empty) || _card.Flow == null)
                 return;
             _card.Start();
+            label_Buffer.BackColor = Color.FromArgb(127,210,21);
         }
 
-       
+        private void button_Stop_Click(object sender, EventArgs e)
+        {
+            _card.Stop();
+        }
 
+        private void button_Undo_Click(object sender, EventArgs e)
+        {
+            _card.RestoreSyncedValues();
+        }       
     }
 }

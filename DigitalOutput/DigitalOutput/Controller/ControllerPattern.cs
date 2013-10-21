@@ -25,6 +25,22 @@ namespace DigitalOutput.Controller
             get { return _model.Name; }
         }
 
+        public void StoreSyncedValues()
+        {
+            foreach (ControllerStep step in Steps)
+            {
+                step.StoreSyncedValues();
+            }
+        }
+
+        public void RestoreSyncedValues()
+        {
+            foreach (ControllerStep step in Steps)
+            {
+                step.RestoreSyncedValues();
+            }
+        }
+
         #region INotifyPropertyChanged Members
 
         public event PropertyChangedEventHandler PropertyChanged;

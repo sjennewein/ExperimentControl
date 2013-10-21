@@ -1,13 +1,31 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using DigitalOutput.Model;
+using System.ComponentModel;
 
 namespace DigitalOutput.Controller
 {
-    public class ControllerChannel
+    public class ControllerChannel 
     {
         private readonly ModelData _model;
+        private int _syncedValue;
+        private Label _myControl;
+
+        public void StoreSyncedValue()
+        {            
+            _syncedValue = _model.Value;
+        }
+
+        public void RestoreSyncedValue()
+        {
+            if(_syncedValue != _model.Value)
+            {
+                _model.Value = _syncedValue;   
+                UpdateGUI();
+            }
+        }
 
         public ControllerChannel(ModelData model, int channel)
         {
@@ -33,17 +51,23 @@ namespace DigitalOutput.Controller
             if (e.Button != MouseButtons.Left)
                 return;
 
-            var checkBox = (Label) sender;
+            _myControl = (Label) sender;
+            
             if(Value == 0)
             {
                 Value = 1;
-                checkBox.BackColor = OnColor;
+                _myControl.BackColor = OnColor;
             }
             else
             {
                 Value = 0;
-                checkBox.BackColor = OffColor;
+                _myControl.BackColor = OffColor;
             }
+        }
+
+        private void UpdateGUI()
+        {
+            _myControl.BackColor = Value == 1 ? OnColor : OffColor;
         }
 
         private void PickColor(int channel)
@@ -69,5 +93,7 @@ namespace DigitalOutput.Controller
             }
                 
         }
+
+       
     }
 }

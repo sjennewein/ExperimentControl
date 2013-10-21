@@ -1,10 +1,12 @@
-﻿using DigitalOutput.Model;
+﻿using System.ComponentModel;
+using DigitalOutput.Model;
 
 namespace DigitalOutput.Controller
 {
-    public class ControllerStep
+    public class ControllerStep : INotifyPropertyChanged
     {
         private readonly ModelStep _model;
+        private int _syncedValue;
 
         public ControllerChannel[] Channels;
 
@@ -25,6 +27,38 @@ namespace DigitalOutput.Controller
             set { _model.Description = value; }
         }
 
+        public void StoreSyncedValues()
+        {
+            _syncedValue = Duration;
+            foreach (ControllerChannel channel in Channels)
+            {
+                channel.StoreSyncedValue();
+            }
+        }
+
+        public void RestoreSyncedValues()
+        {
+            if(_syncedValue != Duration)
+            {
+                Duration = _syncedValue;
+                PropertyHasChanged("Duration");
+            }
+
+            foreach (ControllerChannel channel in Channels)
+            {
+                channel.RestoreSyncedValue();
+            }
+        }
+
         public int Duration { get { return _model.Duration.Value; } set { _model.Duration.Value = value; } }
+
+        private void PropertyHasChanged(string propertyName)
+        {
+            PropertyChangedEventHandler propertyChanged = PropertyChanged;
+            if (null != propertyChanged)
+                propertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

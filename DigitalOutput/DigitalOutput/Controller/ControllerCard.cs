@@ -33,6 +33,11 @@ namespace DigitalOutput.Controller
             _hardwareBuffer.Start(JSON.Instance.ToJSON(_model));
         }
 
+        public void Stop()
+        {
+            _hardwareBuffer.Stop();
+        }
+
         public void Save(Stream fileStream)
         {
             string json = JSON.Instance.ToJSON(_model);
@@ -45,9 +50,25 @@ namespace DigitalOutput.Controller
         }
 
         public void CopyToBuffer()
-        {
+        {            
             string data = JSON.Instance.ToJSON(_model);
             _hardwareBuffer.UpdateData(data);
+        }
+
+        public void StoreSyncedValues()
+        {
+            foreach (ControllerPattern pattern in Patterns)
+            {
+                pattern.StoreSyncedValues();
+            }
+        }
+        
+        public void RestoreSyncedValues()
+        {
+            foreach (ControllerPattern pattern in Patterns)
+            {
+                pattern.RestoreSyncedValues();
+            }
         }
     }
 }

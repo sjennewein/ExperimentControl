@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 using DigitalOutput.Model;
 using NationalInstruments.DAQmx;
@@ -28,12 +29,12 @@ namespace DigitalOutput.Hardware
         {
             while (_run)
             {
-                _running = true;
+                _running = true;               
 
                 if (_updated)
                 {
                     _data = (ModelCard) JSON.Instance.ToObject(_serializedData);
-                    Translator.GenerateOutput(_data);
+                    _outputSequence = Translator.GenerateOutput(_data);
                     _updated = false;
                 }
 
@@ -68,15 +69,12 @@ namespace DigitalOutput.Hardware
 
         public void Start(string data)
         {
-            
-
             if (!_running)
             {
                 _serializedData = data;
                 _updated = true;
                 _myWorker = new Thread(WorkingLoop);
                 _myWorker.Start();
-                
             }
             _run = true;
         }

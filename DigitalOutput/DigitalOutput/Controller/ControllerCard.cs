@@ -28,6 +28,11 @@ namespace DigitalOutput.Controller
             set { _model.Flow = value; }
         }
 
+        public void Start()
+        {
+            _hardwareBuffer.Start(JSON.Instance.ToJSON(_model));
+        }
+
         public void Save(Stream fileStream)
         {
             string json = JSON.Instance.ToJSON(_model);

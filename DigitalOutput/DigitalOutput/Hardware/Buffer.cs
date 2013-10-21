@@ -33,12 +33,13 @@ namespace DigitalOutput.Hardware
                 if (_updated)
                 {
                     _data = (ModelCard) JSON.Instance.ToObject(_serializedData);
-
+                    Translator.GenerateOutput(_data);
+                    _updated = false;
                 }
 
                 //initialize output card
                 var digitalOutputTask = new Task("PCI6534");
-                digitalOutputTask.DOChannels.CreateChannel("/Dev1/port0_32", "",
+                digitalOutputTask.DOChannels.CreateChannel("/Dev2/port0_32", "",
                                                            ChannelLineGrouping.OneChannelForAllLines);
 
                 double sampleRate = _data.SampleRate.GetFrequency(Timing.Frequency.Hz);
@@ -46,7 +47,7 @@ namespace DigitalOutput.Hardware
                 digitalOutputTask.Timing.ConfigureSampleClock("", sampleRate,
                                                               SampleClockActiveEdge.Rising,
                                                               SampleQuantityMode.FiniteSamples);
-                digitalOutputTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger("/Dev1/PFI6",
+                digitalOutputTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger("/Dev2/PFI6",
                                                                                     DigitalEdgeStartTriggerEdge.Rising);
 
                 //write output to card
@@ -67,9 +68,15 @@ namespace DigitalOutput.Hardware
 
         public void Start(string data)
         {
+            
+
             if (!_running)
             {
+                _serializedData = data;
+                _updated = true;
                 _myWorker = new Thread(WorkingLoop);
+                _myWorker.Start();
+                
             }
             _run = true;
         }

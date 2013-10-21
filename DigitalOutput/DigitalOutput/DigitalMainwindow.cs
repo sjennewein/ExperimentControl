@@ -79,6 +79,13 @@ namespace DigitalOutput
 
         }
 
+        private void button_Start_Click(object sender, EventArgs e)
+        {
+            if (String.Equals(_card.Flow, String.Empty))
+                return;
+            _card.Start();
+        }
+
        
 
     }

@@ -25,6 +25,6 @@ namespace DigitalOutput.Controller
             set { _model.Description = value; }
         }
 
-        public int Duration { get; set; }
+        public int Duration { get { return _model.Duration.Value; } set { _model.Duration.Value = value; } }
     }
 }

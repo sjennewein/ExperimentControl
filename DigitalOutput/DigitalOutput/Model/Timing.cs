@@ -1,4 +1,6 @@
-﻿namespace DigitalOutput.Model
+﻿using System;
+
+namespace DigitalOutput.Model
 {
     public class Timing
     {
@@ -48,19 +50,19 @@
             return GetTimeBase(unit)/_frequency;
         }
 
-        private int GetFrequencyBase(Frequency unit)
+        private double GetFrequencyBase(Frequency unit)
         {
-            int frequency = 0;
+            double frequency = 0;
             switch (unit)
             {
                 case Frequency.GHz:
-                    frequency = 10 ^ 9;
+                    frequency = Math.Pow(10,9);
                     break;
                 case Frequency.MHz:
-                    frequency = 10 ^ 6;
+                    frequency = Math.Pow(10,6);
                     break;
                 case Frequency.kHz:
-                    frequency = 10 ^ 3;
+                    frequency = Math.Pow(10,3);
                     break;
                 case Frequency.Hz:
                     frequency = 1;
@@ -69,19 +71,19 @@
             return frequency;
         }
 
-        private int GetTimeBase(Time unit)
+        private double GetTimeBase(Time unit)
         {
-            int timebase = 0;
+            double timebase = 0;
             switch (unit)
             {
                 case Time.ns:
-                    timebase = 10 ^ 9;
+                    timebase = Math.Pow(10,9);
                     break;
                 case Time.us:
-                    timebase = 10 ^ 6;
+                    timebase = Math.Pow(10,6);
                     break;
                 case Time.ms:
-                    timebase = 10 ^ 3;
+                    timebase = Math.Pow(10,3);
                     break;
                 case Time.s:
                     timebase = 1;

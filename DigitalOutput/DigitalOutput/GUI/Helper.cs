@@ -59,6 +59,7 @@ namespace DigitalOutput.GUI
 
             for (int iStepDuration = 0; iStepDuration < pattern.Steps.Length; iStepDuration++)
             {
+                
                 var stepDurationTextBox = new TextBox {Location = new Point(xOffset + iStepDuration*(columnWidth +1), yOffset), Size = new Size(columnWidth, rowHeight)};
                 stepDurationTextBox.DataBindings.Add("Text", pattern.Steps[iStepDuration], "Duration", true,
                                                      DataSourceUpdateMode.OnPropertyChanged);

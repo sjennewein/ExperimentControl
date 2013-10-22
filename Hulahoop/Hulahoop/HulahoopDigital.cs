@@ -22,7 +22,7 @@ namespace Hulahoop
             panel_Iterator.Controls.Add(new IteratorGUI(newIterator) {Location = new Point(0, 45*yPosition)});
         }
 
-        private void button_EveryXthrun_Click(object sender, EventArgs e)
+        private void button_EveryXthRun_Click(object sender, EventArgs e)
         {
             var newEveryXRun = new ControllerEveryXRun(new ModelRunEveryX());
             int yPosition = panel_everyRun.Controls.Count;
@@ -37,9 +37,5 @@ namespace Hulahoop
             window.Visible = false;
         }
 
-        private void button_EveryXthRun_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 }

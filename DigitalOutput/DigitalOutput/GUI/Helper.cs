@@ -84,9 +84,22 @@ namespace DigitalOutput.GUI
                         {
                             Size = new Size(columnWidth, rowHeight),
                             Margin = new Padding(0),
-                            Location = new Point(iStep*(columnWidth+1) + xOffset, iChannel*(rowHeight+1) + yOffset),
-                            BackColor = channel.Value == 1 ? channel.OnColor : channel.OffColor
-                        };                                            
+                            Location = new Point(iStep*(columnWidth+1) + xOffset, iChannel*(rowHeight+1) + yOffset),                            
+                        };
+
+                    newLabel.DataBindings.Add("BackColor", channel, "Color", false,
+                                              DataSourceUpdateMode.OnPropertyChanged);
+
+                    //if(channel.Value == 1)
+                    //{
+                    //    channel.ChangeValue(newLabel, new MouseEventArgs(MouseButtons.Left, 1,0,0,0));
+                    //}
+                    //else
+                    //{
+                    //    newLabel.BackColor = channel.OffColor;
+                    //}
+                    
+
                     newLabel.MouseClick += channel.ChangeValue;
                     newElements[elementCounter] = newLabel;
 
@@ -95,6 +108,7 @@ namespace DigitalOutput.GUI
             }
 
             var newTab = new TabPage(pattern.Name);
+            newTab.AutoScroll = true;
             newTab.Controls.AddRange(newElements);
 
             GeneratedPages.Add(newTab);

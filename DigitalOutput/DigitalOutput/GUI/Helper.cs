@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 using DigitalOutput.Controller;
+using Hulahoop.Controller;
 
 namespace DigitalOutput.GUI
 {
@@ -56,7 +57,7 @@ namespace DigitalOutput.GUI
                 yOffset = descriptionTextBox.Size.Height;
             }
 
-
+            //generate step duration text boxes
             for (int iStepDuration = 0; iStepDuration < pattern.Steps.Length; iStepDuration++)
             {
                 
@@ -64,6 +65,9 @@ namespace DigitalOutput.GUI
                 stepDurationTextBox.DataBindings.Add("Text", pattern.Steps[iStepDuration], "Duration", true,
                                                      DataSourceUpdateMode.OnPropertyChanged);
                 newElements[elementCounter] = stepDurationTextBox;
+                stepDurationTextBox.ContextMenu = new ContextMenu();
+                stepDurationTextBox.ContextMenu.Popup += pattern.Steps[iStepDuration].UpdateContextMenu;
+
                 elementCounter++;
                 
 
@@ -90,14 +94,6 @@ namespace DigitalOutput.GUI
                     newLabel.DataBindings.Add("BackColor", channel, "Color", false,
                                               DataSourceUpdateMode.OnPropertyChanged);
 
-                    //if(channel.Value == 1)
-                    //{
-                    //    channel.ChangeValue(newLabel, new MouseEventArgs(MouseButtons.Left, 1,0,0,0));
-                    //}
-                    //else
-                    //{
-                    //    newLabel.BackColor = channel.OffColor;
-                    //}
                     
 
                     newLabel.MouseClick += channel.ChangeValue;

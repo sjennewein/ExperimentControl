@@ -1,5 +1,9 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
+using System.Drawing;
+using System.Windows.Forms;
 using DigitalOutput.Model;
+using Hulahoop.Controller;
 
 namespace DigitalOutput.Controller
 {
@@ -57,6 +61,44 @@ namespace DigitalOutput.Controller
             PropertyChangedEventHandler propertyChanged = PropertyChanged;
             if (null != propertyChanged)
                 propertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void UpdateContextMenu(object sender, EventArgs e)
+        {
+            var origSender = (ContextMenu) sender;
+            
+            ContextMenu contextMenu = new ContextMenu();
+            foreach (var iterator in HoopManager.Iterators)
+            {
+                var item = new MenuItem(iterator.Name, SwitchToHooping);                
+                contextMenu.MenuItems.Add(item);
+            }
+            foreach (var EveryXthRun in HoopManager.EveryXRun)
+            {
+                var item = new MenuItem(EveryXthRun.Name, SwitchToHooping);
+                contextMenu.MenuItems.Add(item);
+            }            
+            contextMenu.MenuItems.Add(new MenuItem("Enable", SwitchToManual));
+            contextMenu.Show(origSender.SourceControl,new Point(0));
+        }
+
+        public void SwitchToHooping(object sender, EventArgs e)
+        {
+            var item = (MenuItem) sender;
+            var menu = (ContextMenu) item.Parent;
+            var textBox = (TextBox) menu.SourceControl;
+            textBox.Text = item.Text;
+            textBox.ReadOnly = true;
+            textBox.DataBindings.RemoveAt(0);
+        }
+
+        public void SwitchToManual(object sender, EventArgs e)
+        {
+            var item = (MenuItem)sender;
+            var menu = (ContextMenu)item.Parent;
+            var textBox = (TextBox)menu.SourceControl;
+            textBox.ReadOnly = false;
+            textBox.DataBindings.Add("Text", this, "Duration", false, DataSourceUpdateMode.OnPropertyChanged);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

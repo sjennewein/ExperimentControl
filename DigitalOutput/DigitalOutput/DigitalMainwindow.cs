@@ -8,12 +8,15 @@ using DigitalOutput.Controller;
 using DigitalOutput.GUI;
 using DigitalOutput.Model;
 using fastJSON;
+using Hulahoop;
+
 
 namespace DigitalOutput
 {
     public partial class DigitalMainwindow : Form
     {
         private ControllerCard _card;
+        private Form _loops = new HulahoopDigital();
 
         public DigitalMainwindow()
         {
@@ -97,6 +100,11 @@ namespace DigitalOutput
         private void button_Undo_Click(object sender, EventArgs e)
         {
             _card.RestoreSyncedValues();
+        }
+
+        private void button_HulaHoop_Click(object sender, EventArgs e)
+        {
+            _loops.Visible = true;
         }       
     }
 }

@@ -53,12 +53,15 @@
             this.label2 = new System.Windows.Forms.Label();
             this.textBox_Ip1 = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.button_HulaHoop = new System.Windows.Forms.Button();
+            this.groupBox_Loops = new System.Windows.Forms.GroupBox();
             this.TabPanel.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox_ProgramFlow.SuspendLayout();
             this.groupBox_Buffer.SuspendLayout();
             this.groupBox_Stats.SuspendLayout();
             this.groupBox_Network.SuspendLayout();
+            this.groupBox_Loops.SuspendLayout();
             this.SuspendLayout();
             // 
             // TabPanel
@@ -326,11 +329,32 @@
             this.label1.TabIndex = 4;
             this.label1.Text = ".";
             // 
+            // button_HulaHoop
+            // 
+            this.button_HulaHoop.Location = new System.Drawing.Point(6, 19);
+            this.button_HulaHoop.Name = "button_HulaHoop";
+            this.button_HulaHoop.Size = new System.Drawing.Size(88, 23);
+            this.button_HulaHoop.TabIndex = 10;
+            this.button_HulaHoop.Text = "Open Window";
+            this.button_HulaHoop.UseVisualStyleBackColor = true;
+            this.button_HulaHoop.Click += new System.EventHandler(this.button_HulaHoop_Click);
+            // 
+            // groupBox_Loops
+            // 
+            this.groupBox_Loops.Controls.Add(this.button_HulaHoop);
+            this.groupBox_Loops.Location = new System.Drawing.Point(582, 12);
+            this.groupBox_Loops.Name = "groupBox_Loops";
+            this.groupBox_Loops.Size = new System.Drawing.Size(100, 128);
+            this.groupBox_Loops.TabIndex = 11;
+            this.groupBox_Loops.TabStop = false;
+            this.groupBox_Loops.Text = "Hula Hoops";
+            // 
             // DigitalMainwindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1284, 1006);
+            this.Controls.Add(this.groupBox_Loops);
             this.Controls.Add(this.groupBox_Network);
             this.Controls.Add(this.groupBox_Stats);
             this.Controls.Add(this.button_Stop);
@@ -351,6 +375,7 @@
             this.groupBox_Stats.PerformLayout();
             this.groupBox_Network.ResumeLayout(false);
             this.groupBox_Network.PerformLayout();
+            this.groupBox_Loops.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -382,6 +407,8 @@
         private System.Windows.Forms.GroupBox groupBox_ProgramFlow;
         private System.Windows.Forms.Button button_Undo;
         private System.Windows.Forms.Label label_Status;
+        private System.Windows.Forms.Button button_HulaHoop;
+        private System.Windows.Forms.GroupBox groupBox_Loops;
     }
 }
 

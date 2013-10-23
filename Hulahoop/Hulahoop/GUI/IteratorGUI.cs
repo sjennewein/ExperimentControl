@@ -23,6 +23,18 @@ namespace Hulahoop.GUI
             textBox_Stop.DataBindings.Add("Text", _controller, "Stop", false, DataSourceUpdateMode.OnPropertyChanged);
             textBox_Stepsize.DataBindings.Add("Text", _controller, "StepSize", false,
                                               DataSourceUpdateMode.OnPropertyChanged);
+            label_Close.MouseClick += Delete;
+        }
+
+        public void Delete(object sender, MouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Left)
+                return;
+
+            HoopManager.Iterators.Remove(_controller);
+            var label = (Label) sender;
+            var parent = (HulahoopDigital) label.Parent.Parent.Parent;
+            parent.Delete(this);
         }
     }
 }

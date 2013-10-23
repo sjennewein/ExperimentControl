@@ -39,13 +39,13 @@
             this.panel_Iterator.AutoSize = true;
             this.panel_Iterator.Location = new System.Drawing.Point(12, 41);
             this.panel_Iterator.Name = "panel_Iterator";
-            this.panel_Iterator.Size = new System.Drawing.Size(310, 209);
+            this.panel_Iterator.Size = new System.Drawing.Size(374, 209);
             this.panel_Iterator.TabIndex = 0;
             // 
             // panel_everyRun
             // 
             this.panel_everyRun.AutoSize = true;
-            this.panel_everyRun.Location = new System.Drawing.Point(328, 41);
+            this.panel_everyRun.Location = new System.Drawing.Point(390, 41);
             this.panel_everyRun.Name = "panel_everyRun";
             this.panel_everyRun.Size = new System.Drawing.Size(189, 209);
             this.panel_everyRun.TabIndex = 1;
@@ -62,7 +62,7 @@
             // 
             // button_EveryXthRun
             // 
-            this.button_EveryXthRun.Location = new System.Drawing.Point(328, 12);
+            this.button_EveryXthRun.Location = new System.Drawing.Point(390, 12);
             this.button_EveryXthRun.Name = "button_EveryXthRun";
             this.button_EveryXthRun.Size = new System.Drawing.Size(98, 23);
             this.button_EveryXthRun.TabIndex = 3;
@@ -74,7 +74,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(532, 256);
+            this.ClientSize = new System.Drawing.Size(591, 256);
             this.Controls.Add(this.button_EveryXthRun);
             this.Controls.Add(this.button_Iterator);
             this.Controls.Add(this.panel_everyRun);

@@ -19,7 +19,7 @@ namespace Hulahoop
             var newIterator = new ControllerIterator(new ModelIterator());
             int yPosition = panel_Iterator.Controls.Count;
             HoopManager.Iterators.Add(newIterator);
-            panel_Iterator.Controls.Add(new IteratorGUI(newIterator) {Location = new Point(0, 45*yPosition)});
+            panel_Iterator.Controls.Add(new IteratorGUI(newIterator) {Location = new Point(0, 45*yPosition)});            
         }
 
         private void button_EveryXthRun_Click(object sender, EventArgs e)
@@ -37,5 +37,40 @@ namespace Hulahoop
             window.Visible = false;
         }
 
+        public void ReLoad()
+        {
+            foreach (ControllerIterator iterator in HoopManager.Iterators)
+            {
+                int yPosition = panel_Iterator.Controls.Count;
+                panel_Iterator.Controls.Add(new IteratorGUI(iterator) {Location = new Point(0, 45*yPosition)});
+            }
+            foreach (ControllerEveryXRun everyXRun in HoopManager.EveryXRun)
+            {
+                int yPosition = panel_everyRun.Controls.Count;
+                panel_everyRun.Controls.Add(new EveryXRunGUI(everyXRun) {Location = new Point(0, 45*yPosition)});
+            }
+        }
+
+        public void Delete(IteratorGUI iterator)
+        {
+            SuspendLayout();
+            panel_Iterator.Controls.Remove(iterator);
+            for (int iElement = 0; iElement < panel_Iterator.Controls.Count; iElement++)
+            {
+                panel_Iterator.Controls[iElement].Location = new Point(0, 45*iElement);
+            }
+            ResumeLayout();
+        }
+
+        public void Delete(EveryXRunGUI everyXRun)
+        {
+            SuspendLayout();
+            panel_everyRun.Controls.Remove(everyXRun);
+            for (int iElement = 0; iElement < panel_everyRun.Controls.Count; iElement++)
+            {
+                panel_everyRun.Controls[iElement].Location = new Point(0, 45*iElement);
+            }
+            ResumeLayout();
+        }
     }
 }

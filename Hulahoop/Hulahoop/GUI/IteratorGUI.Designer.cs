@@ -37,6 +37,8 @@
             this.textBox_Stepsize = new System.Windows.Forms.TextBox();
             this.textBox_Start = new System.Windows.Forms.TextBox();
             this.label_Close = new System.Windows.Forms.Label();
+            this.label_Actual = new System.Windows.Forms.Label();
+            this.label_Value = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label_Name
@@ -107,17 +109,38 @@
             // 
             this.label_Close.AutoSize = true;
             this.label_Close.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(196)))), ((int)(((byte)(20)))), ((int)(((byte)(94)))));
-            this.label_Close.Location = new System.Drawing.Point(294, 0);
+            this.label_Close.Location = new System.Drawing.Point(361, 0);
             this.label_Close.Name = "label_Close";
             this.label_Close.Size = new System.Drawing.Size(14, 13);
             this.label_Close.TabIndex = 10;
             this.label_Close.Text = "X";
+            // 
+            // label_Actual
+            // 
+            this.label_Actual.AutoSize = true;
+            this.label_Actual.Location = new System.Drawing.Point(307, 5);
+            this.label_Actual.Name = "label_Actual";
+            this.label_Actual.Size = new System.Drawing.Size(37, 13);
+            this.label_Actual.TabIndex = 11;
+            this.label_Actual.Text = "Actual";
+            // 
+            // label_Value
+            // 
+            this.label_Value.AutoSize = true;
+            this.label_Value.Location = new System.Drawing.Point(310, 24);
+            this.label_Value.MinimumSize = new System.Drawing.Size(55, 0);
+            this.label_Value.Name = "label_Value";
+            this.label_Value.Size = new System.Drawing.Size(55, 13);
+            this.label_Value.TabIndex = 12;
+            this.label_Value.Text = "0";
             // 
             // IteratorGUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.Controls.Add(this.label_Value);
+            this.Controls.Add(this.label_Actual);
             this.Controls.Add(this.label_Close);
             this.Controls.Add(this.textBox_Start);
             this.Controls.Add(this.textBox_Stepsize);
@@ -128,7 +151,7 @@
             this.Controls.Add(this.label_Start);
             this.Controls.Add(this.label_Name);
             this.Name = "IteratorGUI";
-            this.Size = new System.Drawing.Size(307, 46);
+            this.Size = new System.Drawing.Size(374, 46);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -145,5 +168,7 @@
         private System.Windows.Forms.TextBox textBox_Stepsize;
         private System.Windows.Forms.TextBox textBox_Start;
         private System.Windows.Forms.Label label_Close;
+        private System.Windows.Forms.Label label_Actual;
+        private System.Windows.Forms.Label label_Value;
     }
 }

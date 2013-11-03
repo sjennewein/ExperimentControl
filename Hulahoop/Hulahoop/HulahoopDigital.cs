@@ -51,7 +51,7 @@ namespace Hulahoop
             }
         }
 
-        public void Delete(IteratorGUI iterator)
+        public void Remove(IteratorGUI iterator)
         {
             SuspendLayout();
             panel_Iterator.Controls.Remove(iterator);
@@ -62,7 +62,7 @@ namespace Hulahoop
             ResumeLayout();
         }
 
-        public void Delete(EveryXRunGUI everyXRun)
+        public void Remove(EveryXRunGUI everyXRun)
         {
             SuspendLayout();
             panel_everyRun.Controls.Remove(everyXRun);

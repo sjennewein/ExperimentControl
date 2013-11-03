@@ -1,15 +1,16 @@
-﻿using DigitalOutput.Model;
+﻿using DigitalOutput.Hardware;
+using DigitalOutput.Model;
 
 namespace DigitalOutput.Controller
 {
     public class ControllerFabric
     {
-        public static ControllerCard GenerateCard(ModelCard model = null)
+        public static ControllerCard GenerateCard(Buffer buffer, ModelCard model = null)
         {
             if (model == null)
                 model = ModelFabric.GenerateCard();
 
-            var newControllerCard = new ControllerCard(model);
+            var newControllerCard = new ControllerCard(model, buffer);            
 
             Description[] newDescriptions = new Description[model.ChannelDescription.Length];
             for (int iDescription = 0; iDescription < model.ChannelDescription.Length; iDescription++ )

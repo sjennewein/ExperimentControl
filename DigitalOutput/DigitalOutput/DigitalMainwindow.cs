@@ -6,9 +6,11 @@ using System.Text;
 using System.Windows.Forms;
 using DigitalOutput.Controller;
 using DigitalOutput.GUI;
+using DigitalOutput.Hardware;
 using DigitalOutput.Model;
 using fastJSON;
 using Hulahoop;
+using Buffer = DigitalOutput.Hardware.Buffer;
 
 
 namespace DigitalOutput
@@ -16,6 +18,7 @@ namespace DigitalOutput
     public partial class DigitalMainwindow : Form
     {
         private ControllerCard _card;
+        private Buffer _buffer = new Buffer();        
         private Form _loops = new HulahoopDigital();
 
         public DigitalMainwindow()
@@ -23,7 +26,7 @@ namespace DigitalOutput
             InitializeComponent();
             WindowState = FormWindowState.Maximized;            
             Console.WriteLine(Width);
-            _card = ControllerFabric.GenerateCard();
+            _card = ControllerFabric.GenerateCard(_buffer);
             textBox_Flow.DataBindings.Add("Text", _card, "Flow", false, DataSourceUpdateMode.OnPropertyChanged);
             SuspendLayout();
             Helper.GenerateTabView(TabPanel, _card);
@@ -68,7 +71,7 @@ namespace DigitalOutput
             }
             
             ModelCard loadedCard = (ModelCard) fastJSON.JSON.Instance.ToObject(input);
-            _card = ControllerFabric.GenerateCard(loadedCard);
+            _card = ControllerFabric.GenerateCard(_buffer, loadedCard);
             SuspendLayout();
             Helper.DisposeTabs(TabPanel);                        
             Helper.GenerateTabView(TabPanel,_card);            

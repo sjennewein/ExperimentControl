@@ -1,17 +1,20 @@
-﻿using Hulahoop.Model;
+﻿using System.Collections.Generic;
+using Hulahoop.Interface;
+using Hulahoop.Model;
 
 namespace Hulahoop.Controller
 {
-    public class ControllerIterator
+    public class ControllerIterator : IteratorSubject
     {
         private readonly ModelIterator _model;
+        private readonly List<IteratorObserver> _observers = new List<IteratorObserver>();
 
         public ControllerIterator(ModelIterator model)
         {
             _model = model;
         }
 
-        private int Value = 0;
+        private int _value = 0;
 
         public int Start
         {
@@ -39,14 +42,29 @@ namespace Hulahoop.Controller
 
         public void Increment()
         {
-            if(Value <= Stop)
+            if (_value > Stop) 
+                return;
+
+            _value += StepSize;
+            
+            foreach (var observer in _observers)
             {
-                Value += StepSize;
+                observer.NewValue(_value);
             }
         }
 
         public void Close()
         {
+        }
+
+        public void Register(IteratorObserver newObserver)
+        {
+            _observers.Add(newObserver);
+        }
+
+        public void UnRegister(IteratorObserver goneObserver)
+        {
+            _observers.Remove(goneObserver);
         }
     }
 }

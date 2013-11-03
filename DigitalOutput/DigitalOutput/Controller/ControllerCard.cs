@@ -7,11 +7,11 @@ namespace DigitalOutput.Controller
 {
     public class ControllerCard
     {
-        private readonly Buffer _hardwareBuffer = new Buffer();
+        private readonly Buffer _hardwareBuffer;
         private readonly ModelCard _model;
         public ControllerPattern[] Patterns;
 
-        public ControllerCard(ModelCard model)
+        public ControllerCard(ModelCard model, Buffer buffer)
         {
             _model = model;
             Patterns = new ControllerPattern[_model.Patterns.Length];

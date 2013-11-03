@@ -25,7 +25,7 @@ namespace Hulahoop.GUI
             HoopManager.EveryXRun.Remove(_controller);
             var label = (Label) sender;
             var parent = (HulahoopDigital) label.Parent.Parent.Parent;
-            parent.Delete(this);
+            parent.Remove(this);
         }
     }
 }

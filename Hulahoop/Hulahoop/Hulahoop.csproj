@@ -67,6 +67,8 @@
     <Compile Include="GUI\EveryXRunGUI.Designer.cs">
       <DependentUpon>EveryXRunGUI.cs</DependentUpon>
     </Compile>
+    <Compile Include="Interface\IteratorObserver.cs" />
+    <Compile Include="Interface\IteratorSubject.cs" />
     <Compile Include="Model\AnalogData.cs" />
     <Compile Include="Model\DigitalData.cs" />
     <Compile Include="Model\ModelIterator.cs" />

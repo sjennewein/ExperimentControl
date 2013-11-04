@@ -111,6 +111,7 @@ namespace DigitalOutput
         private void button_HulaHoop_Click(object sender, EventArgs e)
         {
             _loops.Visible = true;
+            _loops.Focus();
         }       
     }
 }

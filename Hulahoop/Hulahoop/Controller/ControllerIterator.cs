@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using Hulahoop.Interface;
 using Hulahoop.Model;
+using Ionic.Zip;
+using fastJSON;
 
 namespace Hulahoop.Controller
 {
@@ -37,7 +39,14 @@ namespace Hulahoop.Controller
         public string Name
         {
             get { return _model.Name; }
-            set { _model.Name = value; }
+            set
+            {
+                _model.Name = value;
+                foreach (var observer in _observers)
+                {
+                    observer.NewName(_model.Name);
+                }                
+            }
         }
 
         public void Increment()
@@ -55,6 +64,12 @@ namespace Hulahoop.Controller
 
         public void Close()
         {
+        }
+
+        public void Save(ZipFile zip)
+        {
+            string json = JSON.Instance.ToJSON(_model);
+            zip.AddEntry("Iterator_" + Name + ".txt", json);
         }
 
         public void Register(IteratorObserver newObserver)

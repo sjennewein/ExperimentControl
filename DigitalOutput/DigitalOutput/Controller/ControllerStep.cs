@@ -4,10 +4,11 @@ using System.Drawing;
 using System.Windows.Forms;
 using DigitalOutput.Model;
 using Hulahoop.Controller;
+using Hulahoop.Interface;
 
 namespace DigitalOutput.Controller
 {
-    public class ControllerStep : INotifyPropertyChanged
+    public class ControllerStep : INotifyPropertyChanged, IteratorObserver
     {
         private readonly ModelStep _model;
         private int _syncedValue;
@@ -17,6 +18,15 @@ namespace DigitalOutput.Controller
         public ControllerStep(ModelStep model)
         {
             _model = model;
+            if (_model.Iterator != "")
+            {
+                foreach (var iterator in HoopManager.Iterators)
+                {
+                    if(iterator.Name == _model.Iterator)
+                        iterator.Register(this);
+                }
+            }
+
             Channels = new ControllerChannel[_model.Channels.Length];
             for (int iChannel = 0; iChannel < _model.Channels.Length; iChannel++)
             {
@@ -55,6 +65,7 @@ namespace DigitalOutput.Controller
         }
 
         public int Duration { get { return _model.Duration.Value; } set { _model.Duration.Value = value; } }
+        public string Iterator { get { return _model.Iterator; } set { _model.Iterator = value; } }
 
         private void PropertyHasChanged(string propertyName)
         {
@@ -71,7 +82,7 @@ namespace DigitalOutput.Controller
             foreach (var iterator in HoopManager.Iterators)
             {
                 var item = new MenuItem(iterator.Name, SwitchToHooping);                
-                contextMenu.MenuItems.Add(item);
+                contextMenu.MenuItems.Add(item);                
             }
             foreach (var EveryXthRun in HoopManager.EveryXRun)
             {
@@ -87,9 +98,21 @@ namespace DigitalOutput.Controller
             var item = (MenuItem) sender;
             var menu = (ContextMenu) item.Parent;
             var textBox = (TextBox) menu.SourceControl;
-            textBox.Text = item.Text;
+            Iterator = item.Text;
+            RegisterToSubject();
             textBox.ReadOnly = true;
             textBox.DataBindings.RemoveAt(0);
+            
+            textBox.DataBindings.Add("Text", this, "Iterator", false, DataSourceUpdateMode.OnPropertyChanged);
+        }
+
+        private void RegisterToSubject()
+        {
+            foreach (var iterator in HoopManager.Iterators)
+            {
+                if (iterator.Name == Iterator)
+                    iterator.Register(this);
+            }    
         }
 
         public void SwitchToManual(object sender, EventArgs e)
@@ -97,10 +120,28 @@ namespace DigitalOutput.Controller
             var item = (MenuItem)sender;
             var menu = (ContextMenu)item.Parent;
             var textBox = (TextBox)menu.SourceControl;
+            foreach (var iterator in HoopManager.Iterators)
+            {
+                if(iterator.Name == Iterator)
+                    iterator.UnRegister(this);
+                Iterator = "";
+            }
             textBox.ReadOnly = false;
+            textBox.DataBindings.RemoveAt(0);
             textBox.DataBindings.Add("Text", this, "Duration", false, DataSourceUpdateMode.OnPropertyChanged);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public void NewValue(double value)
+        {
+            Duration = (int) value;
+        }
+
+        public void NewName(string name)
+        {
+            Iterator = name;
+            PropertyHasChanged("Iterator");
+        }
     }
 }

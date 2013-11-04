@@ -1,6 +1,7 @@
-﻿using System.IO;
-using DigitalOutput.Hardware;
+﻿using DigitalOutput.Hardware;
 using DigitalOutput.Model;
+using Hulahoop.Controller;
+using Ionic.Zip;
 using fastJSON;
 
 namespace DigitalOutput.Controller
@@ -38,23 +39,26 @@ namespace DigitalOutput.Controller
             _hardwareBuffer.Stop();
         }
 
-        public void Save(Stream fileStream)
+        public void Save(string fileName)
         {
             string json = JSON.Instance.ToJSON(_model);
-
-            using (var writer = new StreamWriter(fileStream))
+            using (var zip = new ZipFile())
             {
-                writer.Write(json);
-                writer.Close();
+                zip.AddEntry("DigitalData.txt", json);
+                HoopManager.Save(zip);
+                zip.Save(fileName);
             }
         }
 
         public void CopyToBuffer()
-        {            
+        {
             string data = JSON.Instance.ToJSON(_model);
             _hardwareBuffer.UpdateData(data);
         }
 
+        /// <summary>
+        /// Saves Values for UNDO
+        /// </summary>
         public void StoreSyncedValues()
         {
             foreach (ControllerPattern pattern in Patterns)
@@ -62,7 +66,10 @@ namespace DigitalOutput.Controller
                 pattern.StoreSyncedValues();
             }
         }
-        
+
+        /// <summary>
+        /// Restores Values for UNDO
+        /// </summary>
         public void RestoreSyncedValues()
         {
             foreach (ControllerPattern pattern in Patterns)

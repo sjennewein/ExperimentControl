@@ -9,6 +9,8 @@ namespace Hulahoop
 {
     public partial class HulahoopDigital : Form
     {
+        private int _iterator = 0;
+        private int _xthRun = 0;
         public HulahoopDigital()
         {
             InitializeComponent();
@@ -17,17 +19,21 @@ namespace Hulahoop
         private void button_Iterator_Click(object sender, EventArgs e)
         {
             var newIterator = new ControllerIterator(new ModelIterator());
+            newIterator.Name = "Iterator" + _iterator;
             int yPosition = panel_Iterator.Controls.Count;
             HoopManager.Iterators.Add(newIterator);
-            panel_Iterator.Controls.Add(new IteratorGUI(newIterator) {Location = new Point(0, 45*yPosition)});            
+            panel_Iterator.Controls.Add(new IteratorGUI(newIterator) {Location = new Point(0, 45*yPosition)});
+            _iterator++;
         }
 
         private void button_EveryXthRun_Click(object sender, EventArgs e)
         {
             var newEveryXRun = new ControllerEveryXRun(new ModelRunEveryX());
+            newEveryXRun.Name = "XthRun" + _xthRun;
             int yPosition = panel_everyRun.Controls.Count;
             HoopManager.EveryXRun.Add(newEveryXRun);
             panel_everyRun.Controls.Add(new EveryXRunGUI(newEveryXRun) {Location = new Point(0, 45*yPosition)});
+            _xthRun++;
         }
 
         private void HulahoopDigital_FormClosing(object sender, FormClosingEventArgs e)
@@ -39,6 +45,8 @@ namespace Hulahoop
 
         public void ReLoad()
         {
+            panel_Iterator.Controls.Clear();
+            panel_everyRun.Controls.Clear();
             foreach (ControllerIterator iterator in HoopManager.Iterators)
             {
                 int yPosition = panel_Iterator.Controls.Count;

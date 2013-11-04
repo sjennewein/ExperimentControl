@@ -34,6 +34,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="fastJSON">
+      <HintPath>external_Library\fastJSON\fastJSON.dll</HintPath>
+    </Reference>
+    <Reference Include="Ionic.Zip.Reduced">
+      <HintPath>external_Library\IonicZip\Ionic.Zip.Reduced.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -69,8 +75,6 @@
     </Compile>
     <Compile Include="Interface\IteratorObserver.cs" />
     <Compile Include="Interface\IteratorSubject.cs" />
-    <Compile Include="Model\AnalogData.cs" />
-    <Compile Include="Model\DigitalData.cs" />
     <Compile Include="Model\ModelIterator.cs" />
     <Compile Include="Model\ModelRunEveryX.cs" />
     <Compile Include="Program.cs" />

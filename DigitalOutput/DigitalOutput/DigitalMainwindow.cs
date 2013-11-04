@@ -8,9 +8,11 @@ using DigitalOutput.Controller;
 using DigitalOutput.GUI;
 using DigitalOutput.Hardware;
 using DigitalOutput.Model;
+using Hulahoop.Controller;
 using fastJSON;
 using Hulahoop;
 using Buffer = DigitalOutput.Hardware.Buffer;
+using Ionic.Zip;
 
 
 namespace DigitalOutput
@@ -19,7 +21,7 @@ namespace DigitalOutput
     {
         private ControllerCard _card;
         private Buffer _buffer = new Buffer();        
-        private Form _loops = new HulahoopDigital();
+        private HulahoopDigital _loops = new HulahoopDigital();
 
         public DigitalMainwindow()
         {
@@ -42,12 +44,7 @@ namespace DigitalOutput
             if (saveFileDialog.ShowDialog() != DialogResult.OK)
                 return;
 
-            using (Stream fileStream = saveFileDialog.OpenFile())
-            {
-                _card.Save(fileStream);
-                fileStream.Close();
-            }   
-            
+            _card.Save(saveFileDialog.FileName);             
         }
 
         private void button_Load_Click(object sender, EventArgs e)
@@ -60,19 +57,25 @@ namespace DigitalOutput
             if (loadFileDialog.ShowDialog() != DialogResult.OK)
                 return;
 
-            using (FileStream fileStream = new FileStream(loadFileDialog.FileName, FileMode.Open))
-            {                             
-                   using(var sr = new StreamReader(fileStream))
-                   {
-                       input = sr.ReadLine();
-                       sr.Close();
-                   }
-                fileStream.Close();
+            using (ZipFile zip = ZipFile.Read(loadFileDialog.FileName))
+            {
+                using (var ms = new MemoryStream())
+                {
+                    ZipEntry entry = zip["DigitalData.txt"];
+                    entry.Extract(ms);
+                    ms.Flush();
+                    ms.Position = 0;
+                    input = new StreamReader(ms).ReadToEnd();
+                    ms.Close();
+                }
+                HoopManager.Load(zip); // has to be restored before the card fabric is called
             }
             
             ModelCard loadedCard = (ModelCard) fastJSON.JSON.Instance.ToObject(input);
             _card = ControllerFabric.GenerateCard(_buffer, loadedCard);
+            
             SuspendLayout();
+            _loops.ReLoad();
             Helper.DisposeTabs(TabPanel);                        
             Helper.GenerateTabView(TabPanel,_card);            
             ResumeLayout();

@@ -62,8 +62,18 @@ namespace DigitalOutput.GUI
             {
                 
                 var stepDurationTextBox = new TextBox {Location = new Point(xOffset + iStepDuration*(columnWidth +1), yOffset), Size = new Size(columnWidth, rowHeight)};
-                stepDurationTextBox.DataBindings.Add("Text", pattern.Steps[iStepDuration], "Duration", true,
+                if (pattern.Steps[iStepDuration].Iterator != "")
+                {
+                    stepDurationTextBox.DataBindings.Add("Text", pattern.Steps[iStepDuration], "Iterator", true,
                                                      DataSourceUpdateMode.OnPropertyChanged);
+                    stepDurationTextBox.ReadOnly = true;
+                }
+                else
+                {
+                    stepDurationTextBox.DataBindings.Add("Text", pattern.Steps[iStepDuration], "Duration", true,
+                                                     DataSourceUpdateMode.OnPropertyChanged);
+                }
+                
                 newElements[elementCounter] = stepDurationTextBox;
                 stepDurationTextBox.ContextMenu = new ContextMenu();
                 stepDurationTextBox.ContextMenu.Popup += pattern.Steps[iStepDuration].UpdateContextMenu;

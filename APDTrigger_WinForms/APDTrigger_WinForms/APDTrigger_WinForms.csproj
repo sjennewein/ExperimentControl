@@ -68,7 +68,6 @@
     </Compile>
     <Compile Include="Helper\AgingDataPoint.cs" />
     <Compile Include="Helper\NetworkData.cs" />
-    <Compile Include="Helper\TcpDataTrigger.cs" />
     <Compile Include="Helper\Controller.cs" />
     <Compile Include="Helper\CycleEventData.cs" />
     <Compile Include="Helper\RunEventData.cs" />
@@ -110,7 +109,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\..\ColdNetworkStack\ColdNetworkStack\ColdNetworkStack.csproj">
+      <Project>{455240AB-B9CB-4909-B0E7-AFB52198E91E}</Project>
+      <Name>ColdNetworkStack</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

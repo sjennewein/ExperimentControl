@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Threading;
 using APDTrigger_WinForms.Helper;
 using NationalInstruments.DAQmx;
@@ -33,12 +32,13 @@ namespace APDTrigger.Hardware
         private readonly bool _monitor;
         private readonly Task _myAcquisitionTask;
         private readonly int _myClockEdges;
-        private readonly bool _myRecapture;
+
         private readonly Task _myThresholdTask;
         private readonly Task _myTriggerTask;
+        private readonly ManualResetEvent _pauseCycling = new ManualResetEvent(true);
         private readonly double _threshold;
         private readonly double _triggerBin;
-        private readonly Random rand = new Random(17);
+
         //private readonly 
         private int _NewSample;
         private int _detectedBins;
@@ -47,7 +47,6 @@ namespace APDTrigger.Hardware
         private int[] _mySpectrum;
         private Timer _myTimer;
         private bool _running;
-        private readonly ManualResetEvent _pauseCycling = new ManualResetEvent(true);
 
         /// <summary>
         ///     Provides the functionality of a standard ASPHERIX experiment in terms of the counter card
@@ -56,8 +55,10 @@ namespace APDTrigger.Hardware
         /// <param name="detectionBins">How often this value has to appear in a row before the trigger is send</param>
         /// <param name="apdBinSize">The number of original datapoints per bin (normaly we sample with 1us and want to have 10ms)</param>
         /// <param name="triggerBin">Measurement length for the high-frequency counter in milliseconds</param>
+        /// <param name="monitor"> </param>        
+        /// <param name="clockEdges"> </param>
         public Counter(double threshold, int detectionBins, int apdBinSize, double triggerBin, bool monitor,
-                       bool recapture, int clockEdges)
+                        int clockEdges)
         {
             _myThresholdTask = new Task("ThresholdTask");
             _myTriggerTask = new Task("TriggerTask");
@@ -66,8 +67,7 @@ namespace APDTrigger.Hardware
             _detectionBins = detectionBins;
             _apdBinSize = apdBinSize;
             _triggerBin = triggerBin/1000.0;
-            _monitor = monitor;
-            _myRecapture = recapture;
+            _monitor = monitor;            
             _myClockEdges = clockEdges;
         }
 
@@ -135,9 +135,9 @@ namespace APDTrigger.Hardware
             _myAcquisitionTask.CIChannels.CreateCountEdgesChannel("/Dev1/ctr0", "", edge, 0, countDirection);
 
             _myAcquisitionTask.CIChannels.All.DuplicateCountPrevention = true;
-                
+
             _myAcquisitionTask.CIChannels.All.DataTransferMechanism = CIDataTransferMechanism.Dma;
-            
+
 
             _myAcquisitionTask.Timing.ConfigureSampleClock("/Dev1/PFI0", 1000000.0, clockActiveEdge,
                                                            SampleQuantityMode.FiniteSamples, _myClockEdges);
@@ -151,7 +151,7 @@ namespace APDTrigger.Hardware
             if (_running == false)
             {
                 _myTimer = new Timer(RunExperiment, null, 0, 10);
-                
+
                 _running = true;
             }
         }
@@ -165,14 +165,14 @@ namespace APDTrigger.Hardware
             {
                 _running = false;
                 _myTimer.Change(Timeout.Infinite, Timeout.Infinite);
-                
+
 
                 Thread.Sleep(30); //wait until all timer processes are finished
                 _myTimer.Dispose();
-                
+
                 _myTriggerTask.Stop();
                 _myTriggerTask.Dispose();
-                
+
                 _myThresholdTask.Stop();
                 _myThresholdTask.Dispose();
 
@@ -180,10 +180,9 @@ namespace APDTrigger.Hardware
                 _myAcquisitionTask.Dispose();
 
                 //send finishing event
-                EventHandler finished = Finished;
+                EventHandler finished = MeasurementFinished;
                 if (null != finished)
                     finished(this, new EventArgs());
-                
             }
         }
 
@@ -203,10 +202,8 @@ namespace APDTrigger.Hardware
                 {
                     //used for pausing between runs signaled from the controller
                     _pauseCycling.WaitOne();
-                    
-                        ReadThresholdCounter();
-                    
-                                                            
+
+                    ReadThresholdCounter();
 
                     if (_monitor) //if we only monitor then ignore all fancy measurement functions
                         return;
@@ -219,22 +216,17 @@ namespace APDTrigger.Hardware
 
                     //check if enough bins have been over the threshold => atom in the trap
                     if (_detectedBins >= _detectionBins)
-                    {                       
-
+                    {
                         _detectedBins = 0;
 
                         //send a trigger to the digital output card
                         _myTriggerTask.Start();
                         _myTriggerTask.Stop();
 
-                        
-                            PerformAcquisition();
-                            EvaluateRecapture();
-                        
-                                               
-                    }
 
-                    
+                        PerformAcquisition();
+                        EvaluateRecapture();
+                    }
                 }
                 finally
                 {
@@ -255,18 +247,16 @@ namespace APDTrigger.Hardware
                 var thresholdReader = new CounterReader(_myThresholdTask.Stream);
                 //read 2 elements because the first one is mostly zero   
                 readOutData = thresholdReader.ReadMultiSampleInt32(2);
-                
             }
             finally
             {
                 _myThresholdTask.Stop();
             }
-                
-            
+
 
             if (readOutData.Length >= 1)
             {
-                _NewSample = readOutData[1]; 
+                _NewSample = readOutData[1];
 
                 EventHandler dataUpdate = NewData;
                 if (null != dataUpdate)
@@ -298,24 +288,24 @@ namespace APDTrigger.Hardware
         /// </summary>
         private void PerformAcquisition()
         {
-            int[] data = new int[_myClockEdges];
+            var data = new int[_myClockEdges];
             int readOutSamples = 0;
             try
             {
                 _myAcquisitionTask.Start();
-                CounterReader acquisitionReader = new CounterReader(_myAcquisitionTask.Stream);
-                acquisitionReader.MemoryOptimizedReadMultiSampleInt32(_myClockEdges, ref data, out readOutSamples);                                    
+                var acquisitionReader = new CounterReader(_myAcquisitionTask.Stream);
+                acquisitionReader.MemoryOptimizedReadMultiSampleInt32(_myClockEdges, ref data, out readOutSamples);
             }
-            catch(DaqException e)
-            {                    
+            catch 
+            {
                 return;
             }
             finally
-            { 
-                _myAcquisitionTask.Stop(); 
+            {
+                _myAcquisitionTask.Stop();
             }
-                        
-            
+
+
             _myAcquiredData = data;
 
 
@@ -330,7 +320,7 @@ namespace APDTrigger.Hardware
             _mySpectrum = derivedSamples;
 
             //1us is to fine grain for most of our stuff so we have to bin the acquired data
-            var bins = (int)Math.Ceiling(derivedSamples.Length / (double)_apdBinSize);
+            var bins = (int) Math.Ceiling(derivedSamples.Length/(double) _apdBinSize);
 
             _myBinnedSpectrum = bin(derivedSamples, bins);
 
@@ -342,7 +332,7 @@ namespace APDTrigger.Hardware
         /// </summary>
         private void EvaluateRecapture()
         {
-            CycleEventData.RecaptureType result = CycleEventData.RecaptureType.Lost;            
+            var result = CycleEventData.RecaptureType.Lost;
 
             if (_myBinnedSpectrum[1] + _myBinnedSpectrum[2] > 2*_threshold)
                 result = CycleEventData.RecaptureType.Captured;
@@ -402,10 +392,10 @@ namespace APDTrigger.Hardware
                 recaptureDone(this, e);
         }
 
-        public event EventHandler Finished;
+        public event EventHandler MeasurementFinished;
         public event EventHandler NewData;
         public event EventHandler CycleFinished;
         public event EventHandler RecaptureMeasurementDone;
-        public event EventHandler EmergencyStop;
+       // public event EventHandler EmergencyStop;
     }
 }

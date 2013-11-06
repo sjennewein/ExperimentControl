@@ -108,6 +108,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\ColdNetworkStack\ColdNetworkStack\ColdNetworkStack.csproj">
+      <Project>{455240AB-B9CB-4909-B0E7-AFB52198E91E}</Project>
+      <Name>ColdNetworkStack</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Hulahoop\Hulahoop\Hulahoop.csproj">
       <Project>{84F2B64F-19A4-4D98-BBE5-DE570A5A4D2A}</Project>
       <Name>Hulahoop</Name>

@@ -13,17 +13,16 @@ namespace ColdNetworkStack.Server
         private readonly TcpListener _listener;
         private readonly AutoResetEvent _myClientGate = new AutoResetEvent(false);
         private readonly List<String> _registeredClients = new List<string>();
-        private readonly AutoResetEvent _startAPDTrigger;
-        private readonly ManualResetEvent _startClientRun = new ManualResetEvent(false);
-        private string _analog = "";
-        private string _digital = "";
+        private readonly ManualResetEvent _startClientRun = new ManualResetEvent(false);        
+        private string _analogData = "";
+        private string _digitalData = "";
         private int _enteredClients;
-        private bool _serverRun = true;
-        private int _startedClients;        
+        private bool _serverRun = true;        
+        private int _startedClients;
+        private string _triggerData = "";
 
-        public Server(IPAddress ip, int port, AutoResetEvent apdTrigger)
+        public Server(IPAddress ip, int port)
         {
-            _startAPDTrigger = apdTrigger;
             _listener = new TcpListener(ip, port);
             new Thread(RunServer).Start();
         }
@@ -50,12 +49,11 @@ namespace ColdNetworkStack.Server
         {
             _serverRun = false;
             _myClientGate.Set();
-            _listener.EndAcceptTcpClient((IAsyncResult) _listener);
         }
 
         private void HandleAsyncConnection(IAsyncResult result)
         {
-            var state = new ConnectionStates();
+            bool _run = true;
             var listener = (TcpListener) result.AsyncState;
             TcpClient client;
             //catch exception when the server is closed
@@ -76,9 +74,7 @@ namespace ColdNetworkStack.Server
             client.NoDelay = true;
             client.Client.NoDelay = true;
 
-            state.Status = StateType.Connect;
-
-            while (true)
+            while (_run)
             {
                 var command = (Commands) Enum.Parse(typeof (Commands), ReadNetworkStream(client));
 
@@ -87,8 +83,7 @@ namespace ColdNetworkStack.Server
                     case Commands.Register:
                         RegisterClient(client);
                         break;
-                    case Commands.Data:
-                        state.Status = StateType.Data;
+                    case Commands.Data:                        
                         HandleData(client);
                         break;
                     case Commands.UnRegister:
@@ -98,12 +93,9 @@ namespace ColdNetworkStack.Server
                         TriggerMode(client);
                         break;
                     case Commands.Disconnect:
-                        state.Status = StateType.Disconnect;
+                        _run = false;
                         break;
-                }
-
-                if (state.Status == StateType.Disconnect)
-                    break;
+                }               
             }
             client.Close();
         }
@@ -113,37 +105,21 @@ namespace ColdNetworkStack.Server
             WriteNetworkStream(client, Answers.Ack.ToString());
             while (true)
             {
-
-                if (ReadNetworkStream(client) == Commands.WaitingForTrigger.ToString())
-                {
-                    _enteredClients++;
-                }
+                if (ReadNetworkStream(client) == Commands.WaitingForTrigger.ToString())                
+                    _enteredClients++;                
                 else
-                {
                     return;
-                }
-
-                if (_enteredClients == _registeredClients.Count)
+                
+                if (_enteredClients == _registeredClients.Count) //the last client starts the next round
                 {
-                    _enteredClients = 0;
-                    _startClientRun.Set(); //block the next run cycle                                                           
+                    AllAreWaiting();                                                                          
                 }
 
                 _startClientRun.WaitOne(); //all clients wait until all returned                
-
+                                
                 WriteNetworkStream(client, Commands.Trigger.ToString());
 
-                _startedClients++;
-
-                if (_startedClients == _registeredClients.Count) //when all clients are started, start the hardware trigger
-                {
-                    _startAPDTrigger.Set();
-                    _startedClients = 0;
-                }
-                
                 _startClientRun.Reset(); //block the next run                               
-
-
             }
         }
 
@@ -172,10 +148,10 @@ namespace ColdNetworkStack.Server
             switch (command)
             {
                 case Commands.Digital:
-                    _digital = ReadNetworkStream(client);
+                    _digitalData = ReadNetworkStream(client);
                     break;
                 case Commands.Analog:
-                    _analog = ReadNetworkStream(client);
+                    _analogData = ReadNetworkStream(client);
                     break;
             }
 
@@ -191,10 +167,13 @@ namespace ColdNetworkStack.Server
             switch (command)
             {
                 case Commands.Digital:
-                    WriteNetworkStream(client, _digital);
+                    WriteNetworkStream(client, _digitalData);
                     break;
                 case Commands.Analog:
-                    WriteNetworkStream(client, _analog);
+                    WriteNetworkStream(client, _analogData);
+                    break;
+                case Commands.Trigger:
+                    WriteNetworkStream(client, _triggerData);
                     break;
             }
         }
@@ -264,5 +243,19 @@ namespace ColdNetworkStack.Server
         {
             _startClientRun.Set();
         }
+
+        public void SetTriggerData(string data)
+        {
+            _triggerData = data;
+        }
+
+        private void AllAreWaiting()
+        {
+            EventHandler startTriggerOutput = AllClientsAreWaiting;
+            if (startTriggerOutput != null)
+                startTriggerOutput(this, new EventArgs());
+        }
+
+        public event EventHandler AllClientsAreWaiting;
     }
 }

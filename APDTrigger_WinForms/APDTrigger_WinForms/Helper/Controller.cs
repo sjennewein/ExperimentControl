@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Net;
 using System.Threading;
 using System.Windows.Forms;
 using APDTrigger.Hardware;
+using ColdNetworkStack.Server;
 
 namespace APDTrigger_WinForms.Helper
 {
@@ -14,6 +16,7 @@ namespace APDTrigger_WinForms.Helper
 
         public enum RunType
         {
+            Network,
             Measurement,
             Monitor
         };
@@ -22,10 +25,11 @@ namespace APDTrigger_WinForms.Helper
 
         private const string _myBaseSaveFolder = "d:\\Manipe\\APD\\";
 
-        private readonly object _listPadlock = new object();
+        private readonly object _HistogramDataLock = new object();
         private readonly List<AgingDataPoint> _myDataList = new List<AgingDataPoint>();
 
         private readonly Control _myGUI;
+        private readonly Server _myTcpServer;
         public RunType Run = RunType.Monitor;
         private int _atoms;
         private int _cyclesDone = 1;
@@ -36,7 +40,6 @@ namespace APDTrigger_WinForms.Helper
         private int[] _myHistogramData = new int[600];
         private bool _mySaveApdSignal;
         private int[] _mySpectrum;
-        private TcpDataTrigger _myTcpDataTrigger;
         private Thread _myWorker;
         private int _noAtoms;
         private double _recapturerate;
@@ -44,18 +47,17 @@ namespace APDTrigger_WinForms.Helper
         private string _saveFolder;
         private DateTime _today = DateTime.Now;
         private StreamWriter writer;
-        
-
-
 
         public Controller(Control gui)
         {
             _myGUI = gui;
             _saveFolder = _myBaseSaveFolder + _today.Year + "\\" + _today.Month + "\\" + _today.Day + "\\";
-            _myTcpDataTrigger = new TcpDataTrigger();
+            _myTcpServer = new Server(IPAddress.Any, 9898);
+
         }
 
         #region BindingProperties
+
         public bool IsRunning
         {
             get { return _isRunning; }
@@ -71,10 +73,7 @@ namespace APDTrigger_WinForms.Helper
         //Acquisition parameters
         public int Samples2Acquire { get; set; }
         public int APDBinsize { get; set; }
-        public bool Recapture { get; set; }
 
-        public int TimeBetweenRuns { get; set; }
-        
         //Results/Statistics
         public int CyclesDone
         {
@@ -135,6 +134,7 @@ namespace APDTrigger_WinForms.Helper
         {
             get { return _myHistogramData; }
         }
+
         #endregion
 
         #region INotifyPropertyChanged Members
@@ -171,9 +171,9 @@ namespace APDTrigger_WinForms.Helper
             _myBinnedSpectrum = null;
             _myHistogramData = new int[600];
 
-            _myCounterHardware = new Counter(Threshold, DetectionBins, APDBinsize, Binning, monitorMode, Recapture,
+            _myCounterHardware = new Counter(Threshold, DetectionBins, APDBinsize, Binning, monitorMode,
                                              Samples2Acquire);
-            _myCounterHardware.Finished += OnFinished;
+            _myCounterHardware.MeasurementFinished += OnMeasurementFinished;
             _myCounterHardware.NewData += OnNewData;
             _myCounterHardware.CycleFinished += OnCyleDone;
             _myCounterHardware.RecaptureMeasurementDone += OnRecaptureDone;
@@ -186,10 +186,9 @@ namespace APDTrigger_WinForms.Helper
             _isRunning = true;
         }
 
-        
         //initializing the card is done in a separate thread otherwise the GUI lags from time to time
         /// <summary>
-        /// Is used for multithreading purposes
+        /// Is used for multi-threading purposes
         /// </summary>
         private void BackgroundWork()
         {
@@ -203,7 +202,6 @@ namespace APDTrigger_WinForms.Helper
         /// </summary>
         public void Stop()
         {
-            
             _myCounterHardware.StopMeasurement();
             if (_mySaveApdSignal)
             {
@@ -219,8 +217,7 @@ namespace APDTrigger_WinForms.Helper
         {
             if (IsRunning)
                 Stop();
-            _myTcpDataTrigger.Stop();
-            
+            _myTcpServer.Stop();
         }
 
         /// <summary>
@@ -243,7 +240,7 @@ namespace APDTrigger_WinForms.Helper
             writer.WriteLine(Data);
         }
 
-        private void OnFinished(object sender, EventArgs e)
+        private void OnMeasurementFinished(object sender, EventArgs e)
         {
             EventHandler finished = Finished;
             if (null != finished)
@@ -266,7 +263,7 @@ namespace APDTrigger_WinForms.Helper
             {
                 var runData = new RunEventData(_runsDone, _recapturerate, _atoms, _noAtoms);
                 runDone(this, runData);
-            } 
+            }
         }
 
         /// <summary>
@@ -276,10 +273,9 @@ namespace APDTrigger_WinForms.Helper
         /// <param name="e"></param>
         private void OnCyleDone(object sender, EventArgs e)
         {
-            if (_cyclesDone >= Cycles) //if all cycles per run are done increment runs
+            if (_cyclesDone >= Cycles) //check if the whole run has finished
             {
                 _cyclesDone = 0;
-
 
                 if (SaveSpectrum)
                     SaveRunSpectrum();
@@ -289,21 +285,17 @@ namespace APDTrigger_WinForms.Helper
 
                 OnRunDone();
 
-                _myTcpDataTrigger.Data = new NetworkData(_atoms, _noAtoms, _cyclesDone, _runsDone, TotalRuns, _recapturerate);
+                _myTcpServer.SetTriggerData(
+                    new NetworkData(_atoms, _noAtoms, _cyclesDone, _runsDone, TotalRuns, _recapturerate).Serialize());
 
                 //stop the counter for a certain amount of time
                 _myCounterHardware.Pause();
-                Thread.Sleep(TimeBetweenRuns);
-                
-                //send the network trigger
-                _myTcpDataTrigger.Launch();
+               
                 //start the counter again
                 _myCounterHardware.Resume();
 
                 _runsDone++;
                 OnPropertyChanged("RunsDone");
-
-                
 
 
                 if (_runsDone >= TotalRuns) //if all runs are done stop the run
@@ -321,7 +313,7 @@ namespace APDTrigger_WinForms.Helper
                 cycleDone(this, new EventArgs());
 
 
-            _myTcpDataTrigger.Data = new NetworkData(_atoms, _noAtoms, _cyclesDone, _runsDone, TotalRuns, _recapturerate );
+            // _myTcpServer.Data = new NetworkData(_atoms, _noAtoms, _cyclesDone, _runsDone, TotalRuns, _recapturerate );
 
             _cyclesDone++;
             OnPropertyChanged("CyclesDone");
@@ -356,7 +348,7 @@ namespace APDTrigger_WinForms.Helper
                 _myBinnedSpectrum[i] += _myCounterHardware.BinnedSpectrum[i];
             }
         }
-        
+
         /// <summary>
         /// Saves the spectrum of the whole run
         /// </summary>
@@ -410,7 +402,7 @@ namespace APDTrigger_WinForms.Helper
         {
             var lifetime = new TimeSpan(0, 0, 0, 10);
             var newDataPoint = new AgingDataPoint(Data, lifetime, _myDataList);
-            lock (_listPadlock)
+            lock (_HistogramDataLock)
             {
                 _myDataList.Add(newDataPoint);
             }
@@ -429,7 +421,7 @@ namespace APDTrigger_WinForms.Helper
 
 
             //bucket sort
-            lock (_listPadlock)
+            lock (_HistogramDataLock)
             {
                 for (int iPoint = 0; iPoint < _myDataList.Count; iPoint++)
                 {
@@ -469,6 +461,7 @@ namespace APDTrigger_WinForms.Helper
                     propertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
         }
+
 
 
         public event EventHandler Finished;

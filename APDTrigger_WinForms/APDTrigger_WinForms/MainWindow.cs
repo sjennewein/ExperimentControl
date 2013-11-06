@@ -61,8 +61,7 @@ namespace APDTrigger_WinForms
             textBox_Atoms.DataBindings.Add("Text", _myController, "Atoms", true, DataSourceUpdateMode.OnPropertyChanged);
             textBox_NoAtoms.DataBindings.Add("Text", _myController, "NoAtoms", true,
                                              DataSourceUpdateMode.OnPropertyChanged);
-            textBox_TimeBetweenRun.DataBindings.Add("Text", _myController, "TimeBetweenRuns", true,
-                                               DataSourceUpdateMode.OnPropertyChanged);
+
 
 
             InitializeApdSignalChart();
@@ -295,6 +294,9 @@ namespace APDTrigger_WinForms
                     case "Monitor":
                         _myController.Run = Controller.RunType.Monitor;
                         break;
+                    case "Network":
+                        _myController.Run = Controller.RunType.Network;
+                        break;
                 }
             }
         }
@@ -355,12 +357,9 @@ namespace APDTrigger_WinForms
             radioButton_Endless.Enabled = false;
             radioButton_triggered.Enabled = false;
             CheckBox_SaveSignal.Enabled = false;
-            radioButton_No.Enabled = false;
-            radioButton_Yes.Enabled = false;
             textBox_apdInput.Enabled = false;
             textBox_acquireInput.Enabled = false;
             checkBox_SaveHistogram.Enabled = false;
-            textBox_TimeBetweenRun.Enabled = false;
         }
 
         /// <summary>
@@ -380,12 +379,9 @@ namespace APDTrigger_WinForms
             radioButton_Endless.Enabled = true;
             radioButton_triggered.Enabled = true;
             CheckBox_SaveSignal.Enabled = true;
-            radioButton_No.Enabled = true;
-            radioButton_Yes.Enabled = true;
             textBox_apdInput.Enabled = true;
             textBox_acquireInput.Enabled = true;
-            checkBox_SaveHistogram.Enabled = true;
-            textBox_TimeBetweenRun.Enabled = true;
+            checkBox_SaveHistogram.Enabled = true;            
         }
 
         /// <summary>
@@ -407,36 +403,7 @@ namespace APDTrigger_WinForms
         {
             UpdateApdHistogram();
         }
-
-        /// <summary>
-        /// Callback function that checks which radiobutton for the recapture measurement is checked
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void radioButton_Recapture_CheckedChanged(object sender, EventArgs e)
-        {
-            foreach (Control control in groupBox_Recapture.Controls)
-            {
-                if ((control is RadioButton) == false)
-                    continue;
-
-                var radio = control as RadioButton;
-
-                if (radio.Checked == false)
-                    continue;
-
-                switch (radio.Text)
-                {
-                    case "Yes":
-                        _myController.Recapture = true;
-                        break;
-                    case "No":
-                        _myController.Recapture = false;
-                        break;
-                }
-            }
-        }
-
+        
         private void checkBox_SaveHistogram_CheckedChanged(object sender, EventArgs e)
         {
             var originalSender = (CheckBox) sender;
@@ -520,5 +487,7 @@ namespace APDTrigger_WinForms
         internal delegate void myGuiCallback(object state);
 
         #endregion
+
+        
     }
 }

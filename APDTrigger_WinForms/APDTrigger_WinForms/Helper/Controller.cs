@@ -173,10 +173,10 @@ namespace APDTrigger_WinForms.Helper
 
             _myCounterHardware = new Counter(Threshold, DetectionBins, APDBinsize, Binning, monitorMode,
                                              Samples2Acquire);
-            _myCounterHardware.MeasurementFinished += OnMeasurementFinished;
-            _myCounterHardware.NewData += OnNewData;
+            _myCounterHardware.APDStopped += OnApdStopped;
+            _myCounterHardware.NewAPDValue += OnNewApdValue;
             _myCounterHardware.CycleFinished += OnCyleDone;
-            _myCounterHardware.RecaptureMeasurementDone += OnRecaptureDone;
+            _myCounterHardware.RecaptureEvaluated += OnRecaptureDone;
             //_myCounterHardware.EmergencyStop += OnEmergencyStop;
 
             _myWorker = new Thread(BackgroundWork);
@@ -194,7 +194,7 @@ namespace APDTrigger_WinForms.Helper
         {
             _myCounterHardware.AimTrigger();
             _myCounterHardware.PrepareAcquisition();
-            _myCounterHardware.StartMeasurement();
+            _myCounterHardware.InitializeMeasurementTimer();
         }
 
         /// <summary>
@@ -202,7 +202,7 @@ namespace APDTrigger_WinForms.Helper
         /// </summary>
         public void Stop()
         {
-            _myCounterHardware.StopMeasurement();
+            _myCounterHardware.StopAPDTrigger();
             if (_mySaveApdSignal)
             {
                 writer.Flush();
@@ -240,14 +240,14 @@ namespace APDTrigger_WinForms.Helper
             writer.WriteLine(Data);
         }
 
-        private void OnMeasurementFinished(object sender, EventArgs e)
+        private void OnApdStopped(object sender, EventArgs e)
         {
             EventHandler finished = Finished;
             if (null != finished)
                 finished(this, new EventArgs());
         }
 
-        private void OnNewData(object sender, EventArgs e)
+        private void OnNewApdValue(object sender, EventArgs e)
         {
             AddHistogramData();
             if (SaveApdSignal)
@@ -466,7 +466,7 @@ namespace APDTrigger_WinForms.Helper
 
         public event EventHandler Finished;
 
-        //public event EventHandler NewData;
+        //public event EventHandler NewAPDValue;
 
         public event EventHandler CycleDone;
 

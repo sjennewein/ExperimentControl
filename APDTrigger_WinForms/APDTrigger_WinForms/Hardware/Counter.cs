@@ -146,11 +146,11 @@ namespace APDTrigger.Hardware
         /// <summary>
         /// Sets the timer with which the experiment is started
         /// </summary>
-        public void StartMeasurement()
+        public void InitializeMeasurementTimer()
         {
             if (_running == false)
             {
-                _myTimer = new Timer(RunExperiment, null, 0, 10);
+                _myTimer = new Timer(RunAPDTrigger, null, 0, 10);
 
                 _running = true;
             }
@@ -159,7 +159,7 @@ namespace APDTrigger.Hardware
         /// <summary>
         /// Stops the experiment
         /// </summary>
-        public void StopMeasurement()
+        public void StopAPDTrigger()
         {
             if (_running)
             {
@@ -180,7 +180,7 @@ namespace APDTrigger.Hardware
                 _myAcquisitionTask.Dispose();
 
                 //send finishing event
-                EventHandler finished = MeasurementFinished;
+                EventHandler finished = APDStopped;
                 if (null != finished)
                     finished(this, new EventArgs());
             }
@@ -190,7 +190,7 @@ namespace APDTrigger.Hardware
         /// Runs the experiment
         /// </summary>
         /// <param name="state"></param>
-        private void RunExperiment(object state)
+        private void RunAPDTrigger(object state)
         {
             if (!_running)
                 return;
@@ -224,7 +224,7 @@ namespace APDTrigger.Hardware
                         _myTriggerTask.Stop();
 
 
-                        PerformAcquisition();
+                        MeasureSpectrum();
                         EvaluateRecapture();
                     }
                 }
@@ -258,7 +258,7 @@ namespace APDTrigger.Hardware
             {
                 _NewSample = readOutData[1];
 
-                EventHandler dataUpdate = NewData;
+                EventHandler dataUpdate = NewAPDValue;
                 if (null != dataUpdate)
                     dataUpdate(this, new EventArgs());
             }
@@ -286,7 +286,7 @@ namespace APDTrigger.Hardware
         /// <summary>
         /// Acquires the data from the spectrum/recapture measurement
         /// </summary>
-        private void PerformAcquisition()
+        private void MeasureSpectrum()
         {
             var data = new int[_myClockEdges];
             int readOutSamples = 0;
@@ -384,7 +384,7 @@ namespace APDTrigger.Hardware
         /// <param name="recapture"></param>
         private void RecaptureDone(CycleEventData.RecaptureType recapture)
         {
-            EventHandler recaptureDone = RecaptureMeasurementDone;
+            EventHandler recaptureDone = RecaptureEvaluated;
             var e = new CycleEventData();
             e.Data = recapture;
 
@@ -392,10 +392,10 @@ namespace APDTrigger.Hardware
                 recaptureDone(this, e);
         }
 
-        public event EventHandler MeasurementFinished;
-        public event EventHandler NewData;
+        public event EventHandler APDStopped;
+        public event EventHandler NewAPDValue;
         public event EventHandler CycleFinished;
-        public event EventHandler RecaptureMeasurementDone;
+        public event EventHandler RecaptureEvaluated;
        // public event EventHandler EmergencyStop;
     }
 }

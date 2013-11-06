@@ -8,6 +8,7 @@ namespace ColdNetworkStack
     public enum Answers
     {
         Ack,
-        Nack
+        Nack,
+        Done
     }
 }

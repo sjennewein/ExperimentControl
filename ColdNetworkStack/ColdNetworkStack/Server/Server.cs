@@ -13,12 +13,17 @@ namespace ColdNetworkStack.Server
         private readonly TcpListener _listener;
         private readonly AutoResetEvent _myClientGate = new AutoResetEvent(false);
         private readonly List<String> _registeredClients = new List<string>();
+        private readonly AutoResetEvent _startAPDTrigger;
+        private readonly ManualResetEvent _startClientRun = new ManualResetEvent(false);
         private string _analog = "";
         private string _digital = "";
-        private bool _run = true;
+        private int _enteredClients;
+        private bool _serverRun = true;
+        private int _startedClients;        
 
-        public Server(IPAddress ip, int port)
+        public Server(IPAddress ip, int port, AutoResetEvent apdTrigger)
         {
+            _startAPDTrigger = apdTrigger;
             _listener = new TcpListener(ip, port);
             new Thread(RunServer).Start();
         }
@@ -26,7 +31,7 @@ namespace ColdNetworkStack.Server
         private void RunServer()
         {
             _listener.Start();
-            while (_run)
+            while (_serverRun)
             {
                 try
                 {
@@ -39,6 +44,13 @@ namespace ColdNetworkStack.Server
                 _myClientGate.WaitOne();
             }
             _listener.Stop();
+        }
+
+        public void Stop()
+        {
+            _serverRun = false;
+            _myClientGate.Set();
+            _listener.EndAcceptTcpClient((IAsyncResult) _listener);
         }
 
         private void HandleAsyncConnection(IAsyncResult result)
@@ -82,6 +94,9 @@ namespace ColdNetworkStack.Server
                     case Commands.UnRegister:
                         UnRegisterClient(client);
                         break;
+                    case Commands.EnterTriggerMode:
+                        TriggerMode(client);
+                        break;
                     case Commands.Disconnect:
                         state.Status = StateType.Disconnect;
                         break;
@@ -91,6 +106,45 @@ namespace ColdNetworkStack.Server
                     break;
             }
             client.Close();
+        }
+
+        private void TriggerMode(TcpClient client)
+        {
+            WriteNetworkStream(client, Answers.Ack.ToString());
+            while (true)
+            {
+
+                if (ReadNetworkStream(client) == Commands.WaitingForTrigger.ToString())
+                {
+                    _enteredClients++;
+                }
+                else
+                {
+                    return;
+                }
+
+                if (_enteredClients == _registeredClients.Count)
+                {
+                    _enteredClients = 0;
+                    _startClientRun.Set(); //block the next run cycle                                                           
+                }
+
+                _startClientRun.WaitOne(); //all clients wait until all returned                
+
+                WriteNetworkStream(client, Commands.Trigger.ToString());
+
+                _startedClients++;
+
+                if (_startedClients == _registeredClients.Count) //when all clients are started, start the hardware trigger
+                {
+                    _startAPDTrigger.Set();
+                    _startedClients = 0;
+                }
+                
+                _startClientRun.Reset(); //block the next run                               
+
+
+            }
         }
 
         private void HandleData(TcpClient client)
@@ -137,7 +191,7 @@ namespace ColdNetworkStack.Server
             switch (command)
             {
                 case Commands.Digital:
-                    WriteNetworkStream(client, _digital);                    
+                    WriteNetworkStream(client, _digital);
                     break;
                 case Commands.Analog:
                     WriteNetworkStream(client, _analog);
@@ -190,7 +244,7 @@ namespace ColdNetworkStack.Server
             {
                 using (NetworkStream ns = client.GetStream())
                 {
-                    ns.ReadTimeout = 1000;
+                    ns.ReadTimeout = 60000;
 
                     var reader = new BinaryReader(ns);
                     string input = reader.ReadString();
@@ -203,6 +257,12 @@ namespace ColdNetworkStack.Server
             {
                 Trace.WriteLine(e.Message);
             }
+            return "";
+        }
+
+        public void StartNextRun()
+        {
+            _startClientRun.Set();
         }
     }
 }

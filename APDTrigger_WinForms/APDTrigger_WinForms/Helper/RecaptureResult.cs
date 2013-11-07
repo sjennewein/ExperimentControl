@@ -5,14 +5,14 @@ using System.Text;
 
 namespace APDTrigger_WinForms.Helper
 {
-    public class CycleEventData : EventArgs
+    public class RecaptureResult : EventArgs
     {
-        public enum RecaptureType
+        public enum State
         {
             Captured,
             Lost
         };
 
-        public RecaptureType Data { get; set; }
+        public State Data { get; set; }
     }
 }

@@ -31,6 +31,7 @@ namespace ColdNetworkStack.Server
         public void StopTriggerMode()
         {
             _trigger = false;
+            _triggerSynchronization.Set();
         }
 
         public void StartCommunication(TcpClient client)
@@ -91,19 +92,19 @@ namespace ColdNetworkStack.Server
                 switch (command)
                 {
                     case Commands.WaitingForTrigger:
-                        _parent.ClientEntered();
+                        _parent.ClientReady();
                         break;
                     case Commands.Quit:
                         _trigger = false;
                         break;
                     default:
                         return;
-                }
-
-                if(!_trigger)
-                    break;
+                }            
 
                 _triggerSynchronization.WaitOne(); //all clients wait until all returned                
+                
+                if (!_trigger)
+                    break;
 
                 WriteNetworkStream(client, Commands.Trigger.ToString());                
             }

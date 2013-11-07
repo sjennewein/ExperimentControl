@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using Arction.LightningChartBasic;
 
@@ -12,11 +6,9 @@ namespace APDTrigger_WinForms
 {
     public partial class ApdSignalContextMenu : Form
     {
-        private MainWindow _myCaller;
-        private LightningChartBasic _myChart;
+        private readonly MainWindow _myCaller;
+        private readonly LightningChartBasic _myChart;
         private bool _myAutoUpdate;
-        public double _myMin { get; set; }
-        public double _myMax { get; set; }
 
         public ApdSignalContextMenu(MainWindow caller, LightningChartBasic chart)
         {
@@ -27,7 +19,7 @@ namespace APDTrigger_WinForms
             yMaxBox.DataBindings.Add("Text", this, "_myMax", true, DataSourceUpdateMode.OnPropertyChanged);
             yMinBox.DataBindings.Add("Text", this, "_myMin", true, DataSourceUpdateMode.OnPropertyChanged);
 
-            if(_myAutoUpdate)
+            if (_myAutoUpdate)
             {
                 autoscaleCheckbox.Checked = true;
                 yMinBox.Enabled = false;
@@ -39,6 +31,9 @@ namespace APDTrigger_WinForms
                 activateTextboxes();
             }
         }
+
+        public double _myMin { get; set; }
+        public double _myMax { get; set; }
 
         private void updateButton_Click(object sender, EventArgs e)
         {
@@ -58,9 +53,7 @@ namespace APDTrigger_WinForms
             {
                 _myAutoUpdate = false;
                 activateTextboxes();
-                
             }
-           
         }
 
         private void activateTextboxes()
@@ -69,7 +62,6 @@ namespace APDTrigger_WinForms
             yMaxBox.Enabled = true;
             _myMin = _myChart.YAxes[0].Minimum;
             _myMax = _myChart.YAxes[0].Maximum;
-
         }
 
         private void yMinBox_KeyUp(object sender, KeyEventArgs e)

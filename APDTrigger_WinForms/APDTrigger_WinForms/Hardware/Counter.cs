@@ -39,8 +39,7 @@ namespace APDTrigger.Hardware
         private readonly double _threshold;
         private readonly double _triggerBin;
 
-        //private readonly 
-        private int _NewSample;
+        private int _newDataPoint;
         private int _detectedBins;
         private int[] _myAcquiredData;
         private int[] _myBinnedSpectrum;
@@ -58,7 +57,7 @@ namespace APDTrigger.Hardware
         /// <param name="monitor"> </param>        
         /// <param name="clockEdges"> </param>
         public Counter(double threshold, int detectionBins, int apdBinSize, double triggerBin, bool monitor,
-                        int clockEdges)
+                       int clockEdges)
         {
             _myThresholdTask = new Task("ThresholdTask");
             _myTriggerTask = new Task("TriggerTask");
@@ -66,14 +65,14 @@ namespace APDTrigger.Hardware
             _threshold = threshold;
             _detectionBins = detectionBins;
             _apdBinSize = apdBinSize;
-            _triggerBin = triggerBin/1000.0;
-            _monitor = monitor;            
+            _triggerBin = triggerBin/1000.0; //_triggerBin is needed in seconds triggerBin comes in ms 
+            _monitor = monitor;
             _myClockEdges = clockEdges;
         }
 
-        public int NewSample
+        public int NewDataPoint
         {
-            get { return _NewSample; }
+            get { return _newDataPoint; }
         }
 
         public int[] Spectrum
@@ -180,12 +179,10 @@ namespace APDTrigger.Hardware
                 _myAcquisitionTask.Dispose();
 
                 //send finishing event
-                EventHandler finished = APDStopped;
-                if (null != finished)
-                    finished(this, new EventArgs());
+                ApdStoppedEvent();
             }
         }
-
+       
         /// <summary>
         /// Runs the experiment
         /// </summary>
@@ -195,7 +192,7 @@ namespace APDTrigger.Hardware
             if (!_running)
                 return;
 
-            //keeps on reading data every 10ms but only evaluates it if no other experiment is running
+            //the trigger keeps on starting this function every 10ms but only evaluates it if it's not running
             if (Monitor.TryEnter(_lockExperiment))
             {
                 try
@@ -203,13 +200,13 @@ namespace APDTrigger.Hardware
                     //used for pausing between runs signaled from the controller
                     _pauseCycling.WaitOne();
 
-                    ReadThresholdCounter();
+                    ReadHighFrequencyCounter();
 
                     if (_monitor) //if we only monitor then ignore all fancy measurement functions
                         return;
 
                     //check if the value read from the counter is bigger than the set threshold
-                    if (_NewSample >= _threshold)
+                    if (_newDataPoint >= _threshold)
                         _detectedBins++;
                     else
                         _detectedBins = 0;
@@ -238,7 +235,7 @@ namespace APDTrigger.Hardware
         /// <summary>
         /// Reads values from the high frequency counting
         /// </summary>
-        private void ReadThresholdCounter()
+        private void ReadHighFrequencyCounter()
         {
             int[] readOutData;
             try
@@ -256,17 +253,15 @@ namespace APDTrigger.Hardware
 
             if (readOutData.Length >= 1)
             {
-                _NewSample = readOutData[1];
+                _newDataPoint = readOutData[1];
 
-                EventHandler dataUpdate = NewAPDValue;
-                if (null != dataUpdate)
-                    dataUpdate(this, new EventArgs());
+               NewAPDValueEvent();
             }
 
 
             //_NewSample = 1000 + rand.Next(0,1000);
         }
-
+       
         /// <summary>
         /// pauses the counter
         /// </summary>
@@ -296,7 +291,7 @@ namespace APDTrigger.Hardware
                 var acquisitionReader = new CounterReader(_myAcquisitionTask.Stream);
                 acquisitionReader.MemoryOptimizedReadMultiSampleInt32(_myClockEdges, ref data, out readOutSamples);
             }
-            catch 
+            catch
             {
                 return;
             }
@@ -323,8 +318,6 @@ namespace APDTrigger.Hardware
             var bins = (int) Math.Ceiling(derivedSamples.Length/(double) _apdBinSize);
 
             _myBinnedSpectrum = bin(derivedSamples, bins);
-
-            CycleDone();
         }
 
         /// <summary>
@@ -332,12 +325,12 @@ namespace APDTrigger.Hardware
         /// </summary>
         private void EvaluateRecapture()
         {
-            var result = CycleEventData.RecaptureType.Lost;
+            var result = new RecaptureResult {Data = RecaptureResult.State.Lost};
 
             if (_myBinnedSpectrum[1] + _myBinnedSpectrum[2] > 2*_threshold)
-                result = CycleEventData.RecaptureType.Captured;
+                result.Data = RecaptureResult.State.Captured;
 
-            RecaptureDone(result);
+            CycleFinishedEvent(result);
         }
 
         /// <summary>
@@ -354,7 +347,7 @@ namespace APDTrigger.Hardware
                 int tempData = 0;
                 for (int counter = 0; counter < _apdBinSize; counter++)
                 {
-                    if (binStep == 0 && counter == 0) //remove first 10 bins they might be rubbish
+                    if (binStep == 0 && counter == 0) //remove first 10 data-points they might be rubbish
                         counter += 10;
 
                     if (binStep + counter > data.Length - 1)
@@ -368,34 +361,33 @@ namespace APDTrigger.Hardware
             return binnedData;
         }
 
-        /// <summary>
-        /// Send event that run is over
-        /// </summary>
-        private void CycleDone()
+
+        private void NewAPDValueEvent()
         {
-            EventHandler cycleFinished = CycleFinished;
-            if (null != cycleFinished)
-                cycleFinished(this, new EventArgs());
+            EventHandler dataUpdate = NewAPDValue;
+            if (null != dataUpdate)
+                dataUpdate(this, new EventArgs());
+        }
+
+        private void ApdStoppedEvent()
+        {
+            EventHandler finished = APDStopped;
+            if (null != finished)
+                finished(this, new EventArgs());
         }
 
         /// <summary>
-        /// Send event that the recapture measurement is over
+        /// Send event that run is over
         /// </summary>
-        /// <param name="recapture"></param>
-        private void RecaptureDone(CycleEventData.RecaptureType recapture)
+        private void CycleFinishedEvent(RecaptureResult result)
         {
-            EventHandler recaptureDone = RecaptureEvaluated;
-            var e = new CycleEventData();
-            e.Data = recapture;
-
-            if (null != recaptureDone)
-                recaptureDone(this, e);
+            EventHandler cycleFinished = CycleFinished;
+            if (null != cycleFinished)
+                cycleFinished(this, result);
         }
 
         public event EventHandler APDStopped;
         public event EventHandler NewAPDValue;
         public event EventHandler CycleFinished;
-        public event EventHandler RecaptureEvaluated;
-       // public event EventHandler EmergencyStop;
     }
 }

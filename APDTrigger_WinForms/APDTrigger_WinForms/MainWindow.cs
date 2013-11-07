@@ -32,7 +32,7 @@ namespace APDTrigger_WinForms
             _myController.TotalRuns = 1;
             stop_button.Enabled = false;
 
-            _myController.Finished += OnFinished;
+            _myController.APDStopped += OnApdStopped;
             FormClosing += OnQuit;
                 //hopefully enough to close all hardware handles when closing the application            
 
@@ -187,11 +187,11 @@ namespace APDTrigger_WinForms
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void OnFinished(object sender, EventArgs e)
+        private void OnApdStopped(object sender, EventArgs e)
         {
             if (InvokeRequired)
             {
-                GuiUpdate callback = OnFinished;
+                GuiUpdate callback = OnApdStopped;
                 Invoke(callback, new[] {sender, e});
             }
             else

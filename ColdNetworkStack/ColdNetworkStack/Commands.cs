@@ -15,6 +15,7 @@
         WaitingForTrigger,
         RunFinished,
         Data,
-        Disconnect
+        Disconnect,
+        Quit
     }    
 }

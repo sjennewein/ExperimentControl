@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -10,16 +8,16 @@ namespace ColdNetworkStack.Server
 {
     public class Server
     {
+        private readonly List<ClientProtocol> _clientTalks = new List<ClientProtocol>();
         private readonly TcpListener _listener;
         private readonly AutoResetEvent _myClientGate = new AutoResetEvent(false);
         private readonly List<String> _registeredClients = new List<string>();
-        private readonly ManualResetEvent _startClientRun = new ManualResetEvent(false);        
-        private string _analogData = "";
-        private string _digitalData = "";
-        private int _enteredClients;
-        private bool _serverRun = true;        
-        private int _startedClients;
-        private string _triggerData = "";
+        public string AnalogData = "";
+        public int CyclesPerRun = 0;
+        public string DigitalData = "";
+        public string TriggerData = "";
+        private long _enteredClients = 0;        
+        private bool _serverRun = true;
 
         public Server(IPAddress ip, int port)
         {
@@ -51,9 +49,18 @@ namespace ColdNetworkStack.Server
             _myClientGate.Set();
         }
 
+        public void RegisterClient(string name)
+        {
+            _registeredClients.Add(name);
+        }
+
+        public void UnregisterClient(string name)
+        {
+            _registeredClients.Remove(name);
+        }
+
         private void HandleAsyncConnection(IAsyncResult result)
         {
-            bool _run = true;
             var listener = (TcpListener) result.AsyncState;
             TcpClient client;
             //catch exception when the server is closed
@@ -74,188 +81,37 @@ namespace ColdNetworkStack.Server
             client.NoDelay = true;
             client.Client.NoDelay = true;
 
-            while (_run)
-            {
-                var command = (Commands) Enum.Parse(typeof (Commands), ReadNetworkStream(client));
+            var clientTalk = new ClientProtocol(this);
+            _clientTalks.Add(clientTalk);
 
-                switch (command)
-                {
-                    case Commands.Register:
-                        RegisterClient(client);
-                        break;
-                    case Commands.Data:                        
-                        HandleData(client);
-                        break;
-                    case Commands.UnRegister:
-                        UnRegisterClient(client);
-                        break;
-                    case Commands.EnterTriggerMode:
-                        TriggerMode(client);
-                        break;
-                    case Commands.Disconnect:
-                        _run = false;
-                        break;
-                }               
-            }
+            clientTalk.StartCommunication(client);
+
+            _clientTalks.Remove(clientTalk);
             client.Close();
-        }
+        }        
 
-        private void TriggerMode(TcpClient client)
+        public void ClientEntered()
         {
-            WriteNetworkStream(client, Answers.Ack.ToString());
-            while (true)
+            Interlocked.Add(ref _enteredClients, 1);
+
+            if (Interlocked.Read(ref _enteredClients) == _registeredClients.Count)
             {
-                if (ReadNetworkStream(client) == Commands.WaitingForTrigger.ToString())                
-                    _enteredClients++;                
-                else
-                    return;
+                Interlocked.Exchange(ref _enteredClients, 0);
                 
-                if (_enteredClients == _registeredClients.Count) //the last client starts the next round
-                {
-                    AllAreWaiting();                                                                          
-                }
-
-                _startClientRun.WaitOne(); //all clients wait until all returned                
-                                
-                WriteNetworkStream(client, Commands.Trigger.ToString());
-
-                _startClientRun.Reset(); //block the next run                               
+                foreach (ClientProtocol client in _clientTalks)
+                    client.SendTrigger();
+                
+                ReadyForNextRun();
             }
         }
 
-        private void HandleData(TcpClient client)
+        private void ReadyForNextRun()
         {
-            WriteNetworkStream(client, Answers.Ack.ToString());
-            var command = (Commands) Enum.Parse(typeof (Commands), ReadNetworkStream(client));
-
-            switch (command)
-            {
-                case Commands.Load:
-                    LoadData(client);
-                    break;
-                case Commands.Save:
-                    SaveData(client);
-                    break;
-            }
+            EventHandler nextRun = AllClientsAreReady;
+            if(nextRun != null)
+                AllClientsAreReady(this,new EventArgs());
         }
 
-        private void SaveData(TcpClient client)
-        {
-            WriteNetworkStream(client, Answers.Ack.ToString());
-            var command = (Commands) Enum.Parse(typeof (Commands), ReadNetworkStream(client));
-            WriteNetworkStream(client, Answers.Ack.ToString());
-
-            switch (command)
-            {
-                case Commands.Digital:
-                    _digitalData = ReadNetworkStream(client);
-                    break;
-                case Commands.Analog:
-                    _analogData = ReadNetworkStream(client);
-                    break;
-            }
-
-            WriteNetworkStream(client, Answers.Ack.ToString());
-        }
-
-        private void LoadData(TcpClient client)
-        {
-            WriteNetworkStream(client, Answers.Ack.ToString());
-            var command = (Commands) Enum.Parse(typeof (Commands), ReadNetworkStream(client));
-            WriteNetworkStream(client, Answers.Ack.ToString());
-
-            switch (command)
-            {
-                case Commands.Digital:
-                    WriteNetworkStream(client, _digitalData);
-                    break;
-                case Commands.Analog:
-                    WriteNetworkStream(client, _analogData);
-                    break;
-                case Commands.Trigger:
-                    WriteNetworkStream(client, _triggerData);
-                    break;
-            }
-        }
-
-        private void RegisterClient(TcpClient client)
-        {
-            WriteNetworkStream(client, Answers.Ack.ToString());
-
-            string name = ReadNetworkStream(client);
-            _registeredClients.Add(name);
-
-            WriteNetworkStream(client, Answers.Ack.ToString());
-        }
-
-        private void UnRegisterClient(TcpClient client)
-        {
-            WriteNetworkStream(client, Answers.Ack.ToString());
-
-            string name = ReadNetworkStream(client);
-            _registeredClients.Remove(name);
-
-            WriteNetworkStream(client, Answers.Ack.ToString());
-        }
-
-        private void WriteNetworkStream(TcpClient client, string message)
-        {
-            try
-            {
-                using (NetworkStream ns = client.GetStream())
-                {
-                    ns.WriteTimeout = 1000;
-                    var writer = new BinaryWriter(ns);
-                    writer.Write(message);
-                    writer.Flush();
-                    writer.Close();
-                }
-            }
-            catch (Exception e)
-            {
-                Trace.WriteLine(e.Message);
-            }
-        }
-
-        private string ReadNetworkStream(TcpClient client)
-        {
-            try
-            {
-                using (NetworkStream ns = client.GetStream())
-                {
-                    ns.ReadTimeout = 60000;
-
-                    var reader = new BinaryReader(ns);
-                    string input = reader.ReadString();
-
-                    reader.Close();
-                    return input;
-                }
-            }
-            catch (Exception e)
-            {
-                Trace.WriteLine(e.Message);
-            }
-            return "";
-        }
-
-        public void StartNextRun()
-        {
-            _startClientRun.Set();
-        }
-
-        public void SetTriggerData(string data)
-        {
-            _triggerData = data;
-        }
-
-        private void AllAreWaiting()
-        {
-            EventHandler startTriggerOutput = AllClientsAreWaiting;
-            if (startTriggerOutput != null)
-                startTriggerOutput(this, new EventArgs());
-        }
-
-        public event EventHandler AllClientsAreWaiting;
+        public event EventHandler AllClientsAreReady;
     }
 }

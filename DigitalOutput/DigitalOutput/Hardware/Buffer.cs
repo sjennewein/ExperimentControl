@@ -14,7 +14,7 @@ namespace DigitalOutput.Hardware
         private Thread _myWorker;
         private UInt32[] _outputSequence;
         private bool _run = true;
-        private bool _running;
+        private bool _running = false;
         private string _serializedData;
         private bool _updated;
 
@@ -40,15 +40,15 @@ namespace DigitalOutput.Hardware
 
                 //initialize output card
                 var digitalOutputTask = new Task("PCI6534");
-                digitalOutputTask.DOChannels.CreateChannel("/Dev2/port0_32", "",
+                digitalOutputTask.DOChannels.CreateChannel("/Dev1/port0_32", "",
                                                            ChannelLineGrouping.OneChannelForAllLines);
 
                 double sampleRate = _data.SampleRate.GetFrequency(Timing.Frequency.Hz);
 
                 digitalOutputTask.Timing.ConfigureSampleClock("", sampleRate,
                                                               SampleClockActiveEdge.Rising,
-                                                              SampleQuantityMode.FiniteSamples);
-                digitalOutputTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger("/Dev2/PFI6",
+                                                              SampleQuantityMode.FiniteSamples,_outputSequence.Length);
+                digitalOutputTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger("/Dev1/PFI6",
                                                                                     DigitalEdgeStartTriggerEdge.Rising);
 
                 //write output to card

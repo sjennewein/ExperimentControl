@@ -16,6 +16,7 @@ namespace DigitalOutput.Controller
         {
             _model = model;
             Patterns = new ControllerPattern[_model.Patterns.Length];
+            _hardwareBuffer = buffer;
             for (int iPattern = 0; iPattern < _model.Patterns.Length; iPattern++)
             {
                 ModelPattern modelPattern = _model.Patterns[iPattern];

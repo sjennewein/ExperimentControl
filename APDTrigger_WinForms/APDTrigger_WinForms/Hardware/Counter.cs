@@ -32,9 +32,10 @@ namespace APDTrigger.Hardware
         private readonly bool _monitor;
         private readonly Task _myAcquisitionTask;
         private readonly int _myClockEdges;
-
+        private readonly Task _mySampleClock;
         private readonly Task _myThresholdTask;
         private readonly Task _myTriggerTask;
+        private readonly Task _myFrequencyGenerator;
         private readonly ManualResetEvent _pauseCycling = new ManualResetEvent(true);
         private readonly double _threshold;
         private readonly double _triggerBin;
@@ -47,6 +48,7 @@ namespace APDTrigger.Hardware
         private Timer _myTimer;
         private int _newDataPoint;
         private volatile bool _running;
+        private readonly double _frequency;
 
         /// <summary>
         ///     Provides the functionality of a standard ASPHERIX experiment in terms of the counter card
@@ -58,11 +60,14 @@ namespace APDTrigger.Hardware
         /// <param name="monitor"> </param>        
         /// <param name="clockEdges"> </param>
         public Counter(double threshold, int detectionBins, int apdBinSize, double triggerBin, bool monitor,
-                       int clockEdges)
+                       int clockEdges, double frequency)
         {
             _myThresholdTask = new Task("ThresholdTask");
             _myTriggerTask = new Task("TriggerTask");
             _myAcquisitionTask = new Task("AcquisitionTask");
+            _mySampleClock = new Task("SampleClockTask");
+            _myFrequencyGenerator = new Task("FrequencyGenerator");
+            _frequency = frequency;
             _threshold = threshold;
             _detectionBins = detectionBins;
             _apdBinSize = apdBinSize;
@@ -105,7 +110,7 @@ namespace APDTrigger.Hardware
             const long divisor = 4;
             const CIPeriodStartingEdge edge = CIPeriodStartingEdge.Rising;
 
-            _myThresholdTask.CIChannels.CreatePeriodChannel("/Dev1/ctr1", "", minValue, maxValue, edge,
+            _myThresholdTask.CIChannels.CreatePeriodChannel("/Dev3/ctr2", "Threshold", minValue, maxValue, edge,
                                                             CIPeriodMeasurementMethod.HighFrequencyTwoCounter,
                                                             _triggerBin, divisor,
                                                             CIPeriodUnits.Ticks);
@@ -118,7 +123,7 @@ namespace APDTrigger.Hardware
             /*     The trigger is fired when the read in counts are over a certain threshold     */
             /*************************************************************************************/
 
-            _myTriggerTask.COChannels.CreatePulseChannelTicks("/Dev1/ctr2", "", "", COPulseIdleState.Low, 0, 200, 200);
+            _myTriggerTask.COChannels.CreatePulseChannelTicks("/Dev3/ctr1", "Trigger", "", COPulseIdleState.Low, 0, 200, 200);
             _myTriggerTask.Timing.ConfigureImplicit(SampleQuantityMode.FiniteSamples, 1);
         }
 
@@ -132,15 +137,39 @@ namespace APDTrigger.Hardware
             const CICountEdgesCountDirection countDirection = CICountEdgesCountDirection.Up;
             const SampleClockActiveEdge clockActiveEdge = SampleClockActiveEdge.Rising;
 
-            _myAcquisitionTask.CIChannels.CreateCountEdgesChannel("/Dev1/ctr0", "", edge, 0, countDirection);
+            _myAcquisitionTask.CIChannels.CreateCountEdgesChannel("/Dev3/ctr3", "Acquisition", edge, 0, countDirection);
 
             _myAcquisitionTask.CIChannels.All.DuplicateCountPrevention = true;
 
             _myAcquisitionTask.CIChannels.All.DataTransferMechanism = CIDataTransferMechanism.Dma;
 
 
-            _myAcquisitionTask.Timing.ConfigureSampleClock("/Dev1/PFI0", 1000000.0, clockActiveEdge,
+            _myAcquisitionTask.Timing.ConfigureSampleClock("/Dev3/PFI12", 1000000, clockActiveEdge,
                                                            SampleQuantityMode.FiniteSamples, _myClockEdges);
+            InitializeSampleClock();
+        }
+
+        private void InitializeSampleClock()
+        {
+            //create 1MHz sampling clock internally
+            _mySampleClock.COChannels.CreatePulseChannelFrequency("/Dev3/ctr0", "ClkOutput",
+                                                                      COPulseFrequencyUnits.Hertz, COPulseIdleState.Low,
+                                                                      0, 1000000, 0.5);
+            _mySampleClock.Triggers.PauseTrigger.ConfigureDigitalLevelTrigger("/Dev3/PFI9", DigitalLevelPauseTriggerCondition.Low);
+            _mySampleClock.Timing.ConfigureImplicit(SampleQuantityMode.ContinuousSamples);
+        }
+
+        public void StartFrequencyGenerator()
+        {
+            _myFrequencyGenerator.COChannels.CreatePulseChannelFrequency("/Dev3/ctr1", "Trigger",
+                                                                         COPulseFrequencyUnits.Hertz,
+                                                                         COPulseIdleState.Low, 0, _frequency, 0.5);
+            _myFrequencyGenerator.Timing.ConfigureImplicit(SampleQuantityMode.ContinuousSamples);
+
+
+
+
+            _myFrequencyGenerator.Start();
         }
 
         /// <summary>
@@ -150,8 +179,9 @@ namespace APDTrigger.Hardware
         {
             if (_running == false)
             {
-                _myTimer = new Timer(RunAPDTrigger, null, 0, 10);
                 _running = true;
+                _myTimer = new Timer(RunAPDTrigger, null, 0, 10);
+                
             }
         }
 
@@ -159,7 +189,7 @@ namespace APDTrigger.Hardware
         /// Stops the experiment
         /// </summary>
         public void StopAPDTrigger()
-        {
+        {            
             _running = false;            
         }
 

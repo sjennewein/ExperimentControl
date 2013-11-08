@@ -27,6 +27,7 @@ namespace APDTrigger_WinForms.Helper
 
         private readonly object _HistogramDataLock = new object();
         private readonly List<AgingDataPoint> _myDataList = new List<AgingDataPoint>();
+        
 
         private readonly Control _myGUI;
         private readonly Server _tcpServer;
@@ -66,6 +67,9 @@ namespace APDTrigger_WinForms.Helper
         //Acquisition parameters
         public int Samples2Acquire { get; set; }
         public int APDBinsize { get; set; }
+
+        //FrequencyGenerator
+        public double Frequency { get; set; }
 
         //Results/Statistics
         public int CyclesDone
@@ -152,7 +156,7 @@ namespace APDTrigger_WinForms.Helper
         /// <summary>
         /// Initializes the counter with the parameters from the GUI and starts the counter
         /// </summary>
-        public void Start()
+        public void Start(bool runFrequencyGenerator = false)
         {
             Initialize();
             //_myCounterHardware.EmergencyStop += OnEmergencyStop;
@@ -160,6 +164,8 @@ namespace APDTrigger_WinForms.Helper
             _myWorker = new Thread(BackgroundWork) {Name = "Worker"};
             _myWorker.Start();
 
+            if (runFrequencyGenerator)
+                _myCounterHardware.StartFrequencyGenerator();
             //_isRunning = true;
         }
 
@@ -176,7 +182,7 @@ namespace APDTrigger_WinForms.Helper
             _myHistogramData = new int[600];
 
             _myCounterHardware = new Counter(Threshold, DetectionBins, APDBinsize, Binning, monitorMode,
-                                             Samples2Acquire);
+                                             Samples2Acquire, Frequency);
             _myCounterHardware.APDStopped += OnApdStopped;
             _myCounterHardware.NewAPDValue += OnNewApdValue;
             _myCounterHardware.CycleFinished += OnCyleFinished;
@@ -187,9 +193,7 @@ namespace APDTrigger_WinForms.Helper
         /// Is used for multi-threading purposes
         /// </summary>
         private void BackgroundWork()
-        {
-         
-
+        {        
             _myCounterHardware.AimTrigger();
             _myCounterHardware.PrepareAcquisition();
             _myCounterHardware.InitializeMeasurementTimer();
@@ -200,7 +204,9 @@ namespace APDTrigger_WinForms.Helper
         /// </summary>
         public void Stop()
         {          
-            _myCounterHardware.StopAPDTrigger();
+            if(_myCounterHardware != null)
+                _myCounterHardware.StopAPDTrigger();
+
             if (_saveApdSignal)
             {
                 writer.Flush();
@@ -211,9 +217,11 @@ namespace APDTrigger_WinForms.Helper
         /// Is called when the window is closing
         /// </summary>
         public void Quit()
-        {            
+        {
+
             Stop();
             
+
             _tcpServer.Stop();
         }
 

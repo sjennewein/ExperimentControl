@@ -61,6 +61,8 @@ namespace APDTrigger_WinForms
             textBox_Atoms.DataBindings.Add("Text", _myController, "Atoms", true, DataSourceUpdateMode.OnPropertyChanged);
             textBox_NoAtoms.DataBindings.Add("Text", _myController, "NoAtoms", true,
                                              DataSourceUpdateMode.OnPropertyChanged);
+            textBox_Frequency.DataBindings.Add("Text", _myController, "Frequency", true,
+                                               DataSourceUpdateMode.OnPropertyChanged);
 
             InitializeApdSignalChart();
             InitializeApdHistogram();
@@ -351,8 +353,8 @@ namespace APDTrigger_WinForms
             textBox_runsInput.Enabled = false;
             textBox_apdInput.Enabled = false;
             textBox_acquireInput.Enabled = false;
-            radioButton_Endless.Enabled = false;
-            radioButton_triggered.Enabled = false;
+            radioButton_Monitor.Enabled = false;
+            radioButton_Measurement.Enabled = false;
             CheckBox_SaveSignal.Enabled = false;
             textBox_apdInput.Enabled = false;
             textBox_acquireInput.Enabled = false;
@@ -373,8 +375,8 @@ namespace APDTrigger_WinForms
             textBox_runsInput.Enabled = true;
             textBox_apdInput.Enabled = true;
             textBox_acquireInput.Enabled = true;
-            radioButton_Endless.Enabled = true;
-            radioButton_triggered.Enabled = true;
+            radioButton_Monitor.Enabled = true;
+            radioButton_Measurement.Enabled = true;
             CheckBox_SaveSignal.Enabled = true;
             textBox_apdInput.Enabled = true;
             textBox_acquireInput.Enabled = true;
@@ -484,6 +486,21 @@ namespace APDTrigger_WinForms
         internal delegate void myGuiCallback(object state);
 
         #endregion
+
+        private void button_StartFrequency_Click(object sender, EventArgs e)
+        {
+            radioButton_Monitor.Checked = true;
+            _myController.Start(true);
+            DisableAllInputs();
+            button_StopFrequency.Enabled = true;
+            ApdHistogramUpdate.Start();
+            ApdSignalUpdate.Start();
+        }
+
+        private void button_StopFrequency_Click(object sender, EventArgs e)
+        {
+            _myController.Stop();
+        }
 
         
     }

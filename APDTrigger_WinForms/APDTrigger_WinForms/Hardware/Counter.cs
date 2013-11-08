@@ -27,7 +27,7 @@ namespace APDTrigger.Hardware
     public class Counter
     {
         private readonly int _apdBinSize;
-        private readonly int _detectionBins;
+        private readonly int _detectionBins;        
         private readonly object _lockExperiment = new object();
         private readonly bool _monitor;
         private readonly Task _myAcquisitionTask;
@@ -39,13 +39,14 @@ namespace APDTrigger.Hardware
         private readonly double _threshold;
         private readonly double _triggerBin;
 
-        private int _newDataPoint;
         private int _detectedBins;
+        private bool _finalized;
         private int[] _myAcquiredData;
         private int[] _myBinnedSpectrum;
         private int[] _mySpectrum;
         private Timer _myTimer;
-        private bool _running;
+        private int _newDataPoint;
+        private volatile bool _running;
 
         /// <summary>
         ///     Provides the functionality of a standard ASPHERIX experiment in terms of the counter card
@@ -150,7 +151,6 @@ namespace APDTrigger.Hardware
             if (_running == false)
             {
                 _myTimer = new Timer(RunAPDTrigger, null, 0, 10);
-
                 _running = true;
             }
         }
@@ -160,29 +160,9 @@ namespace APDTrigger.Hardware
         /// </summary>
         public void StopAPDTrigger()
         {
-            if (_running)
-            {
-                _running = false;
-                _myTimer.Change(Timeout.Infinite, Timeout.Infinite);
-
-
-                Thread.Sleep(30); //wait until all timer processes are finished
-                _myTimer.Dispose();
-
-                _myTriggerTask.Stop();
-                _myTriggerTask.Dispose();
-
-                _myThresholdTask.Stop();
-                _myThresholdTask.Dispose();
-
-                _myAcquisitionTask.Stop();
-                _myAcquisitionTask.Dispose();
-
-                //send finishing event
-                ApdStoppedEvent();
-            }
+            _running = false;            
         }
-       
+
         /// <summary>
         /// Runs the experiment
         /// </summary>
@@ -190,7 +170,11 @@ namespace APDTrigger.Hardware
         private void RunAPDTrigger(object state)
         {
             if (!_running)
+            {
+                ReleaseResources();
                 return;
+            }
+
 
             //the trigger keeps on starting this function every 10ms but only evaluates it if it's not running
             if (Monitor.TryEnter(_lockExperiment))
@@ -232,6 +216,35 @@ namespace APDTrigger.Hardware
             }
         }
 
+        private void ReleaseResources()
+        {
+            if (_finalized)
+                return;
+
+            lock (_lockExperiment)
+            {
+                if (_finalized)
+                    return;
+
+                _finalized = true;
+
+                _myTimer.Change(Timeout.Infinite, Timeout.Infinite);
+                _myTimer.Dispose();
+
+                _myTriggerTask.Stop();
+                _myTriggerTask.Dispose();
+
+                _myThresholdTask.Stop();
+                _myThresholdTask.Dispose();
+
+                _myAcquisitionTask.Stop();
+                _myAcquisitionTask.Dispose();
+            }
+
+            //send finishing event
+            ApdStoppedEvent();
+        }
+
         /// <summary>
         /// Reads values from the high frequency counting
         /// </summary>
@@ -255,13 +268,14 @@ namespace APDTrigger.Hardware
             {
                 _newDataPoint = readOutData[1];
 
-               NewAPDValueEvent();
+
+                NewAPDValueEvent();
             }
 
 
             //_NewSample = 1000 + rand.Next(0,1000);
         }
-       
+
         /// <summary>
         /// pauses the counter
         /// </summary>
@@ -370,7 +384,7 @@ namespace APDTrigger.Hardware
         }
 
         private void ApdStoppedEvent()
-        {
+        {           
             EventHandler finished = APDStopped;
             if (null != finished)
                 finished(this, new EventArgs());
@@ -380,7 +394,7 @@ namespace APDTrigger.Hardware
         /// Send event that run is over
         /// </summary>
         private void CycleFinishedEvent(RecaptureResult result)
-        {
+        {           
             EventHandler cycleFinished = CycleFinished;
             if (null != cycleFinished)
                 cycleFinished(this, result);

@@ -148,17 +148,22 @@ namespace APDTrigger.Hardware
             _myAcquisitionTask.Timing.ConfigureSampleClock("/Dev3/PFI12", 1000000, clockActiveEdge,
                                                SampleQuantityMode.FiniteSamples, _myClockEdges);
 
+            
+            InitializeSampleClock();
+            
+
+            //var device = DaqSystem.Local.LoadDevice("Dev3");
+            //Console.WriteLine(device.NumberOfDmaChannels);
+        }
+
+        private void InitializeSampleClock()
+        {
             //create 1MHz sampling clock internally
             _mySampleClock.COChannels.CreatePulseChannelFrequency("/Dev3/ctr0", "ClkOutput",
                                                                       COPulseFrequencyUnits.Hertz, COPulseIdleState.Low,
                                                                       0, 1000000, 0.5);
-            _mySampleClock.Triggers.PauseTrigger.ConfigureDigitalLevelTrigger("/Dev3/PFI9",DigitalLevelPauseTriggerCondition.Low);
+            _mySampleClock.Triggers.PauseTrigger.ConfigureDigitalLevelTrigger("/Dev3/PFI9", DigitalLevelPauseTriggerCondition.Low);
             _mySampleClock.Timing.ConfigureImplicit(SampleQuantityMode.ContinuousSamples);
-
-            
-
-            var device = DaqSystem.Local.LoadDevice("Dev3");
-            Console.WriteLine(device.NumberOfDmaChannels);
         }
 
         public void StartFrequencyGenerator()
@@ -167,8 +172,11 @@ namespace APDTrigger.Hardware
                                                                          COPulseFrequencyUnits.Hertz,
                                                                          COPulseIdleState.Low, 0, _frequency, 0.5);
             _myFrequencyGenerator.Timing.ConfigureImplicit(SampleQuantityMode.ContinuousSamples);
+            
 
-            _myFrequencyGenerator.Start();
+
+            
+            _myFrequencyGenerator.Start();          
         }
 
         /// <summary>
@@ -342,10 +350,13 @@ namespace APDTrigger.Hardware
                 _myAcquisitionTask.Start();
                 CounterReader acquisitionReader = new CounterReader(_myAcquisitionTask.Stream);
                 acquisitionReader.MemoryOptimizedReadMultiSampleInt32(data.Length, ref data, out readOutSamples);
+                //Thread.Sleep(10);
                 Console.WriteLine("Good: " + readOutSamples);    
             }
-            catch
-            {}
+            catch (Exception e)
+            {
+                Trace.WriteLine(e.Message);
+            }
             finally
             {
                 _myAcquisitionTask.Stop();

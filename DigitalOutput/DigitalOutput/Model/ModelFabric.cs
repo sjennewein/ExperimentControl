@@ -8,7 +8,7 @@
             const int steps = 15;
             const int patterns = 5;
             var sampleRate = new Timing();
-            sampleRate.SetFrequency(1,Timing.Frequency.MHz);
+            sampleRate.SetFrequency(10,Timing.Frequency.MHz);
 
             //initialize card
             var newCard = new ModelCard

@@ -39,12 +39,13 @@ namespace APDTrigger.Hardware
         private readonly double _threshold;
         private readonly double _triggerBin;
 
-        private int _newDataPoint;
         private int _detectedBins;
+        private bool _finalized;
         private int[] _myAcquiredData;
         private int[] _myBinnedSpectrum;
         private int[] _mySpectrum;
         private Timer _myTimer;
+        private int _newDataPoint;
         private bool _running;
 
         /// <summary>
@@ -160,29 +161,9 @@ namespace APDTrigger.Hardware
         /// </summary>
         public void StopAPDTrigger()
         {
-            if (_running)
-            {
-                _running = false;
-                _myTimer.Change(Timeout.Infinite, Timeout.Infinite);
-
-
-                Thread.Sleep(30); //wait until all timer processes are finished
-                _myTimer.Dispose();
-
-                _myTriggerTask.Stop();
-                _myTriggerTask.Dispose();
-
-                _myThresholdTask.Stop();
-                _myThresholdTask.Dispose();
-
-                _myAcquisitionTask.Stop();
-                _myAcquisitionTask.Dispose();
-
-                //send finishing event
-                ApdStoppedEvent();
-            }
+            _running = false;
         }
-       
+
         /// <summary>
         /// Runs the experiment
         /// </summary>
@@ -190,7 +171,11 @@ namespace APDTrigger.Hardware
         private void RunAPDTrigger(object state)
         {
             if (!_running)
+            {
+                ReleaseResources();
                 return;
+            }
+
 
             //the trigger keeps on starting this function every 10ms but only evaluates it if it's not running
             if (Monitor.TryEnter(_lockExperiment))
@@ -232,6 +217,33 @@ namespace APDTrigger.Hardware
             }
         }
 
+        private void ReleaseResources()
+        {
+            if (_finalized)
+                return;
+                
+            lock (_lockExperiment)
+            {
+                if (_finalized)
+                    return;
+
+                _myTimer.Change(Timeout.Infinite, Timeout.Infinite);
+                _myTimer.Dispose();
+                _myTriggerTask.Stop();
+                _myTriggerTask.Dispose();
+
+                _myThresholdTask.Stop();
+                _myThresholdTask.Dispose();
+
+                _myAcquisitionTask.Stop();
+                _myAcquisitionTask.Dispose();
+
+                _finalized = true;
+                //send finishing event
+                ApdStoppedEvent();
+            }
+        }
+
         /// <summary>
         /// Reads values from the high frequency counting
         /// </summary>
@@ -255,13 +267,13 @@ namespace APDTrigger.Hardware
             {
                 _newDataPoint = readOutData[1];
 
-               NewAPDValueEvent();
+                NewAPDValueEvent();
             }
 
 
             //_NewSample = 1000 + rand.Next(0,1000);
         }
-       
+
         /// <summary>
         /// pauses the counter
         /// </summary>

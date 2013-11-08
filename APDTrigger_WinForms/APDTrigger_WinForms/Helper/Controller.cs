@@ -32,8 +32,7 @@ namespace APDTrigger_WinForms.Helper
         private readonly Server _tcpServer;
         public RunType Run = RunType.Monitor;
         private int _atoms;
-        private int _cyclesDone = 1;
-        private bool _isRunning;
+        private int _cyclesDone = 1;        
         private int[] _myBinnedSpectrum;
 
         private Counter _myCounterHardware;
@@ -161,7 +160,7 @@ namespace APDTrigger_WinForms.Helper
             _myWorker = new Thread(BackgroundWork) {Name = "Worker"};
             _myWorker.Start();
 
-            _isRunning = true;
+            //_isRunning = true;
         }
 
         private void Initialize()
@@ -189,6 +188,8 @@ namespace APDTrigger_WinForms.Helper
         /// </summary>
         private void BackgroundWork()
         {
+         
+
             _myCounterHardware.AimTrigger();
             _myCounterHardware.PrepareAcquisition();
             _myCounterHardware.InitializeMeasurementTimer();
@@ -198,22 +199,21 @@ namespace APDTrigger_WinForms.Helper
         /// Stops the counter card gracefully
         /// </summary>
         public void Stop()
-        {
+        {          
             _myCounterHardware.StopAPDTrigger();
             if (_saveApdSignal)
             {
                 writer.Flush();
-            }
-            _isRunning = false;
+            }            
         }
 
         /// <summary>
         /// Is called when the window is closing
         /// </summary>
         public void Quit()
-        {
-            if (_isRunning)
-                Stop();
+        {            
+            Stop();
+            
             _tcpServer.Stop();
         }
 

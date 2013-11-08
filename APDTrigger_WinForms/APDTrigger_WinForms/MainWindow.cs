@@ -62,8 +62,6 @@ namespace APDTrigger_WinForms
             textBox_NoAtoms.DataBindings.Add("Text", _myController, "NoAtoms", true,
                                              DataSourceUpdateMode.OnPropertyChanged);
 
-
-
             InitializeApdSignalChart();
             InitializeApdHistogram();
         }
@@ -91,7 +89,6 @@ namespace APDTrigger_WinForms
             apdSignal.YAxes[0].Title.Color = Color.Black;
             apdSignal.YAxes[0].Title.Shadow.Visible = false;
             apdSignal.YAxes[0].Units.Visible = false;
-            //apdSignal.YAxes[0].SetRange(0,30);
 
             apdSignal.XAxis.SetRange(0, 5);
             apdSignal.XAxis.Title.Text = "Time [mm:ss]";
@@ -250,7 +247,7 @@ namespace APDTrigger_WinForms
         /// </summary>
         private void UpdateApdSignal()
         {
-            double dataInterval = _myController.Binning/800.0;
+            double dataInterval = _myController.Binning/500.0;
             //System.Console.WriteLine(_myController.Data[0]);
             apdSignal.BeginUpdate();
             _pointCount++;

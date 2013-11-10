@@ -35,6 +35,7 @@ namespace APDTrigger_WinForms.Helper
         private int _atoms;
         private int _cyclesDone = 1;        
         private int[] _myBinnedSpectrum;
+        
 
         private Counter _myCounterHardware;
         private int[] _myHistogramData = new int[600];
@@ -210,15 +211,15 @@ namespace APDTrigger_WinForms.Helper
             if (_saveApdSignal)
             {
                 writer.Flush();
-            }            
+            }
+         
         }
 
         /// <summary>
         /// Is called when the window is closing
         /// </summary>
         public void Quit()
-        {
-
+        {            
             Stop();
             
 
@@ -447,7 +448,8 @@ namespace APDTrigger_WinForms.Helper
         /// </summary>
         /// <param name="propertyName"></param>
         private void PropertyChangedEvent(string propertyName)
-        {
+        {            
+
             if (_myGUI.InvokeRequired)
             {
                 GuiUpdate callback = PropertyChangedEvent;

@@ -269,6 +269,12 @@ namespace APDTrigger.Hardware
 
                 _myAcquisitionTask.Stop();
                 _myAcquisitionTask.Dispose();
+
+                _mySampleClock.Stop();
+                _mySampleClock.Dispose();
+
+                _myFrequencyGenerator.Stop();
+                _myFrequencyGenerator.Dispose();
             }
 
             //send finishing event

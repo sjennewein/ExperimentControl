@@ -673,6 +673,7 @@
             this.Controls.Add(this.groupBox_Trigger);
             this.Name = "MainWindow";
             this.Text = "APD Trigger";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainWindow_FormClosing);
             this.groupBox_Trigger.ResumeLayout(false);
             this.groupBox_Trigger.PerformLayout();
             this.groupBox_Recapture.ResumeLayout(false);

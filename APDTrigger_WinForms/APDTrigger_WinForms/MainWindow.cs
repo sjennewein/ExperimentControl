@@ -13,7 +13,7 @@ namespace APDTrigger_WinForms
     {
         private readonly Controller _myController;
         public bool AutoUpdate = false;
-
+        private bool _apdIsRunning = false;
         private DisplayType _myChart2Display = DisplayType.Histogram;
         private int _pointCount;
         
@@ -30,11 +30,11 @@ namespace APDTrigger_WinForms
             _myController.Samples2Acquire = 50000;
             _myController.Cycles = 100;
             _myController.TotalRuns = 1;
+            _myController.Frequency = 0.5;
             stop_button.Enabled = false;
+            button_StopFrequency.Enabled = false;
 
-            _myController.APDStopped += OnApdStopped;
-            FormClosing += OnQuit;
-                //hopefully enough to close all hardware handles when closing the application            
+            _myController.APDStopped += OnApdStopped;                
 
             textBox_binningInput.DataBindings.Add("Text", _myController, "Binning", true,
                                                   DataSourceUpdateMode.OnPropertyChanged);
@@ -164,11 +164,13 @@ namespace APDTrigger_WinForms
         /// <param name="e"></param>
         private void start_button_Click(object sender, EventArgs e)
         {
+            _apdIsRunning = true;
             DisableAllInputs();
             stop_button.Enabled = true;
             _myController.Start();
             ApdHistogramUpdate.Start();
             ApdSignalUpdate.Start();
+            
         }
 
         /// <summary>
@@ -197,9 +199,10 @@ namespace APDTrigger_WinForms
             {
                 ApdSignalUpdate.Stop();
                 ApdHistogramUpdate.Stop();
-                EnableAllInputs();
-                start_button.Enabled = true;
+                EnableAllInputs();                
                 stop_button.Enabled = false;
+                button_StopFrequency.Enabled = false;
+                _apdIsRunning = false;
             }
         }
 
@@ -359,6 +362,10 @@ namespace APDTrigger_WinForms
             textBox_apdInput.Enabled = false;
             textBox_acquireInput.Enabled = false;
             checkBox_SaveHistogram.Enabled = false;
+            button_StartFrequency.Enabled = false;
+            button_StopFrequency.Enabled = false;
+            textBox_Frequency.Enabled = false;
+            radioButton_Network.Enabled = false;
         }
 
         /// <summary>
@@ -380,17 +387,11 @@ namespace APDTrigger_WinForms
             CheckBox_SaveSignal.Enabled = true;
             textBox_apdInput.Enabled = true;
             textBox_acquireInput.Enabled = true;
-            checkBox_SaveHistogram.Enabled = true;            
-        }
-
-        /// <summary>
-        /// Callback function when the program is closed
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnQuit(object sender, EventArgs e)
-        {
-            _myController.Quit();
+            checkBox_SaveHistogram.Enabled = true;
+            button_StartFrequency.Enabled = true;
+            button_StopFrequency.Enabled = true;
+            textBox_Frequency.Enabled = true;
+            radioButton_Network.Enabled = true;
         }
 
         /// <summary>
@@ -489,17 +490,32 @@ namespace APDTrigger_WinForms
 
         private void button_StartFrequency_Click(object sender, EventArgs e)
         {
+            _apdIsRunning = true;
             radioButton_Monitor.Checked = true;
             _myController.Start(true);
             DisableAllInputs();
             button_StopFrequency.Enabled = true;
             ApdHistogramUpdate.Start();
             ApdSignalUpdate.Start();
+            
         }
 
         private void button_StopFrequency_Click(object sender, EventArgs e)
         {
             _myController.Stop();
+        }
+
+        private void MainWindow_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (_apdIsRunning)
+            {
+                e.Cancel = true;
+                MessageBox.Show("You have to stop the APD first!");
+                return;
+            }
+                
+
+                _myController.Quit();
         }
 
         

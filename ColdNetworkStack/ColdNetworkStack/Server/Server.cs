@@ -98,11 +98,16 @@ namespace ColdNetworkStack.Server
             {
                 Interlocked.Exchange(ref _readyClients, 0);
                 
-                foreach (ClientProtocol client in _clientTalks)
-                    client.SendTrigger();
+                
                 
                 ReadyForNextRun();
             }
+        }
+
+        public void StartNextRun()
+        {
+            foreach (ClientProtocol client in _clientTalks)
+                client.SendTrigger();
         }
 
         private void ReadyForNextRun()

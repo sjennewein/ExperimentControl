@@ -124,7 +124,7 @@
             this.radioButton_Network.TabIndex = 16;
             this.radioButton_Network.Text = "Network";
             this.radioButton_Network.UseVisualStyleBackColor = true;
-            this.radioButton_Network.CheckedChanged += new System.EventHandler(this.triggerRadioButton_CheckedChanged);
+            this.radioButton_Network.CheckedChanged += new System.EventHandler(this.radioButton_Mode_CheckedChanged);
             // 
             // checkBox_SaveHistogram
             // 
@@ -148,7 +148,7 @@
             this.CheckBox_SaveSignal.TabIndex = 14;
             this.CheckBox_SaveSignal.Text = "Save APD-Signal: ";
             this.CheckBox_SaveSignal.UseVisualStyleBackColor = true;
-            this.CheckBox_SaveSignal.CheckedChanged += new System.EventHandler(this.saveCheckBox_CheckedChanged);
+            this.CheckBox_SaveSignal.CheckedChanged += new System.EventHandler(this.checkBox_Save_CheckedChanged);
             // 
             // label8
             // 
@@ -176,7 +176,7 @@
             this.radioButton_Monitor.TabStop = true;
             this.radioButton_Monitor.Text = "Monitor";
             this.radioButton_Monitor.UseVisualStyleBackColor = true;
-            this.radioButton_Monitor.CheckedChanged += new System.EventHandler(this.triggerRadioButton_CheckedChanged);
+            this.radioButton_Monitor.CheckedChanged += new System.EventHandler(this.radioButton_Mode_CheckedChanged);
             // 
             // radioButton_Measurement
             // 
@@ -187,7 +187,7 @@
             this.radioButton_Measurement.TabIndex = 8;
             this.radioButton_Measurement.Text = "Measurement";
             this.radioButton_Measurement.UseVisualStyleBackColor = true;
-            this.radioButton_Measurement.CheckedChanged += new System.EventHandler(this.triggerRadioButton_CheckedChanged);
+            this.radioButton_Measurement.CheckedChanged += new System.EventHandler(this.radioButton_Mode_CheckedChanged);
             // 
             // stop_button
             // 
@@ -197,7 +197,7 @@
             this.stop_button.TabIndex = 7;
             this.stop_button.Text = "Stop";
             this.stop_button.UseVisualStyleBackColor = true;
-            this.stop_button.Click += new System.EventHandler(this.stop_button_Click);
+            this.stop_button.Click += new System.EventHandler(this.button_Stop_Click);
             // 
             // start_button
             // 
@@ -207,7 +207,7 @@
             this.start_button.TabIndex = 6;
             this.start_button.Text = "Start";
             this.start_button.UseVisualStyleBackColor = true;
-            this.start_button.Click += new System.EventHandler(this.start_button_Click);
+            this.start_button.Click += new System.EventHandler(this.button_Start_Click);
             // 
             // label3
             // 
@@ -355,7 +355,7 @@
             this.apdSignal.YAxesLayout = Arction.LightningChartBasic.YAxesLayout.LayeredCommonXAxis;
             this.apdSignal.ZoomFactor = 2D;
             this.apdSignal.ZoomRectLine = ((Arction.LightningChartBasic.LineStyle)(resources.GetObject("apdSignal.ZoomRectLine")));
-            this.apdSignal.DoubleClick += new System.EventHandler(this.apdSignalChart_DoubleClick);
+            this.apdSignal.DoubleClick += new System.EventHandler(this.chart_ApdSignal_DoubleClick);
             // 
             // groupBox3
             // 
@@ -541,12 +541,12 @@
             // ApdSignalUpdate
             // 
             this.ApdSignalUpdate.Interval = 20;
-            this.ApdSignalUpdate.Tick += new System.EventHandler(this.ApdSignalUpdate_Tick);
+            this.ApdSignalUpdate.Tick += new System.EventHandler(this.timer_ApdSignal_Tick);
             // 
             // ApdHistogramUpdate
             // 
             this.ApdHistogramUpdate.Interval = 1000;
-            this.ApdHistogramUpdate.Tick += new System.EventHandler(this.ApdHistogramUpdate_Tick);
+            this.ApdHistogramUpdate.Tick += new System.EventHandler(this.timer_ApdHistogram_Tick);
             // 
             // groupBox_Histogram
             // 

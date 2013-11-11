@@ -12,11 +12,11 @@ namespace APDTrigger_WinForms
     public partial class MainWindow : Form
     {
         private readonly Controller _myController;
-        public bool AutoUpdate = false;
-        private bool _apdIsRunning = false;
+        public bool AutoUpdate;
+        private bool _apdIsRunning;
         private DisplayType _myChart2Display = DisplayType.Histogram;
         private int _pointCount;
-        
+
         public MainWindow()
         {
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
@@ -34,7 +34,7 @@ namespace APDTrigger_WinForms
             stop_button.Enabled = false;
             button_StopFrequency.Enabled = false;
 
-            _myController.APDStopped += OnApdStopped;                
+            _myController.APDStopped += OnApdStopped;
 
             textBox_binningInput.DataBindings.Add("Text", _myController, "Binning", true,
                                                   DataSourceUpdateMode.OnPropertyChanged);
@@ -162,7 +162,7 @@ namespace APDTrigger_WinForms
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void start_button_Click(object sender, EventArgs e)
+        private void button_Start_Click(object sender, EventArgs e)
         {
             _apdIsRunning = true;
             DisableAllInputs();
@@ -170,7 +170,6 @@ namespace APDTrigger_WinForms
             _myController.Start();
             ApdHistogramUpdate.Start();
             ApdSignalUpdate.Start();
-            
         }
 
         /// <summary>
@@ -178,7 +177,7 @@ namespace APDTrigger_WinForms
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void stop_button_Click(object sender, EventArgs e)
+        private void button_Stop_Click(object sender, EventArgs e)
         {
             _myController.Stop();
         }
@@ -199,7 +198,7 @@ namespace APDTrigger_WinForms
             {
                 ApdSignalUpdate.Stop();
                 ApdHistogramUpdate.Stop();
-                EnableAllInputs();                
+                EnableAllInputs();
                 stop_button.Enabled = false;
                 button_StopFrequency.Enabled = false;
                 _apdIsRunning = false;
@@ -276,7 +275,7 @@ namespace APDTrigger_WinForms
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void triggerRadioButton_CheckedChanged(object sender, EventArgs e)
+        private void radioButton_Mode_CheckedChanged(object sender, EventArgs e)
         {
             foreach (Control control in groupBox_Trigger.Controls)
             {
@@ -291,13 +290,13 @@ namespace APDTrigger_WinForms
                 switch (radio.Text)
                 {
                     case "Measurement":
-                        _myController.Run = Controller.RunType.Measurement;
+                        _myController.Mode = Controller.RunType.Measurement;
                         break;
                     case "Monitor":
-                        _myController.Run = Controller.RunType.Monitor;
+                        _myController.Mode = Controller.RunType.Monitor;
                         break;
                     case "Network":
-                        _myController.Run = Controller.RunType.Network;
+                        _myController.Mode = Controller.RunType.Network;
                         break;
                 }
             }
@@ -308,7 +307,7 @@ namespace APDTrigger_WinForms
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void apdSignalChart_DoubleClick(object sender, EventArgs e)
+        private void chart_ApdSignal_DoubleClick(object sender, EventArgs e)
         {
             Form contextMenu = new ApdSignalContextMenu(this, apdSignal);
             contextMenu.ShowDialog();
@@ -319,7 +318,7 @@ namespace APDTrigger_WinForms
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void saveCheckBox_CheckedChanged(object sender, EventArgs e)
+        private void checkBox_Save_CheckedChanged(object sender, EventArgs e)
         {
             var originalSender = (CheckBox) sender;
             if (originalSender.Checked)
@@ -337,7 +336,7 @@ namespace APDTrigger_WinForms
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ApdSignalUpdate_Tick(object sender, EventArgs e)
+        private void timer_ApdSignal_Tick(object sender, EventArgs e)
         {
             UpdateApdSignal();
         }
@@ -399,11 +398,11 @@ namespace APDTrigger_WinForms
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ApdHistogramUpdate_Tick(object sender, EventArgs e)
+        private void timer_ApdHistogram_Tick(object sender, EventArgs e)
         {
             UpdateApdHistogram();
         }
-        
+
         private void checkBox_SaveHistogram_CheckedChanged(object sender, EventArgs e)
         {
             var originalSender = (CheckBox) sender;
@@ -466,6 +465,35 @@ namespace APDTrigger_WinForms
             }
         }
 
+        private void button_StartFrequency_Click(object sender, EventArgs e)
+        {
+            _apdIsRunning = true;
+            radioButton_Monitor.Checked = true;
+            _myController.Start(true);
+            DisableAllInputs();
+            button_StopFrequency.Enabled = true;
+            ApdHistogramUpdate.Start();
+            ApdSignalUpdate.Start();
+        }
+
+        private void button_StopFrequency_Click(object sender, EventArgs e)
+        {
+            _myController.Stop();
+        }
+
+        private void MainWindow_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (_apdIsRunning)
+            {
+                e.Cancel = true;
+                MessageBox.Show("You have to stop the APD first!");
+                return;
+            }
+
+
+            _myController.Quit();
+        }
+
         #region Nested type: DisplayType
 
         private enum DisplayType
@@ -487,37 +515,5 @@ namespace APDTrigger_WinForms
         internal delegate void myGuiCallback(object state);
 
         #endregion
-
-        private void button_StartFrequency_Click(object sender, EventArgs e)
-        {
-            _apdIsRunning = true;
-            radioButton_Monitor.Checked = true;
-            _myController.Start(true);
-            DisableAllInputs();
-            button_StopFrequency.Enabled = true;
-            ApdHistogramUpdate.Start();
-            ApdSignalUpdate.Start();
-            
-        }
-
-        private void button_StopFrequency_Click(object sender, EventArgs e)
-        {
-            _myController.Stop();
-        }
-
-        private void MainWindow_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if (_apdIsRunning)
-            {
-                e.Cancel = true;
-                MessageBox.Show("You have to stop the APD first!");
-                return;
-            }
-                
-
-                _myController.Quit();
-        }
-
-        
     }
 }

@@ -23,36 +23,39 @@ namespace APDTrigger_WinForms.Helper
 
         #endregion
 
-        private const string _myBaseSaveFolder = "d:\\Manipe\\APD\\";
+        #region private variables
+        
+        private const string _BaseSaveFolder = "d:\\Manipe\\APD\\";
 
         private readonly object _HistogramDataLock = new object();
-        private readonly List<AgingDataPoint> _myDataList = new List<AgingDataPoint>();
+        private readonly List<AgingDataPoint> _histogramDataPoints = new List<AgingDataPoint>();
         
 
         private readonly Control _myGUI;
         private readonly Server _tcpServer;
-        public RunType Run = RunType.Monitor;
+        public RunType Mode = RunType.Monitor;
         private int _atoms;
         private int _cyclesDone = 1;        
-        private int[] _myBinnedSpectrum;
+        private int[] _binnedSpectrumData;
         
 
         private Counter _myCounterHardware;
-        private int[] _myHistogramData = new int[600];
+        private int[] _histogramData = new int[600];
         private bool _saveApdSignal;
-        private int[] _mySpectrum;
-        private Thread _myWorker;
+        private int[] _Spectrum;
+        private Thread _Worker;
         private int _noAtoms;
         private double _recapturerate;
         private int _runsDone = 1;
         private string _saveFolder;
         private DateTime _today = DateTime.Now;
         private StreamWriter writer;
+        #endregion
 
         public Controller(Control gui)
         {
             _myGUI = gui;
-            _saveFolder = _myBaseSaveFolder + _today.Year + "\\" + _today.Month + "\\" + _today.Day + "\\";
+            _saveFolder = _BaseSaveFolder + _today.Year + "\\" + _today.Month + "\\" + _today.Day + "\\";
             _tcpServer = new Server(IPAddress.Any, 9898);
         }
 
@@ -100,7 +103,7 @@ namespace APDTrigger_WinForms.Helper
 
         public int[] BinnedSpectrum
         {
-            get { return _myBinnedSpectrum; }
+            get { return _binnedSpectrumData; }
         }
 
         public bool SaveApdSignal
@@ -130,7 +133,7 @@ namespace APDTrigger_WinForms.Helper
 
         public int[] HistogramData
         {
-            get { return _myHistogramData; }
+            get { return _histogramData; }
         }
 
         #endregion
@@ -150,7 +153,7 @@ namespace APDTrigger_WinForms.Helper
             if (_today.Date != now.Date)
             {
                 _today = now;
-                _saveFolder = _myBaseSaveFolder + _today.Year + "\\" + _today.Month + "\\" + _today.Day + "\\";
+                _saveFolder = _BaseSaveFolder + _today.Year + "\\" + _today.Month + "\\" + _today.Day + "\\";
             }
         }
 
@@ -162,8 +165,8 @@ namespace APDTrigger_WinForms.Helper
             Initialize();
             //_myCounterHardware.EmergencyStop += OnEmergencyStop;
 
-            _myWorker = new Thread(BackgroundWork) {Name = "Worker"};
-            _myWorker.Start();
+            _Worker = new Thread(BackgroundWork) {Name = "Worker"};
+            _Worker.Start();
 
             if (runFrequencyGenerator)
                 _myCounterHardware.StartFrequencyGenerator();
@@ -172,19 +175,20 @@ namespace APDTrigger_WinForms.Helper
 
         private void Initialize()
         {
-            bool monitorMode = (Run == RunType.Monitor); //enable monitor mode if user selected that
+            bool monitorMode = (Mode == RunType.Monitor); //enable monitor mode if user selected that
             _atoms = 0;
             _noAtoms = 0;
             _recapturerate = 0;
             _runsDone = 0;
             _cyclesDone = 0;
-            _mySpectrum = null;
-            _myBinnedSpectrum = null;
-            _myHistogramData = new int[600];
+            _Spectrum = null;
+            _binnedSpectrumData = null;
+            _histogramData = new int[600];
 
+           // if(_)
             _myCounterHardware = new Counter(Threshold, DetectionBins, APDBinsize, Binning, monitorMode,
                                              Samples2Acquire, Frequency);
-            _myCounterHardware.APDStopped += OnApdStopped;
+            _myCounterHardware.APDStopped += OnApdStoppedEvent;
             _myCounterHardware.NewAPDValue += OnNewApdValue;
             _myCounterHardware.CycleFinished += OnCyleFinished;
         }
@@ -245,14 +249,7 @@ namespace APDTrigger_WinForms.Helper
             }
             writer.WriteLine(Data);
         }
-
-        private void OnApdStopped(object sender, EventArgs e)
-        {
-            EventHandler finished = APDStopped;
-            if (null != finished)
-                finished(this, new EventArgs());
-        }
-
+       
         private void OnNewApdValue(object sender, EventArgs e)
         {
             AddHistogramData();
@@ -262,15 +259,11 @@ namespace APDTrigger_WinForms.Helper
             }
         }
 
-        private void OnRunDone()
+        private void StartNextRun()
         {
-            EventHandler runDone = RunHasFinished;
-            if (null != runDone)
-            {
-                var runData = new RunEventData(_runsDone, _recapturerate, _atoms, _noAtoms);
-                runDone(this, runData);
-            }
+            _tcpServer.StartNextRun();
         }
+        
 
         /// <summary>
         /// Updates the values for the cycle counter
@@ -291,10 +284,10 @@ namespace APDTrigger_WinForms.Helper
                 if (SaveSpectrum)
                     SaveRunSpectrum();
 
-                _mySpectrum = null;
-                _myBinnedSpectrum = null;
+                _Spectrum = null;
+                _binnedSpectrumData = null;
 
-                OnRunDone();
+                OnRunDoneEvent();
 
                 //_myTcpServer.SetTriggerData(
                 //  new NetworkData(_atoms, _noAtoms, _cyclesDone, _runsDone, TotalRuns, _recapturerate).Serialize());
@@ -329,12 +322,12 @@ namespace APDTrigger_WinForms.Helper
         private void UpdateSpectrumDatePoint()
         {
             int amountOfSamples = _myCounterHardware.Spectrum.Length;
-            if (_mySpectrum == null)
-                _mySpectrum = new int[amountOfSamples];
+            if (_Spectrum == null)
+                _Spectrum = new int[amountOfSamples];
 
             for (int i = 0; i < amountOfSamples; i++)
             {
-                _mySpectrum[i] += _myCounterHardware.Spectrum[i];
+                _Spectrum[i] += _myCounterHardware.Spectrum[i];
             }
         }
 
@@ -344,12 +337,12 @@ namespace APDTrigger_WinForms.Helper
         private void UpdateBinnedSpectrum()
         {
             int amountOfBins = _myCounterHardware.BinnedSpectrum.Length;
-            if (_myBinnedSpectrum == null)
-                _myBinnedSpectrum = new int[amountOfBins];
+            if (_binnedSpectrumData == null)
+                _binnedSpectrumData = new int[amountOfBins];
 
             for (int i = 0; i < amountOfBins; i++)
             {
-                _myBinnedSpectrum[i] += _myCounterHardware.BinnedSpectrum[i];
+                _binnedSpectrumData[i] += _myCounterHardware.BinnedSpectrum[i];
             }
         }
 
@@ -368,7 +361,7 @@ namespace APDTrigger_WinForms.Helper
                 new StreamWriter(
                     _saveFolder + "Spectrum_" + now.Hour + "-" + now.Minute + "-" + now.Second + "_Run_" + RunsDone +
                     ".txt", true);
-            foreach (int bin in _mySpectrum)
+            foreach (int bin in _Spectrum)
             {
                 spectrumWriter.WriteLine(bin);
             }
@@ -401,10 +394,10 @@ namespace APDTrigger_WinForms.Helper
         private void AddHistogramData()
         {
             var lifetime = new TimeSpan(0, 0, 0, 10);
-            var newDataPoint = new AgingDataPoint(Data, lifetime, _myDataList);
+            var newDataPoint = new AgingDataPoint(Data, lifetime, _histogramDataPoints);
             lock (_HistogramDataLock)
             {
-                _myDataList.Add(newDataPoint);
+                _histogramDataPoints.Add(newDataPoint);
             }
         }
 
@@ -423,12 +416,12 @@ namespace APDTrigger_WinForms.Helper
             //bucket sort
             lock (_HistogramDataLock)
             {
-                for (int iPoint = 0; iPoint < _myDataList.Count; iPoint++)
+                for (int iPoint = 0; iPoint < _histogramDataPoints.Count; iPoint++)
                 {
-                    _myDataList[iPoint].CheckLifetime(); //call this only when locked and not with foreach
+                    _histogramDataPoints[iPoint].CheckLifetime(); //call this only when locked and not with foreach
                 }
 
-                foreach (AgingDataPoint dataPoint in _myDataList)
+                foreach (AgingDataPoint dataPoint in _histogramDataPoints)
                 {
                     if (dataPoint.Value/interval > bucketNumber)
                     {
@@ -440,7 +433,24 @@ namespace APDTrigger_WinForms.Helper
                     }
                 }
             }
-            _myHistogramData = buckets;
+            _histogramData = buckets;
+        }
+
+        private void OnRunDoneEvent()
+        {
+            EventHandler runDone = RunHasFinished;
+            if (null != runDone)
+            {
+                var runData = new RunEventData(_runsDone, _recapturerate, _atoms, _noAtoms);
+                runDone(this, runData);
+            }
+        }
+
+        private void OnApdStoppedEvent(object sender, EventArgs e)
+        {
+            EventHandler finished = APDStopped;
+            if (null != finished)
+                finished(this, new EventArgs());
         }
 
         /// <summary>

@@ -16,7 +16,7 @@ namespace ColdNetworkStack.Server
         public int CyclesPerRun = 0;
         public string DigitalData = "";
         public string TriggerData = "";
-        private long _readyClients = 0;        
+        private long _readyClients;
         private bool _serverRun = true;
 
         public Server(IPAddress ip, int port)
@@ -88,7 +88,7 @@ namespace ColdNetworkStack.Server
 
             _clientTalks.Remove(clientTalk);
             client.Close();
-        }        
+        }
 
         public void ClientReady()
         {
@@ -97,11 +97,14 @@ namespace ColdNetworkStack.Server
             if (Interlocked.Read(ref _readyClients) == _registeredClients.Count)
             {
                 Interlocked.Exchange(ref _readyClients, 0);
-                
-                
-                
                 ReadyForNextRun();
             }
+        }
+
+        public void StopTrigger()
+        {
+            foreach (ClientProtocol client in _clientTalks)
+                client.StopTriggerMode();
         }
 
         public void StartNextRun()
@@ -113,8 +116,8 @@ namespace ColdNetworkStack.Server
         private void ReadyForNextRun()
         {
             EventHandler nextRun = AllClientsAreReady;
-            if(nextRun != null)
-                AllClientsAreReady(this,new EventArgs());
+            if (nextRun != null)
+                AllClientsAreReady(this, new EventArgs());
         }
 
         public event EventHandler AllClientsAreReady;

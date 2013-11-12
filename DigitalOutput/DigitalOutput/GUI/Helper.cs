@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.Windows.Forms;
 using DigitalOutput.Controller;
-using Hulahoop.Controller;
 
 namespace DigitalOutput.GUI
 {
@@ -30,12 +29,15 @@ namespace DigitalOutput.GUI
             //generate channel description text boxes
             for (int iChannelDescription = 0; iChannelDescription < pattern.Descriptions.Length; iChannelDescription++)
             {
-                const int yOffsetLocal = 2 * rowHeight;
+                const int yOffsetLocal = 2*rowHeight;
 
                 var descriptionTextBox = new TextBox
-                    {Location = new Point(0, iChannelDescription*(rowHeight+1) + yOffsetLocal), Size = new Size(100, rowHeight)};
+                    {
+                        Location = new Point(0, iChannelDescription*(rowHeight + 1) + yOffsetLocal),
+                        Size = new Size(100, rowHeight)
+                    };
                 descriptionTextBox.DataBindings.Add("Text", pattern.Descriptions[iChannelDescription],
-                                                       "Text", true, DataSourceUpdateMode.OnPropertyChanged);
+                                                    "Text", true, DataSourceUpdateMode.OnPropertyChanged);
                 newElements[elementCounter] = descriptionTextBox;
 
                 elementCounter++;
@@ -48,9 +50,12 @@ namespace DigitalOutput.GUI
             {
                 const int xOffsetLocal = 100;
                 var descriptionTextBox = new TextBox
-                    {Location = new Point(xOffsetLocal + iStepDescription*(columnWidth+1), 0), Size = new Size(columnWidth, rowHeight)};
+                    {
+                        Location = new Point(xOffsetLocal + iStepDescription*(columnWidth + 1), 0),
+                        Size = new Size(columnWidth, rowHeight)
+                    };
                 descriptionTextBox.DataBindings.Add("Text", pattern.Steps[iStepDescription], "Description", true,
-                                                       DataSourceUpdateMode.OnPropertyChanged);
+                                                    DataSourceUpdateMode.OnPropertyChanged);
                 newElements[elementCounter] = descriptionTextBox;
 
                 elementCounter++;
@@ -60,27 +65,28 @@ namespace DigitalOutput.GUI
             //generate step duration text boxes
             for (int iStepDuration = 0; iStepDuration < pattern.Steps.Length; iStepDuration++)
             {
-                
-                var stepDurationTextBox = new TextBox {Location = new Point(xOffset + iStepDuration*(columnWidth +1), yOffset), Size = new Size(columnWidth, rowHeight)};
+                var stepDurationTextBox = new TextBox
+                    {
+                        Location = new Point(xOffset + iStepDuration*(columnWidth + 1), yOffset),
+                        Size = new Size(columnWidth, rowHeight)
+                    };
                 if (pattern.Steps[iStepDuration].Iterator != "")
                 {
                     stepDurationTextBox.DataBindings.Add("Text", pattern.Steps[iStepDuration], "Iterator", true,
-                                                     DataSourceUpdateMode.OnPropertyChanged);
+                                                         DataSourceUpdateMode.OnPropertyChanged);
                     stepDurationTextBox.ReadOnly = true;
                 }
                 else
                 {
                     stepDurationTextBox.DataBindings.Add("Text", pattern.Steps[iStepDuration], "Duration", true,
-                                                     DataSourceUpdateMode.OnPropertyChanged);
+                                                         DataSourceUpdateMode.OnPropertyChanged);
                 }
-                
+
                 newElements[elementCounter] = stepDurationTextBox;
                 stepDurationTextBox.ContextMenu = new ContextMenu();
                 stepDurationTextBox.ContextMenu.Popup += pattern.Steps[iStepDuration].UpdateContextMenu;
 
                 elementCounter++;
-                
-
             }
             yOffset += rowHeight;
 
@@ -98,13 +104,11 @@ namespace DigitalOutput.GUI
                         {
                             Size = new Size(columnWidth, rowHeight),
                             Margin = new Padding(0),
-                            Location = new Point(iStep*(columnWidth+1) + xOffset, iChannel*(rowHeight+1) + yOffset),                            
+                            Location = new Point(iStep*(columnWidth + 1) + xOffset, iChannel*(rowHeight + 1) + yOffset),
                         };
 
                     newLabel.DataBindings.Add("BackColor", channel, "Color", false,
                                               DataSourceUpdateMode.OnPropertyChanged);
-
-                    
 
                     newLabel.MouseClick += channel.ChangeValue;
                     newElements[elementCounter] = newLabel;
@@ -137,8 +141,7 @@ namespace DigitalOutput.GUI
         }
 
         public static void DisposeTabs(TabControl tab)
-        {
-            int pages = GeneratedPages.Count;
+        {       
             var toDelete = new List<TabPage>();
 
             foreach (TabPage page in GeneratedPages)

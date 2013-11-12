@@ -11,7 +11,13 @@ namespace DigitalOutput.Controller
     {
         private readonly ModelData _model;
         private int _syncedValue;
-        private Label _myControl;
+        private ControllerStep _parent;
+        //private Label _myControl;
+
+        private void SomethingHasChanged()
+        {
+            _parent.SomethingHasChanged();
+        }
 
         public void StoreSyncedValue()
         {            
@@ -27,8 +33,9 @@ namespace DigitalOutput.Controller
             }
         }
 
-        public ControllerChannel(ModelData model, int channel)
+        public ControllerChannel(ModelData model, int channel, ControllerStep parent)
         {
+            _parent = parent;
             _model = model;
             PickColor(channel);
             if(_model.Value == 1)
@@ -47,6 +54,7 @@ namespace DigitalOutput.Controller
             set
             {
                 //Console.WriteLine(value);
+                SomethingHasChanged();
                 _model.Value = value;
             }
         }
@@ -71,11 +79,6 @@ namespace DigitalOutput.Controller
                 Color = _offColor;
             }
             PropertyHasChanged("Color");
-        }
-
-        private void UpdateGUI()
-        {
-            //_myControl.BackColor = Value == 1 ? _onColor : _offColor;
         }
 
         private void PickColor(int channel)
@@ -109,6 +112,6 @@ namespace DigitalOutput.Controller
                 propertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

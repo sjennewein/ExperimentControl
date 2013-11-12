@@ -1,8 +1,9 @@
-﻿using DigitalOutput.Hardware;
+﻿using System;
 using DigitalOutput.Model;
 using Hulahoop.Controller;
 using Ionic.Zip;
 using fastJSON;
+using Buffer = DigitalOutput.Hardware.Buffer;
 
 namespace DigitalOutput.Controller
 {
@@ -20,7 +21,7 @@ namespace DigitalOutput.Controller
             for (int iPattern = 0; iPattern < _model.Patterns.Length; iPattern++)
             {
                 ModelPattern modelPattern = _model.Patterns[iPattern];
-                Patterns[iPattern] = new ControllerPattern(modelPattern);
+                Patterns[iPattern] = new ControllerPattern(modelPattern, this);
             }
         }
 
@@ -78,5 +79,14 @@ namespace DigitalOutput.Controller
                 pattern.RestoreSyncedValues();
             }
         }
+
+        public void SomethingHasChanged()
+        {
+            EventHandler somethingChanged = SomethingChanged;
+            if (somethingChanged != null)
+                somethingChanged(this, new EventArgs());
+        }
+
+        public event EventHandler SomethingChanged;
     }
 }

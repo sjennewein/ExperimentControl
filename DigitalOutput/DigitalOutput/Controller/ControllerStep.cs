@@ -11,18 +11,21 @@ namespace DigitalOutput.Controller
     public class ControllerStep : INotifyPropertyChanged, IteratorObserver
     {
         private readonly ModelStep _model;
-        private int _syncedValue;
+        private readonly ControllerPattern _parent;
 
         public ControllerChannel[] Channels;
+        private int _syncedDuration;
+        private string _syncedIterator;
 
-        public ControllerStep(ModelStep model)
+        public ControllerStep(ModelStep model, ControllerPattern parent)
         {
+            _parent = parent;
             _model = model;
             if (_model.Iterator != "")
             {
-                foreach (var iterator in HoopManager.Iterators)
+                foreach (ControllerIterator iterator in HoopManager.Iterators)
                 {
-                    if(iterator.Name == _model.Iterator)
+                    if (iterator.Name == _model.Iterator)
                         iterator.Register(this);
                 }
             }
@@ -31,7 +34,7 @@ namespace DigitalOutput.Controller
             for (int iChannel = 0; iChannel < _model.Channels.Length; iChannel++)
             {
                 ModelData channelModel = _model.Channels[iChannel];
-                Channels[iChannel] = new ControllerChannel(channelModel, iChannel);
+                Channels[iChannel] = new ControllerChannel(channelModel, iChannel, this);
             }
         }
 
@@ -41,9 +44,50 @@ namespace DigitalOutput.Controller
             set { _model.Description = value; }
         }
 
+        public int Duration
+        {
+            get { return _model.Duration.Value; }
+            set
+            {
+                SomethingHasChanged();
+                _model.Duration.Value = value;
+            }
+        }
+
+        public string Iterator
+        {
+            get { return _model.Iterator; }
+            set
+            {
+                SomethingHasChanged();
+                _model.Iterator = value;
+            }
+        }
+
+        #region INotifyPropertyChanged Members
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        #endregion
+
+        #region IteratorObserver Members
+
+        public void NewValue(double value)
+        {
+            Duration = (int) value;
+        }
+
+        public void NewName(string name)
+        {
+            Iterator = name;
+            PropertyHasChanged("Iterator");
+        }
+
+        #endregion
+
         public void StoreSyncedValues()
         {
-            _syncedValue = Duration;
+            _syncedDuration = Duration;           
             foreach (ControllerChannel channel in Channels)
             {
                 channel.StoreSyncedValue();
@@ -51,10 +95,10 @@ namespace DigitalOutput.Controller
         }
 
         public void RestoreSyncedValues()
-        {
-            if(_syncedValue != Duration)
+        {       
+            if (_syncedDuration != Duration)
             {
-                Duration = _syncedValue;
+                Duration = _syncedDuration;
                 PropertyHasChanged("Duration");
             }
 
@@ -63,9 +107,6 @@ namespace DigitalOutput.Controller
                 channel.RestoreSyncedValue();
             }
         }
-
-        public int Duration { get { return _model.Duration.Value; } set { _model.Duration.Value = value; } }
-        public string Iterator { get { return _model.Iterator; } set { _model.Iterator = value; } }
 
         private void PropertyHasChanged(string propertyName)
         {
@@ -77,20 +118,20 @@ namespace DigitalOutput.Controller
         public void UpdateContextMenu(object sender, EventArgs e)
         {
             var origSender = (ContextMenu) sender;
-            
-            ContextMenu contextMenu = new ContextMenu();
-            foreach (var iterator in HoopManager.Iterators)
+
+            var contextMenu = new ContextMenu();
+            foreach (ControllerIterator iterator in HoopManager.Iterators)
             {
-                var item = new MenuItem(iterator.Name, SwitchToHooping);                
-                contextMenu.MenuItems.Add(item);                
+                var item = new MenuItem(iterator.Name, SwitchToHooping);
+                contextMenu.MenuItems.Add(item);
             }
-            foreach (var EveryXthRun in HoopManager.EveryXRun)
+            foreach (ControllerEveryXRun EveryXthRun in HoopManager.EveryXRun)
             {
                 var item = new MenuItem(EveryXthRun.Name, SwitchToHooping);
                 contextMenu.MenuItems.Add(item);
-            }            
+            }
             contextMenu.MenuItems.Add(new MenuItem("Enable", SwitchToManual));
-            contextMenu.Show(origSender.SourceControl,new Point(0));
+            contextMenu.Show(origSender.SourceControl, new Point(0));
         }
 
         public void SwitchToHooping(object sender, EventArgs e)
@@ -98,50 +139,51 @@ namespace DigitalOutput.Controller
             var item = (MenuItem) sender;
             var menu = (ContextMenu) item.Parent;
             var textBox = (TextBox) menu.SourceControl;
+            
+            UnregisterFromSubject();
             Iterator = item.Text;
             RegisterToSubject();
             textBox.ReadOnly = true;
             textBox.DataBindings.RemoveAt(0);
-            
+
             textBox.DataBindings.Add("Text", this, "Iterator", false, DataSourceUpdateMode.OnPropertyChanged);
         }
 
         private void RegisterToSubject()
         {
-            foreach (var iterator in HoopManager.Iterators)
+            foreach (ControllerIterator iterator in HoopManager.Iterators)
             {
                 if (iterator.Name == Iterator)
                     iterator.Register(this);
-            }    
+            }
+        }
+
+        private void UnregisterFromSubject()
+        {        
+            foreach (ControllerIterator iterator in HoopManager.Iterators)
+            {
+                if (iterator.Name == Iterator)
+                    iterator.UnRegister(this);
+            }
         }
 
         public void SwitchToManual(object sender, EventArgs e)
         {
-            var item = (MenuItem)sender;
-            var menu = (ContextMenu)item.Parent;
-            var textBox = (TextBox)menu.SourceControl;
-            foreach (var iterator in HoopManager.Iterators)
-            {
-                if(iterator.Name == Iterator)
-                    iterator.UnRegister(this);
-                Iterator = "";
-            }
+            var item = (MenuItem) sender;
+            var menu = (ContextMenu) item.Parent;
+            var textBox = (TextBox) menu.SourceControl;
+
+            UnregisterFromSubject();
+            Iterator = "";
+
             textBox.ReadOnly = false;
             textBox.DataBindings.RemoveAt(0);
             textBox.DataBindings.Add("Text", this, "Duration", false, DataSourceUpdateMode.OnPropertyChanged);
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public void NewValue(double value)
+        public void SomethingHasChanged()
         {
-            Duration = (int) value;
-        }
-
-        public void NewName(string name)
-        {
-            Iterator = name;
-            PropertyHasChanged("Iterator");
+            _parent.SomethingHasChanged();
         }
     }
 }

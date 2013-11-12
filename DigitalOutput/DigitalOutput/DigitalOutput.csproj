@@ -66,6 +66,7 @@
     <Compile Include="Controller\ControllerFabric.cs" />
     <Compile Include="Controller\ControllerPattern.cs" />
     <Compile Include="Controller\ControllerStep.cs" />
+    <Compile Include="Controller\RunData.cs" />
     <Compile Include="Model\Timing.cs" />
     <Compile Include="GUI\Helper.cs" />
     <Compile Include="Hardware\Buffer.cs" />

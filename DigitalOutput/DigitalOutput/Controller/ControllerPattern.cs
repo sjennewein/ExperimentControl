@@ -8,15 +8,18 @@ namespace DigitalOutput.Controller
         private readonly ModelPattern _model;
         public Description[] Descriptions;
         public ControllerStep[] Steps;
+        private ControllerCard _parent;
 
-        public ControllerPattern(ModelPattern model)
+        public ControllerPattern(ModelPattern model, ControllerCard parent)
         {
+            _parent = parent;
             _model = model;
+
             Steps = new ControllerStep[model.Steps.Length];
             for (int iSteps = 0; iSteps < _model.Steps.Length; iSteps++)
             {
                 ModelStep stepModel = _model.Steps[iSteps];
-                Steps[iSteps] = new ControllerStep(stepModel);
+                Steps[iSteps] = new ControllerStep(stepModel, this);
             }
         }
 
@@ -39,6 +42,11 @@ namespace DigitalOutput.Controller
             {
                 step.RestoreSyncedValues();
             }
+        }
+
+        public void SomethingHasChanged()
+        {
+            _parent.SomethingHasChanged();
         }
 
         #region INotifyPropertyChanged Members

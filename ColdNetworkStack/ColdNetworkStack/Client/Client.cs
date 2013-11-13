@@ -14,6 +14,7 @@ namespace ColdNetworkStack.Client
         private readonly AutoResetEvent _runFinished;
         private NetworkStream _NetworkStream;
         private bool _loop;
+        public bool Connection = false;
 
         public Client(string name)
         {
@@ -27,8 +28,7 @@ namespace ColdNetworkStack.Client
             ReadNetworkStream(_client);
             WriteNetworkStream(_client, _name);
             ReadNetworkStream(_client);
-            if (_client.Connected)
-                TriggerEvent(Connected);
+            Connection = true;
         }
 
         public void Disconnect()
@@ -39,6 +39,7 @@ namespace ColdNetworkStack.Client
             ReadNetworkStream(_client);
             WriteNetworkStream(_client, Commands.Disconnect.ToString());
             _client.Close();
+            Connection = false;
         }
 
         public void SendDigitalData(string data)

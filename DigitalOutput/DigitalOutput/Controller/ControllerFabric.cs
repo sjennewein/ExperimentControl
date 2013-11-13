@@ -5,12 +5,12 @@ namespace DigitalOutput.Controller
 {
     public class ControllerFabric
     {
-        public static ControllerCard GenerateCard(Buffer buffer, ModelCard model = null)
+        public static ControllerCard GenerateCard(Buffer buffer, DigitalMainwindow gui, ModelCard model = null)
         {
             if (model == null)
                 model = ModelFabric.GenerateCard();
 
-            var newControllerCard = new ControllerCard(model, buffer);            
+            var newControllerCard = new ControllerCard(model, buffer, gui);            
 
             Description[] newDescriptions = new Description[model.ChannelDescription.Length];
             for (int iDescription = 0; iDescription < model.ChannelDescription.Length; iDescription++ )

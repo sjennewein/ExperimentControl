@@ -22,39 +22,42 @@ namespace DigitalOutput
         public DigitalMainwindow()
         {
             InitializeComponent();
-            
+
             WindowState = FormWindowState.Maximized;
-            Console.WriteLine(Width);    
+            Console.WriteLine(Width);
+            _buffer.Started += delegate { HardwareStarted(); };
+            _buffer.Stopped += delegate { HardwareStopped(); };
             Initialize();
         }
 
         private void Initialize(ModelCard model = null)
         {
-            _card = ControllerFabric.GenerateCard(_buffer, model);
+            _card = ControllerFabric.GenerateCard(_buffer, this, model);
             _card.SomethingChanged += RunChanged;
 
             if (model == null)
             {
                 _card.Ip = "127.0.0.1";
-                _card.Port = 9898;    
+                _card.Port = 9898;
             }
             else
             {
                 textBox_Flow.DataBindings.RemoveAt(0);
                 textBox_Ip.DataBindings.RemoveAt(0);
                 textBox_Port.DataBindings.RemoveAt(0);
+                label_CycleDone.DataBindings.RemoveAt(0);
             }
-            
-            
+
             textBox_Ip.DataBindings.Add("Text", _card, "Ip", false, DataSourceUpdateMode.OnPropertyChanged);
             textBox_Port.DataBindings.Add("Text", _card, "Port", false, DataSourceUpdateMode.OnPropertyChanged);
             textBox_Flow.DataBindings.Add("Text", _card, "Flow", false, DataSourceUpdateMode.OnPropertyChanged);
+            label_CycleDone.DataBindings.Add("Text", _card, "CyclesDone", false, DataSourceUpdateMode.OnPropertyChanged);
 
             if (model == null)
             {
                 SuspendLayout();
                 Helper.GenerateTabView(TabPanel, _card);
-                ResumeLayout();    
+                ResumeLayout();
             }
             else
             {
@@ -62,8 +65,8 @@ namespace DigitalOutput
                 _loops.ReLoad();
                 Helper.DisposeTabs(TabPanel);
                 Helper.GenerateTabView(TabPanel, _card);
-                ResumeLayout();    
-            }            
+                ResumeLayout();
+            }
         }
 
         private void RunChanged(object sender, EventArgs e)
@@ -109,7 +112,7 @@ namespace DigitalOutput
             }
 
             var loadedCard = (ModelCard) JSON.Instance.ToObject(input);
-            
+
             Initialize(loadedCard);
         }
 
@@ -124,7 +127,11 @@ namespace DigitalOutput
         private void button_Start_Click(object sender, EventArgs e)
         {
             if (String.Equals(_card.Flow, String.Empty) || _card.Flow == null)
+            {
+                MessageBox.Show("You have to provide a \"Program flow\"!");
                 return;
+            }
+
             _card.Start();
             label_Buffer.BackColor = Color.FromArgb(127, 210, 21);
         }
@@ -161,13 +168,15 @@ namespace DigitalOutput
                 textBox_Port.Enabled = true;
                 button_Connect.Enabled = true;
                 button_Disconnect.Enabled = true;
+                _card.Network = true;
             }
             else
-            {
+            {               
                 textBox_Ip.Enabled = false;
                 textBox_Port.Enabled = false;
                 button_Connect.Enabled = false;
                 button_Disconnect.Enabled = false;
+                _card.Network = false;
             }
         }
 
@@ -175,5 +184,39 @@ namespace DigitalOutput
         {
             _card.Disconnect();
         }
+
+        private void HardwareStopped()
+        {
+            if (InvokeRequired)
+            {
+                GuiUpdate callback = HardwareStopped;
+                Invoke(callback);
+            }
+            else
+            {
+                label_Status.Text = "Stopped";
+                label_Status.BackColor = Color.FromArgb(196, 20, 94);
+            }
+        }
+
+        private void HardwareStarted()
+        {
+            if (InvokeRequired)
+            {
+                GuiUpdate callback = HardwareStarted;
+                Invoke(callback);
+            }
+            else
+            {
+                label_Status.Text = "Started";
+                label_Status.BackColor = Color.FromArgb(127, 210, 21);
+            }
+        }
+
+        #region Nested type: GuiUpdate
+
+        private delegate void GuiUpdate();
+
+        #endregion
     }
 }

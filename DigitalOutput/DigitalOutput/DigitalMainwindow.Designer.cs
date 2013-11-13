@@ -47,12 +47,14 @@
             this.textBox_Port = new System.Windows.Forms.TextBox();
             this.button_Disconnect = new System.Windows.Forms.Button();
             this.button_Connect = new System.Windows.Forms.Button();
-            this.label3 = new System.Windows.Forms.Label();
+            this.label_Network = new System.Windows.Forms.Label();
             this.checkBox_Network = new System.Windows.Forms.CheckBox();
             this.label_Server = new System.Windows.Forms.Label();
             this.textBox_Ip = new System.Windows.Forms.TextBox();
             this.button_HulaHoop = new System.Windows.Forms.Button();
             this.groupBox_Loops = new System.Windows.Forms.GroupBox();
+            this.label_Cycle = new System.Windows.Forms.Label();
+            this.label_CycleDone = new System.Windows.Forms.Label();
             this.TabPanel.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox_ProgramFlow.SuspendLayout();
@@ -188,6 +190,8 @@
             // 
             // groupBox_Information
             // 
+            this.groupBox_Information.Controls.Add(this.label_CycleDone);
+            this.groupBox_Information.Controls.Add(this.label_Cycle);
             this.groupBox_Information.Controls.Add(this.label_Status);
             this.groupBox_Information.Location = new System.Drawing.Point(894, 12);
             this.groupBox_Information.Name = "groupBox_Information";
@@ -212,14 +216,14 @@
             // 
             // groupBox_Network
             // 
-            this.groupBox_Network.Controls.Add(this.label_collon);
             this.groupBox_Network.Controls.Add(this.textBox_Port);
             this.groupBox_Network.Controls.Add(this.button_Disconnect);
             this.groupBox_Network.Controls.Add(this.button_Connect);
-            this.groupBox_Network.Controls.Add(this.label3);
+            this.groupBox_Network.Controls.Add(this.label_Network);
             this.groupBox_Network.Controls.Add(this.checkBox_Network);
             this.groupBox_Network.Controls.Add(this.label_Server);
             this.groupBox_Network.Controls.Add(this.textBox_Ip);
+            this.groupBox_Network.Controls.Add(this.label_collon);
             this.groupBox_Network.Location = new System.Drawing.Point(688, 12);
             this.groupBox_Network.Name = "groupBox_Network";
             this.groupBox_Network.Size = new System.Drawing.Size(200, 128);
@@ -230,7 +234,7 @@
             // label_collon
             // 
             this.label_collon.AutoSize = true;
-            this.label_collon.Location = new System.Drawing.Point(140, 76);
+            this.label_collon.Location = new System.Drawing.Point(146, 76);
             this.label_collon.Name = "label_collon";
             this.label_collon.Size = new System.Drawing.Size(10, 13);
             this.label_collon.TabIndex = 9;
@@ -267,20 +271,20 @@
             this.button_Connect.UseVisualStyleBackColor = true;
             this.button_Connect.Click += new System.EventHandler(this.button_Connect_Click);
             // 
-            // label3
+            // label_Network
             // 
-            this.label3.AutoSize = true;
-            this.label3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(196)))), ((int)(((byte)(20)))), ((int)(((byte)(94)))));
-            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(10, 18);
-            this.label3.Margin = new System.Windows.Forms.Padding(0);
-            this.label3.MaximumSize = new System.Drawing.Size(130, 24);
-            this.label3.MinimumSize = new System.Drawing.Size(110, 24);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(126, 24);
-            this.label3.TabIndex = 12;
-            this.label3.Text = "Disconnected";
-            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.label_Network.AutoSize = true;
+            this.label_Network.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(196)))), ((int)(((byte)(20)))), ((int)(((byte)(94)))));
+            this.label_Network.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_Network.Location = new System.Drawing.Point(10, 18);
+            this.label_Network.Margin = new System.Windows.Forms.Padding(0);
+            this.label_Network.MaximumSize = new System.Drawing.Size(130, 24);
+            this.label_Network.MinimumSize = new System.Drawing.Size(110, 24);
+            this.label_Network.Name = "label_Network";
+            this.label_Network.Size = new System.Drawing.Size(126, 24);
+            this.label_Network.TabIndex = 12;
+            this.label_Network.Text = "Disconnected";
+            this.label_Network.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // checkBox_Network
             // 
@@ -306,10 +310,10 @@
             // textBox_Ip
             // 
             this.textBox_Ip.Enabled = false;
-            this.textBox_Ip.Location = new System.Drawing.Point(81, 73);
+            this.textBox_Ip.Location = new System.Drawing.Point(66, 73);
             this.textBox_Ip.MaxLength = 3;
             this.textBox_Ip.Name = "textBox_Ip";
-            this.textBox_Ip.Size = new System.Drawing.Size(55, 20);
+            this.textBox_Ip.Size = new System.Drawing.Size(82, 20);
             this.textBox_Ip.TabIndex = 0;
             // 
             // button_HulaHoop
@@ -331,6 +335,24 @@
             this.groupBox_Loops.TabIndex = 11;
             this.groupBox_Loops.TabStop = false;
             this.groupBox_Loops.Text = "Hula Hoops";
+            // 
+            // label_Cycle
+            // 
+            this.label_Cycle.AutoSize = true;
+            this.label_Cycle.Location = new System.Drawing.Point(7, 57);
+            this.label_Cycle.Name = "label_Cycle";
+            this.label_Cycle.Size = new System.Drawing.Size(68, 13);
+            this.label_Cycle.TabIndex = 9;
+            this.label_Cycle.Text = "Cycles done:";
+            // 
+            // label_CycleDone
+            // 
+            this.label_CycleDone.AutoSize = true;
+            this.label_CycleDone.Location = new System.Drawing.Point(81, 57);
+            this.label_CycleDone.Name = "label_CycleDone";
+            this.label_CycleDone.Size = new System.Drawing.Size(13, 13);
+            this.label_CycleDone.TabIndex = 10;
+            this.label_CycleDone.Text = "0";
             // 
             // DigitalMainwindow
             // 
@@ -379,7 +401,7 @@
         private System.Windows.Forms.TextBox textBox_Ip;
         private System.Windows.Forms.CheckBox checkBox_Network;
         private System.Windows.Forms.Label label_Server;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label_Network;
         private System.Windows.Forms.TextBox textBox_Flow;
         private System.Windows.Forms.GroupBox groupBox_ProgramFlow;
         private System.Windows.Forms.Button button_Undo;
@@ -390,6 +412,8 @@
         private System.Windows.Forms.Button button_Connect;
         private System.Windows.Forms.Label label_collon;
         private System.Windows.Forms.TextBox textBox_Port;
+        private System.Windows.Forms.Label label_CycleDone;
+        private System.Windows.Forms.Label label_Cycle;
     }
 }
 

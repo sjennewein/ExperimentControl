@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Threading;
 using DigitalOutput.Model;
 using NationalInstruments.DAQmx;
@@ -10,14 +9,14 @@ namespace DigitalOutput.Hardware
 {
     public class Buffer
     {
+        private readonly ManualResetEvent _loopGate = new ManualResetEvent(true);
         private ModelCard _data;
         private Thread _myWorker;
         private UInt32[] _outputSequence;
         private bool _run = true;
-        private bool _running = false;
+        private bool _running;
         private string _serializedData;
         private bool _updated;
-
 
         public void UpdateData(string newData)
         {
@@ -27,10 +26,10 @@ namespace DigitalOutput.Hardware
 
         public void WorkingLoop()
         {
-            TriggerEvent(HardwareStarted);
+            TriggerEvent(Started);
             while (_run)
             {
-                _running = true;               
+                _running = true;
 
                 if (_updated)
                 {
@@ -48,7 +47,7 @@ namespace DigitalOutput.Hardware
 
                 digitalOutputTask.Timing.ConfigureSampleClock("", sampleRate,
                                                               SampleClockActiveEdge.Rising,
-                                                              SampleQuantityMode.FiniteSamples,_outputSequence.Length);
+                                                              SampleQuantityMode.FiniteSamples, _outputSequence.Length);
                 digitalOutputTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger("/Dev1/PFI6",
                                                                                     DigitalEdgeStartTriggerEdge.Rising);
 
@@ -64,9 +63,22 @@ namespace DigitalOutput.Hardware
                 //free hardware
                 digitalOutputTask.Stop();
                 digitalOutputTask.Dispose();
+
+                TriggerEvent(CycleDone);
+                _loopGate.WaitOne();
             }
-            TriggerEvent(OutputStopped);
+            TriggerEvent(Stopped);
             _running = false;
+        }
+
+        public void Pause()
+        {
+            _loopGate.Reset();
+        }
+
+        public void Resume()
+        {
+            _loopGate.Set();
         }
 
         public void Start(string data)
@@ -93,7 +105,8 @@ namespace DigitalOutput.Hardware
                 triggerEvent(this, new EventArgs());
         }
 
-        public event EventHandler HardwareStarted;
-        public event EventHandler OutputStopped;
+        public event EventHandler Started;
+        public event EventHandler Stopped;
+        public event EventHandler CycleDone;
     }
 }

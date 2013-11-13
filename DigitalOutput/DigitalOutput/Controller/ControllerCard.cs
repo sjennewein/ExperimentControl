@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Drawing;
 using System.Net;
 using ColdNetworkStack.Client;
 using DigitalOutput.Model;
@@ -9,23 +11,28 @@ using Buffer = DigitalOutput.Hardware.Buffer;
 
 namespace DigitalOutput.Controller
 {
-    public class ControllerCard
+    public class ControllerCard : INotifyPropertyChanged
     {
+        private readonly DigitalMainwindow _myGui;
         private readonly Buffer _hardwareBuffer;
         private readonly ModelCard _model;
+        public bool Network = false;
         private Client _tcpClient;
         public ControllerPattern[] Patterns;
 
-        public ControllerCard(ModelCard model, Buffer buffer)
+        public ControllerCard(ModelCard model, Buffer buffer, DigitalMainwindow gui)
         {
             _model = model;
             Patterns = new ControllerPattern[_model.Patterns.Length];
             _hardwareBuffer = buffer;
+            _myGui = gui;
+            _hardwareBuffer.CycleDone += delegate { UpdateCycles(); };
+
             for (int iPattern = 0; iPattern < _model.Patterns.Length; iPattern++)
             {
                 ModelPattern modelPattern = _model.Patterns[iPattern];
                 Patterns[iPattern] = new ControllerPattern(modelPattern, this);
-            }
+            }            
         }
 
         public string Ip
@@ -46,8 +53,21 @@ namespace DigitalOutput.Controller
             set { _model.Flow = value; }
         }
 
+        public int CyclesDone { get; set; }
+
+        public int RunsDone { get; set; }
+
+        private void UpdateCycles()
+        {
+            CyclesDone++;
+            PropertyChangedEvent("CyclesDone");
+            PropertyChangedEvent("RunsDone");
+        }
+
         public void Start()
         {
+            CyclesDone = 0;
+            RunsDone = 0;
             _hardwareBuffer.Start(JSON.Instance.ToJSON(_model));
         }
 
@@ -74,6 +94,7 @@ namespace DigitalOutput.Controller
         }
 
         public string Status { get; set; }
+        public Color StatusColor { get; set; }
 
         /// <summary>
         /// Saves Values for UNDO
@@ -115,6 +136,25 @@ namespace DigitalOutput.Controller
             _tcpClient.Disconnect();
         }
 
+        private void PropertyChangedEvent(string propertyName)
+        {
+            if (_myGui.InvokeRequired)
+            {
+                GuiUpdate callback = PropertyChangedEvent;
+                _myGui.Invoke(callback, propertyName);                
+            }
+            else
+            {
+                PropertyChangedEventHandler propertyChanged = PropertyChanged;
+                if (null != propertyChanged)
+                    propertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
+        private delegate void GuiUpdate(string propertyName);
+
         public event EventHandler SomethingChanged;
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

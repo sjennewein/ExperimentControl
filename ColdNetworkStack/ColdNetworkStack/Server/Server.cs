@@ -19,20 +19,22 @@ namespace ColdNetworkStack.Server
         private long _readyClients;
         private bool _serverRun = true;
 
+        public List<String> RegisteredClients { get { return _registeredClients; } } 
+
         public Server(IPAddress ip, int port)
         {
             _listener = new TcpListener(ip, port);
-            new Thread(RunServer).Start();
+            new Thread(Listen).Start();
         }
 
-        private void RunServer()
+        private void Listen()
         {
             _listener.Start();
             while (_serverRun)
             {
                 try
                 {
-                    _listener.BeginAcceptTcpClient(HandleAsyncConnection, _listener);
+                    _listener.BeginAcceptTcpClient(ListenCallback, _listener);
                 }
                 catch
                 {
@@ -52,14 +54,16 @@ namespace ColdNetworkStack.Server
         public void RegisterClient(string name)
         {
             _registeredClients.Add(name);
+            TriggerEvent(ClientsChanged);
         }
 
         public void UnregisterClient(string name)
         {
             _registeredClients.Remove(name);
+            TriggerEvent(ClientsChanged);
         }
 
-        private void HandleAsyncConnection(IAsyncResult result)
+        private void ListenCallback(IAsyncResult result)
         {
             var listener = (TcpListener) result.AsyncState;
             TcpClient client;
@@ -89,7 +93,7 @@ namespace ColdNetworkStack.Server
             _clientTalks.Remove(clientTalk);
             client.Close();
         }
-
+       
         public void ClientReady()
         {
             Interlocked.Add(ref _readyClients, 1);
@@ -97,7 +101,7 @@ namespace ColdNetworkStack.Server
             if (Interlocked.Read(ref _readyClients) == _registeredClients.Count)
             {
                 Interlocked.Exchange(ref _readyClients, 0);
-                ReadyForNextRun();
+                TriggerEvent(AllClientsAreReady);
             }
         }
 
@@ -113,13 +117,15 @@ namespace ColdNetworkStack.Server
                 client.SendTrigger();
         }
 
-        private void ReadyForNextRun()
+        private void TriggerEvent(EventHandler newEvent, EventArgs e = null)
         {
-            EventHandler nextRun = AllClientsAreReady;
-            if (nextRun != null)
-                AllClientsAreReady(this, new EventArgs());
+            EventHandler triggerEvent = newEvent;
+            if (triggerEvent != null)
+                triggerEvent(this, new EventArgs());
         }
 
         public event EventHandler AllClientsAreReady;
+
+        public event EventHandler ClientsChanged;
     }
 }

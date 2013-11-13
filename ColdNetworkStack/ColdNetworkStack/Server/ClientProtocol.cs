@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading;
 
 namespace ColdNetworkStack.Server
@@ -9,7 +9,10 @@ namespace ColdNetworkStack.Server
     public class ClientProtocol
     {
         private readonly Server _parent;
+        //private readonly AutoResetEvent _receiveDone = new AutoResetEvent(false);
+        //private readonly AutoResetEvent _sendDone = new AutoResetEvent(false);
         private readonly AutoResetEvent _triggerSynchronization = new AutoResetEvent(false);
+        private NetworkStream _NetworkStream;
         private bool _run;
         private bool _trigger;
 
@@ -39,7 +42,8 @@ namespace ColdNetworkStack.Server
             _run = true;
             while (_run)
             {
-                var command = (Commands) Enum.Parse(typeof (Commands), ReadNetworkStream(client));
+                string input = ReadNetworkStream(client);
+                var command = (Commands) Enum.Parse(typeof (Commands), input);
 
                 switch (command)
                 {
@@ -99,17 +103,17 @@ namespace ColdNetworkStack.Server
                         break;
                     default:
                         return;
-                }            
+                }
 
                 _triggerSynchronization.WaitOne(); //all clients wait until all returned                
-                
+
                 if (!_trigger)
                     break;
 
-                WriteNetworkStream(client, Commands.Trigger.ToString());                
+                WriteNetworkStream(client, Commands.Trigger.ToString());
             }
 
-            WriteNetworkStream(client,Commands.Quit.ToString());            
+            WriteNetworkStream(client, Commands.Quit.ToString());
         }
 
         private void SaveData(TcpClient client)
@@ -173,43 +177,48 @@ namespace ColdNetworkStack.Server
 
         private string ReadNetworkStream(TcpClient client)
         {
+            var readBuffer = new byte[1024];
+            var completeMessage = new StringBuilder();
+            int numberOfBytesRead = 0;
+
+            if (_NetworkStream == null)
+                _NetworkStream = client.GetStream();
+
             try
             {
-                using (NetworkStream ns = client.GetStream())
+                _NetworkStream.ReadTimeout = 120000; // two minutes timeout                    
+                do
                 {
-                    ns.ReadTimeout = 120000;
-
-                    var reader = new BinaryReader(ns);
-                    string input = reader.ReadString();
-
-                    reader.Close();
-                    return input;
-                }
+                    numberOfBytesRead = _NetworkStream.Read(readBuffer, 0, readBuffer.Length);
+                    completeMessage.AppendFormat("{0}", Encoding.ASCII.GetString(readBuffer, 0, numberOfBytesRead));
+                } while (_NetworkStream.DataAvailable);
             }
             catch (Exception e)
             {
                 Trace.WriteLine(e.Message);
             }
-            return "";
+
+            return completeMessage.ToString();
         }
 
         private void WriteNetworkStream(TcpClient client, string message)
         {
+            if (_NetworkStream == null)
+                _NetworkStream = client.GetStream();
+
+
             try
             {
-                using (NetworkStream ns = client.GetStream())
-                {
-                    ns.WriteTimeout = 120000;
-                    var writer = new BinaryWriter(ns);
-                    writer.Write(message);
-                    writer.Flush();
-                    writer.Close();
-                }
+                _NetworkStream.WriteTimeout = 120000;
+                byte[] writeBuffer = Encoding.ASCII.GetBytes(message);
+
+                _NetworkStream.Write(writeBuffer, 0, writeBuffer.Length);
             }
             catch (Exception e)
             {
                 Trace.WriteLine(e.Message);
             }
         }
+        
     }
 }

@@ -22,14 +22,48 @@ namespace DigitalOutput
         public DigitalMainwindow()
         {
             InitializeComponent();
+            
             WindowState = FormWindowState.Maximized;
-            Console.WriteLine(Width);
-            _card = ControllerFabric.GenerateCard(_buffer);
+            Console.WriteLine(Width);    
+            Initialize();
+        }
+
+        private void Initialize(ModelCard model = null)
+        {
+            _card = ControllerFabric.GenerateCard(_buffer, model);
             _card.SomethingChanged += RunChanged;
+
+            if (model == null)
+            {
+                _card.Ip = "127.0.0.1";
+                _card.Port = 9898;    
+            }
+            else
+            {
+                textBox_Flow.DataBindings.RemoveAt(0);
+                textBox_Ip.DataBindings.RemoveAt(0);
+                textBox_Port.DataBindings.RemoveAt(0);
+            }
+            
+            
+            textBox_Ip.DataBindings.Add("Text", _card, "Ip", false, DataSourceUpdateMode.OnPropertyChanged);
+            textBox_Port.DataBindings.Add("Text", _card, "Port", false, DataSourceUpdateMode.OnPropertyChanged);
             textBox_Flow.DataBindings.Add("Text", _card, "Flow", false, DataSourceUpdateMode.OnPropertyChanged);
-            SuspendLayout();
-            Helper.GenerateTabView(TabPanel, _card);
-            ResumeLayout();
+
+            if (model == null)
+            {
+                SuspendLayout();
+                Helper.GenerateTabView(TabPanel, _card);
+                ResumeLayout();    
+            }
+            else
+            {
+                SuspendLayout();
+                _loops.ReLoad();
+                Helper.DisposeTabs(TabPanel);
+                Helper.GenerateTabView(TabPanel, _card);
+                ResumeLayout();    
+            }            
         }
 
         private void RunChanged(object sender, EventArgs e)
@@ -75,15 +109,8 @@ namespace DigitalOutput
             }
 
             var loadedCard = (ModelCard) JSON.Instance.ToObject(input);
-            _card = ControllerFabric.GenerateCard(_buffer, loadedCard);
-
-            SuspendLayout();
-            _loops.ReLoad();
-            Helper.DisposeTabs(TabPanel);
-            Helper.GenerateTabView(TabPanel, _card);
-            ResumeLayout();
-            textBox_Flow.DataBindings.RemoveAt(0);
-            textBox_Flow.DataBindings.Add("Text", _card, "Flow", false, DataSourceUpdateMode.OnPropertyChanged);
+            
+            Initialize(loadedCard);
         }
 
         private void button_Synchronize_Click(object sender, EventArgs e)
@@ -118,6 +145,35 @@ namespace DigitalOutput
         {
             _loops.Visible = true;
             _loops.Focus();
+        }
+
+        private void button_Connect_Click(object sender, EventArgs e)
+        {
+            _card.Connect();
+        }
+
+        private void checkBox_Network_CheckedChanged(object sender, EventArgs e)
+        {
+            var source = (CheckBox) sender;
+            if (source.Checked)
+            {
+                textBox_Ip.Enabled = true;
+                textBox_Port.Enabled = true;
+                button_Connect.Enabled = true;
+                button_Disconnect.Enabled = true;
+            }
+            else
+            {
+                textBox_Ip.Enabled = false;
+                textBox_Port.Enabled = false;
+                button_Connect.Enabled = false;
+                button_Disconnect.Enabled = false;
+            }
+        }
+
+        private void button_Disconnect_Click(object sender, EventArgs e)
+        {
+            _card.Disconnect();
         }
     }
 }

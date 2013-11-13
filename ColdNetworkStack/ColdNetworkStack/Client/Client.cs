@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading;
 
 namespace ColdNetworkStack.Client
@@ -10,8 +10,9 @@ namespace ColdNetworkStack.Client
     public class Client
     {
         private readonly TcpClient _client = new TcpClient();
-        private readonly AutoResetEvent _runFinished;
         private readonly string _name;
+        private readonly AutoResetEvent _runFinished;
+        private NetworkStream _NetworkStream;
         private bool _loop;
 
         public Client(string name)
@@ -22,21 +23,23 @@ namespace ColdNetworkStack.Client
         public void Connect(IPAddress ip, int port)
         {
             _client.Connect(ip, port);
-            WriteNetworkStream(_client,Commands.Register.ToString());
+            WriteNetworkStream(_client, Commands.Register.ToString());
             ReadNetworkStream(_client);
             WriteNetworkStream(_client, _name);
             ReadNetworkStream(_client);
+            if (_client.Connected)
+                TriggerEvent(Connected);
         }
 
         public void Disconnect()
         {
-            WriteNetworkStream(_client,Commands.UnRegister.ToString());
+            WriteNetworkStream(_client, Commands.UnRegister.ToString());
             ReadNetworkStream(_client);
             WriteNetworkStream(_client, _name);
             ReadNetworkStream(_client);
-            WriteNetworkStream(_client,Commands.Disconnect.ToString());
+            WriteNetworkStream(_client, Commands.Disconnect.ToString());
             _client.Close();
-        }        
+        }
 
         public void SendDigitalData(string data)
         {
@@ -81,46 +84,48 @@ namespace ColdNetworkStack.Client
                 _runFinished.WaitOne();
                 if (_loop)
                     break;
-                WriteNetworkStream(_client,Commands.WaitingForTrigger.ToString());
+                WriteNetworkStream(_client, Commands.WaitingForTrigger.ToString());
                 if (ReadNetworkStream(_client) == Commands.Trigger.ToString())
-                    RunInitiated();
+                    TriggerEvent(RunInitiated);
             }
         }
 
         private string ReadNetworkStream(TcpClient client)
         {
+            var readBuffer = new byte[1024];
+            var completeMessage = new StringBuilder();
+            int numberOfBytesRead = 0;
+
+            if (_NetworkStream == null)
+                _NetworkStream = client.GetStream();
+
             try
             {
-                using (NetworkStream ns = client.GetStream())
+                _NetworkStream.ReadTimeout = 120000; // two minutes timeout                    
+                do
                 {
-                    ns.ReadTimeout = 60000;
-
-                    var reader = new BinaryReader(ns);
-                    string input = reader.ReadString();
-
-                    reader.Close();
-                    return input;
-                }
+                    numberOfBytesRead = _NetworkStream.Read(readBuffer, 0, readBuffer.Length);
+                    completeMessage.AppendFormat("{0}", Encoding.ASCII.GetString(readBuffer, 0, numberOfBytesRead));
+                } while (_NetworkStream.DataAvailable);
             }
             catch (Exception e)
             {
                 Trace.WriteLine(e.Message);
             }
-            return "";
+            return completeMessage.ToString();
         }
 
         private void WriteNetworkStream(TcpClient client, string message)
         {
+            if (_NetworkStream == null)
+                _NetworkStream = client.GetStream();
+
             try
             {
-                using (NetworkStream ns = client.GetStream())
-                {
-                    ns.WriteTimeout = 1000;
-                    var writer = new BinaryWriter(ns);
-                    writer.Write(message);
-                    writer.Flush();
-                    writer.Close();
-                }
+                _NetworkStream.WriteTimeout = 120000;
+                byte[] writeBuffer = Encoding.ASCII.GetBytes(message);
+
+                _NetworkStream.Write(writeBuffer, 0, writeBuffer.Length);
             }
             catch (Exception e)
             {
@@ -128,14 +133,16 @@ namespace ColdNetworkStack.Client
             }
         }
 
-        private void RunInitiated()
+        private void TriggerEvent(EventHandler newEvent)
         {
-            EventHandler runHasBeenInitiated = RunHasBeenInitiated;
-            if (runHasBeenInitiated != null)
-                runHasBeenInitiated(this, new EventArgs());
+            EventHandler triggerEvent = newEvent;
+            if (triggerEvent != null)
+                triggerEvent(this, new EventArgs());
         }
 
-        public event EventHandler RunHasBeenInitiated;
+        public event EventHandler RunInitiated;
 
+        public event EventHandler Connected;
+        public event EventHandler Disconnected;
     }
 }

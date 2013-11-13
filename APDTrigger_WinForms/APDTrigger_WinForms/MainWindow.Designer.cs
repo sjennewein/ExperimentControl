@@ -82,10 +82,12 @@
             this.button_StartFrequency = new System.Windows.Forms.Button();
             this.label18 = new System.Windows.Forms.Label();
             this.textBox_Frequency = new System.Windows.Forms.TextBox();
+            this.textBox_tcpClient = new System.Windows.Forms.TextBox();
             this.groupBox_Trigger.SuspendLayout();
             this.groupBox_Recapture.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox_Histogram.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -601,6 +603,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.textBox_tcpClient);
             this.groupBox1.Location = new System.Drawing.Point(12, 363);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(167, 94);
@@ -658,6 +661,15 @@
             this.textBox_Frequency.TabIndex = 20;
             this.textBox_Frequency.Text = "1000";
             // 
+            // textBox_tcpClient
+            // 
+            this.textBox_tcpClient.Location = new System.Drawing.Point(10, 20);
+            this.textBox_tcpClient.Multiline = true;
+            this.textBox_tcpClient.Name = "textBox_tcpClient";
+            this.textBox_tcpClient.ReadOnly = true;
+            this.textBox_tcpClient.Size = new System.Drawing.Size(100, 68);
+            this.textBox_tcpClient.TabIndex = 0;
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -682,6 +694,8 @@
             this.groupBox3.PerformLayout();
             this.groupBox_Histogram.ResumeLayout(false);
             this.groupBox_Histogram.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
@@ -742,6 +756,7 @@
         private System.Windows.Forms.Button button_StartFrequency;
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.TextBox textBox_Frequency;
+        private System.Windows.Forms.TextBox textBox_tcpClient;
     }
 }
 

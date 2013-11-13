@@ -27,6 +27,7 @@ namespace DigitalOutput.Hardware
 
         public void WorkingLoop()
         {
+            TriggerEvent(HardwareStarted);
             while (_run)
             {
                 _running = true;               
@@ -64,6 +65,7 @@ namespace DigitalOutput.Hardware
                 digitalOutputTask.Stop();
                 digitalOutputTask.Dispose();
             }
+            TriggerEvent(OutputStopped);
             _running = false;
         }
 
@@ -83,5 +85,15 @@ namespace DigitalOutput.Hardware
         {
             _run = false;
         }
+
+        private void TriggerEvent(EventHandler newEvent, EventArgs e = null)
+        {
+            EventHandler triggerEvent = newEvent;
+            if (triggerEvent != null)
+                triggerEvent(this, new EventArgs());
+        }
+
+        public event EventHandler HardwareStarted;
+        public event EventHandler OutputStopped;
     }
 }

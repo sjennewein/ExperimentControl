@@ -63,7 +63,8 @@ namespace APDTrigger_WinForms
                                              DataSourceUpdateMode.OnPropertyChanged);
             textBox_Frequency.DataBindings.Add("Text", _myController, "Frequency", true,
                                                DataSourceUpdateMode.OnPropertyChanged);
-
+            textBox_tcpClient.DataBindings.Add("Text", _myController, "RegisteredClients", true,
+                                               DataSourceUpdateMode.OnPropertyChanged);
             InitializeApdSignalChart();
             InitializeApdHistogram();
         }

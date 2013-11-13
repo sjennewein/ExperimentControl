@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Net;
+using ColdNetworkStack.Client;
 using DigitalOutput.Model;
 using Hulahoop.Controller;
 using Ionic.Zip;
@@ -11,6 +13,7 @@ namespace DigitalOutput.Controller
     {
         private readonly Buffer _hardwareBuffer;
         private readonly ModelCard _model;
+        private Client _tcpClient;
         public ControllerPattern[] Patterns;
 
         public ControllerCard(ModelCard model, Buffer buffer)
@@ -23,6 +26,18 @@ namespace DigitalOutput.Controller
                 ModelPattern modelPattern = _model.Patterns[iPattern];
                 Patterns[iPattern] = new ControllerPattern(modelPattern, this);
             }
+        }
+
+        public string Ip
+        {
+            get { return _model.Ip; }
+            set { _model.Ip = value; }
+        }
+
+        public int Port
+        {
+            get { return _model.Port; }
+            set { _model.Port = value; }
         }
 
         public string Flow
@@ -58,6 +73,8 @@ namespace DigitalOutput.Controller
             _hardwareBuffer.UpdateData(data);
         }
 
+        public string Status { get; set; }
+
         /// <summary>
         /// Saves Values for UNDO
         /// </summary>
@@ -85,6 +102,17 @@ namespace DigitalOutput.Controller
             EventHandler somethingChanged = SomethingChanged;
             if (somethingChanged != null)
                 somethingChanged(this, new EventArgs());
+        }
+
+        public void Connect()
+        {
+            _tcpClient = new Client("DigitalCard");
+            _tcpClient.Connect(IPAddress.Parse(Ip), Port);
+        }
+
+        public void Disconnect()
+        {
+            _tcpClient.Disconnect();
         }
 
         public event EventHandler SomethingChanged;

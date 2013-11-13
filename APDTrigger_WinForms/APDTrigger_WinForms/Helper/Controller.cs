@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Net;
+using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using APDTrigger.Hardware;
@@ -58,7 +59,7 @@ namespace APDTrigger_WinForms.Helper
             _myGUI = gui;
             _saveFolder = _BaseSaveFolder + _today.Year + "\\" + _today.Month + "\\" + _today.Day + "\\";
             _tcpServer = new Server(IPAddress.Any, 9898);
-            _tcpServer.AllClientsAreReady += NextRun;
+            _tcpServer.ClientsChanged += delegate { PropertyChangedEvent("RegisteredClients"); };
         }
 
         #region BindingProperties
@@ -138,6 +139,19 @@ namespace APDTrigger_WinForms.Helper
             get { return _histogramData; }
         }
 
+        public String RegisteredClients
+        {
+            get
+            {
+                var output = new StringBuilder();
+                foreach (string client in _tcpServer.RegisteredClients)
+                {
+                    output.Append(client + "\n");
+                }
+                return output.ToString();
+            }
+        }
+
         #endregion
 
         #region INotifyPropertyChanged Members
@@ -189,11 +203,11 @@ namespace APDTrigger_WinForms.Helper
 
             _myCounterHardware = new Counter(Threshold, DetectionBins, APDBinsize, Binning, monitorMode,
                                              Samples2Acquire, Frequency);
-            _myCounterHardware.APDStopped += OnApdStoppedEvent;
+            _myCounterHardware.APDStopped += delegate { TriggerEvent(APDStopped); };
             _myCounterHardware.NewAPDValue += OnNewApdValue;
             _myCounterHardware.CycleFinished += OnCyleFinished;
 
-            if(Mode == RunType.Network)
+            if (Mode == RunType.Network)
                 _myCounterHardware.Pause();
         }
 
@@ -218,7 +232,7 @@ namespace APDTrigger_WinForms.Helper
                 _myCounterHardware.StopAPDTrigger();
                 _myCounterHardware.Resume();
             }
-                
+
 
             if (_saveApdSignal)
             {
@@ -294,7 +308,7 @@ namespace APDTrigger_WinForms.Helper
                 _Spectrum = null;
                 _binnedSpectrumData = null;
 
-                OnRunDoneEvent();
+                TriggerEvent(RunHasFinished);
 
                 //_myTcpServer.SetTriggerData(
                 //  new NetworkData(_atoms, _noAtoms, _cyclesDone, _runsDone, TotalRuns, _recapturerate).Serialize());
@@ -443,23 +457,6 @@ namespace APDTrigger_WinForms.Helper
             _histogramData = buckets;
         }
 
-        private void OnRunDoneEvent()
-        {
-            EventHandler runDone = RunHasFinished;
-            if (null != runDone)
-            {
-                var runData = new RunEventData(_runsDone, _recapturerate, _atoms, _noAtoms);
-                runDone(this, runData);
-            }
-        }
-
-        private void OnApdStoppedEvent(object sender, EventArgs e)
-        {
-            EventHandler finished = APDStopped;
-            if (null != finished)
-                finished(this, new EventArgs());
-        }
-
         /// <summary>
         /// Handles the GUI update events with invoking it to the right thread
         /// </summary>
@@ -479,9 +476,18 @@ namespace APDTrigger_WinForms.Helper
             }
         }
 
+        private void TriggerEvent(EventHandler newEvent, EventArgs e = null)
+        {
+            EventHandler triggerEvent = newEvent;
+            if (triggerEvent != null)
+                triggerEvent(this, new EventArgs());
+        }
+
         public event EventHandler APDStopped;
 
         public event EventHandler RunHasFinished;
+
+        public event EventHandler ClientsChanged;
 
         #region Nested type: GuiUpdate
 

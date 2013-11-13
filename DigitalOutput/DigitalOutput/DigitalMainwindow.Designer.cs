@@ -40,26 +40,24 @@
             this.button_Synchronize = new System.Windows.Forms.Button();
             this.groupBox_Buffer = new System.Windows.Forms.GroupBox();
             this.button_Undo = new System.Windows.Forms.Button();
-            this.groupBox_Stats = new System.Windows.Forms.GroupBox();
+            this.groupBox_Information = new System.Windows.Forms.GroupBox();
             this.label_Status = new System.Windows.Forms.Label();
             this.groupBox_Network = new System.Windows.Forms.GroupBox();
+            this.label_collon = new System.Windows.Forms.Label();
+            this.textBox_Port = new System.Windows.Forms.TextBox();
+            this.button_Disconnect = new System.Windows.Forms.Button();
+            this.button_Connect = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.checkBox_Network = new System.Windows.Forms.CheckBox();
             this.label_Server = new System.Windows.Forms.Label();
-            this.textBox_Ip4 = new System.Windows.Forms.TextBox();
-            this.textBox_Ip3 = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.textBox_Ip2 = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.textBox_Ip1 = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
+            this.textBox_Ip = new System.Windows.Forms.TextBox();
             this.button_HulaHoop = new System.Windows.Forms.Button();
             this.groupBox_Loops = new System.Windows.Forms.GroupBox();
             this.TabPanel.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox_ProgramFlow.SuspendLayout();
             this.groupBox_Buffer.SuspendLayout();
-            this.groupBox_Stats.SuspendLayout();
+            this.groupBox_Information.SuspendLayout();
             this.groupBox_Network.SuspendLayout();
             this.groupBox_Loops.SuspendLayout();
             this.SuspendLayout();
@@ -188,15 +186,15 @@
             this.button_Undo.UseVisualStyleBackColor = true;
             this.button_Undo.Click += new System.EventHandler(this.button_Undo_Click);
             // 
-            // groupBox_Stats
+            // groupBox_Information
             // 
-            this.groupBox_Stats.Controls.Add(this.label_Status);
-            this.groupBox_Stats.Location = new System.Drawing.Point(894, 12);
-            this.groupBox_Stats.Name = "groupBox_Stats";
-            this.groupBox_Stats.Size = new System.Drawing.Size(200, 128);
-            this.groupBox_Stats.TabIndex = 8;
-            this.groupBox_Stats.TabStop = false;
-            this.groupBox_Stats.Text = "Statistics";
+            this.groupBox_Information.Controls.Add(this.label_Status);
+            this.groupBox_Information.Location = new System.Drawing.Point(894, 12);
+            this.groupBox_Information.Name = "groupBox_Information";
+            this.groupBox_Information.Size = new System.Drawing.Size(200, 128);
+            this.groupBox_Information.TabIndex = 8;
+            this.groupBox_Information.TabStop = false;
+            this.groupBox_Information.Text = "Information";
             // 
             // label_Status
             // 
@@ -214,22 +212,60 @@
             // 
             // groupBox_Network
             // 
+            this.groupBox_Network.Controls.Add(this.label_collon);
+            this.groupBox_Network.Controls.Add(this.textBox_Port);
+            this.groupBox_Network.Controls.Add(this.button_Disconnect);
+            this.groupBox_Network.Controls.Add(this.button_Connect);
             this.groupBox_Network.Controls.Add(this.label3);
             this.groupBox_Network.Controls.Add(this.checkBox_Network);
             this.groupBox_Network.Controls.Add(this.label_Server);
-            this.groupBox_Network.Controls.Add(this.textBox_Ip4);
-            this.groupBox_Network.Controls.Add(this.textBox_Ip3);
-            this.groupBox_Network.Controls.Add(this.label4);
-            this.groupBox_Network.Controls.Add(this.textBox_Ip2);
-            this.groupBox_Network.Controls.Add(this.label2);
-            this.groupBox_Network.Controls.Add(this.textBox_Ip1);
-            this.groupBox_Network.Controls.Add(this.label1);
+            this.groupBox_Network.Controls.Add(this.textBox_Ip);
             this.groupBox_Network.Location = new System.Drawing.Point(688, 12);
             this.groupBox_Network.Name = "groupBox_Network";
             this.groupBox_Network.Size = new System.Drawing.Size(200, 128);
             this.groupBox_Network.TabIndex = 9;
             this.groupBox_Network.TabStop = false;
             this.groupBox_Network.Text = "Network";
+            // 
+            // label_collon
+            // 
+            this.label_collon.AutoSize = true;
+            this.label_collon.Location = new System.Drawing.Point(140, 76);
+            this.label_collon.Name = "label_collon";
+            this.label_collon.Size = new System.Drawing.Size(10, 13);
+            this.label_collon.TabIndex = 9;
+            this.label_collon.Text = ":";
+            // 
+            // textBox_Port
+            // 
+            this.textBox_Port.Enabled = false;
+            this.textBox_Port.Location = new System.Drawing.Point(154, 73);
+            this.textBox_Port.MaxLength = 3;
+            this.textBox_Port.Name = "textBox_Port";
+            this.textBox_Port.Size = new System.Drawing.Size(40, 20);
+            this.textBox_Port.TabIndex = 15;
+            // 
+            // button_Disconnect
+            // 
+            this.button_Disconnect.Enabled = false;
+            this.button_Disconnect.Location = new System.Drawing.Point(121, 99);
+            this.button_Disconnect.Name = "button_Disconnect";
+            this.button_Disconnect.Size = new System.Drawing.Size(75, 23);
+            this.button_Disconnect.TabIndex = 14;
+            this.button_Disconnect.Text = "Disconnect";
+            this.button_Disconnect.UseVisualStyleBackColor = true;
+            this.button_Disconnect.Click += new System.EventHandler(this.button_Disconnect_Click);
+            // 
+            // button_Connect
+            // 
+            this.button_Connect.Enabled = false;
+            this.button_Connect.Location = new System.Drawing.Point(40, 99);
+            this.button_Connect.Name = "button_Connect";
+            this.button_Connect.Size = new System.Drawing.Size(75, 23);
+            this.button_Connect.TabIndex = 13;
+            this.button_Connect.Text = "Connect";
+            this.button_Connect.UseVisualStyleBackColor = true;
+            this.button_Connect.Click += new System.EventHandler(this.button_Connect_Click);
             // 
             // label3
             // 
@@ -256,6 +292,7 @@
             this.checkBox_Network.TabIndex = 11;
             this.checkBox_Network.Text = "Network:       ";
             this.checkBox_Network.UseVisualStyleBackColor = true;
+            this.checkBox_Network.CheckedChanged += new System.EventHandler(this.checkBox_Network_CheckedChanged);
             // 
             // label_Server
             // 
@@ -266,68 +303,14 @@
             this.label_Server.TabIndex = 10;
             this.label_Server.Text = "Server IP:";
             // 
-            // textBox_Ip4
+            // textBox_Ip
             // 
-            this.textBox_Ip4.Enabled = false;
-            this.textBox_Ip4.Location = new System.Drawing.Point(172, 71);
-            this.textBox_Ip4.MaxLength = 3;
-            this.textBox_Ip4.Name = "textBox_Ip4";
-            this.textBox_Ip4.Size = new System.Drawing.Size(24, 20);
-            this.textBox_Ip4.TabIndex = 9;
-            // 
-            // textBox_Ip3
-            // 
-            this.textBox_Ip3.Enabled = false;
-            this.textBox_Ip3.Location = new System.Drawing.Point(142, 71);
-            this.textBox_Ip3.MaxLength = 3;
-            this.textBox_Ip3.Name = "textBox_Ip3";
-            this.textBox_Ip3.Size = new System.Drawing.Size(24, 20);
-            this.textBox_Ip3.TabIndex = 7;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(164, 74);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(10, 13);
-            this.label4.TabIndex = 8;
-            this.label4.Text = ".";
-            // 
-            // textBox_Ip2
-            // 
-            this.textBox_Ip2.Enabled = false;
-            this.textBox_Ip2.Location = new System.Drawing.Point(112, 71);
-            this.textBox_Ip2.MaxLength = 3;
-            this.textBox_Ip2.Name = "textBox_Ip2";
-            this.textBox_Ip2.Size = new System.Drawing.Size(24, 20);
-            this.textBox_Ip2.TabIndex = 5;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(134, 74);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(10, 13);
-            this.label2.TabIndex = 6;
-            this.label2.Text = ".";
-            // 
-            // textBox_Ip1
-            // 
-            this.textBox_Ip1.Enabled = false;
-            this.textBox_Ip1.Location = new System.Drawing.Point(82, 71);
-            this.textBox_Ip1.MaxLength = 3;
-            this.textBox_Ip1.Name = "textBox_Ip1";
-            this.textBox_Ip1.Size = new System.Drawing.Size(24, 20);
-            this.textBox_Ip1.TabIndex = 0;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(104, 74);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(10, 13);
-            this.label1.TabIndex = 4;
-            this.label1.Text = ".";
+            this.textBox_Ip.Enabled = false;
+            this.textBox_Ip.Location = new System.Drawing.Point(81, 73);
+            this.textBox_Ip.MaxLength = 3;
+            this.textBox_Ip.Name = "textBox_Ip";
+            this.textBox_Ip.Size = new System.Drawing.Size(55, 20);
+            this.textBox_Ip.TabIndex = 0;
             // 
             // button_HulaHoop
             // 
@@ -356,7 +339,7 @@
             this.ClientSize = new System.Drawing.Size(1284, 1006);
             this.Controls.Add(this.groupBox_Loops);
             this.Controls.Add(this.groupBox_Network);
-            this.Controls.Add(this.groupBox_Stats);
+            this.Controls.Add(this.groupBox_Information);
             this.Controls.Add(this.button_Stop);
             this.Controls.Add(this.button_Load);
             this.Controls.Add(this.button_Save);
@@ -371,8 +354,8 @@
             this.groupBox_ProgramFlow.PerformLayout();
             this.groupBox_Buffer.ResumeLayout(false);
             this.groupBox_Buffer.PerformLayout();
-            this.groupBox_Stats.ResumeLayout(false);
-            this.groupBox_Stats.PerformLayout();
+            this.groupBox_Information.ResumeLayout(false);
+            this.groupBox_Information.PerformLayout();
             this.groupBox_Network.ResumeLayout(false);
             this.groupBox_Network.PerformLayout();
             this.groupBox_Loops.ResumeLayout(false);
@@ -391,15 +374,9 @@
         private System.Windows.Forms.Label label_Buffer;
         private System.Windows.Forms.Button button_Synchronize;
         private System.Windows.Forms.GroupBox groupBox_Buffer;
-        private System.Windows.Forms.GroupBox groupBox_Stats;
+        private System.Windows.Forms.GroupBox groupBox_Information;
         private System.Windows.Forms.GroupBox groupBox_Network;
-        private System.Windows.Forms.TextBox textBox_Ip1;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox textBox_Ip4;
-        private System.Windows.Forms.TextBox textBox_Ip3;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox textBox_Ip2;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox textBox_Ip;
         private System.Windows.Forms.CheckBox checkBox_Network;
         private System.Windows.Forms.Label label_Server;
         private System.Windows.Forms.Label label3;
@@ -409,6 +386,10 @@
         private System.Windows.Forms.Label label_Status;
         private System.Windows.Forms.Button button_HulaHoop;
         private System.Windows.Forms.GroupBox groupBox_Loops;
+        private System.Windows.Forms.Button button_Disconnect;
+        private System.Windows.Forms.Button button_Connect;
+        private System.Windows.Forms.Label label_collon;
+        private System.Windows.Forms.TextBox textBox_Port;
     }
 }
 

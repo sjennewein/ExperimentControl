@@ -57,6 +57,8 @@
             this.groupBox_Loops = new System.Windows.Forms.GroupBox();
             this.label_Run = new System.Windows.Forms.Label();
             this.label_RunsDone = new System.Windows.Forms.Label();
+            this.label_Of = new System.Windows.Forms.Label();
+            this.label_CyclesPerRun = new System.Windows.Forms.Label();
             this.TabPanel.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox_ProgramFlow.SuspendLayout();
@@ -192,6 +194,8 @@
             // 
             // groupBox_Information
             // 
+            this.groupBox_Information.Controls.Add(this.label_CyclesPerRun);
+            this.groupBox_Information.Controls.Add(this.label_Of);
             this.groupBox_Information.Controls.Add(this.label_RunsDone);
             this.groupBox_Information.Controls.Add(this.label_Run);
             this.groupBox_Information.Controls.Add(this.label_CycleDone);
@@ -376,6 +380,24 @@
             this.label_RunsDone.TabIndex = 12;
             this.label_RunsDone.Text = "0";
             // 
+            // label_Of
+            // 
+            this.label_Of.AutoSize = true;
+            this.label_Of.Location = new System.Drawing.Point(131, 57);
+            this.label_Of.Name = "label_Of";
+            this.label_Of.Size = new System.Drawing.Size(12, 13);
+            this.label_Of.TabIndex = 13;
+            this.label_Of.Text = "/";
+            // 
+            // label_CyclesPerRun
+            // 
+            this.label_CyclesPerRun.AutoSize = true;
+            this.label_CyclesPerRun.Location = new System.Drawing.Point(149, 57);
+            this.label_CyclesPerRun.Name = "label_CyclesPerRun";
+            this.label_CyclesPerRun.Size = new System.Drawing.Size(13, 13);
+            this.label_CyclesPerRun.TabIndex = 14;
+            this.label_CyclesPerRun.Text = "0";
+            // 
             // DigitalMainwindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -439,6 +461,8 @@
         private System.Windows.Forms.Label label_Cycle;
         private System.Windows.Forms.Label label_RunsDone;
         private System.Windows.Forms.Label label_Run;
+        private System.Windows.Forms.Label label_CyclesPerRun;
+        private System.Windows.Forms.Label label_Of;
     }
 }
 

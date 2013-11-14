@@ -11,9 +11,10 @@ namespace ColdNetworkStack.Client
     {
         private readonly TcpClient _client = new TcpClient();
         private readonly string _name;
-        private readonly AutoResetEvent _nextRun;
+        private readonly AutoResetEvent _nextRun = new AutoResetEvent(false);
         private NetworkStream _NetworkStream;
-        private bool _loop;
+        private Thread _workerThread;
+        private bool _loop = true;
         public bool Connection = false;
         public int CyclesPerRun = 0;
 
@@ -72,9 +73,11 @@ namespace ColdNetworkStack.Client
             var answer = ReadNetworkStream(_client);                            //read how many cycles per run
             CyclesPerRun = Convert.ToInt32(answer);
             WriteNetworkStream(_client, Answers.Ack.ToString());                //send ack
+            TriggerEvent(DataReceived);
 
             _loop = true;
-            new Thread(RunLoop);
+            _workerThread = new Thread(RunLoop) {Name = "LOOP"};
+            _workerThread.Start();
         }
 
         public void StopLoop()
@@ -88,7 +91,7 @@ namespace ColdNetworkStack.Client
             while (_loop)
             {
                 _nextRun.WaitOne();
-                if (_loop)
+                if (!_loop)
                     break;
                 WriteNetworkStream(_client, Commands.WaitingForTrigger.ToString());
                 if (ReadNetworkStream(_client) == Commands.Trigger.ToString())
@@ -152,7 +155,7 @@ namespace ColdNetworkStack.Client
         }
 
         public event EventHandler RunTriggered;
-
+        public event EventHandler DataReceived;
         public event EventHandler Connected;
         public event EventHandler Disconnected;
     }

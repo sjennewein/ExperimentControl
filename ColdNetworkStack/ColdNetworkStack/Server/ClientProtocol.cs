@@ -83,7 +83,7 @@ namespace ColdNetworkStack.Server
         private void TriggerMode(TcpClient client)
         {
             WriteNetworkStream(client, Answers.Ack.ToString());
-
+            Thread.Sleep(1);
             WriteNetworkStream(client, _parent.CyclesPerRun.ToString());
             ReadNetworkStream(client);
 

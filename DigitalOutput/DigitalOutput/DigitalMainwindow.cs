@@ -47,6 +47,7 @@ namespace DigitalOutput
                 textBox_Port.DataBindings.RemoveAt(0);
                 label_CycleDone.DataBindings.RemoveAt(0);
                 label_RunsDone.DataBindings.RemoveAt(0);
+                label_CyclesPerRun.DataBindings.RemoveAt(0);
             }
 
             textBox_Ip.DataBindings.Add("Text", _card, "Ip", false, DataSourceUpdateMode.OnPropertyChanged);
@@ -54,6 +55,7 @@ namespace DigitalOutput
             textBox_Flow.DataBindings.Add("Text", _card, "Flow", false, DataSourceUpdateMode.OnPropertyChanged);
             label_CycleDone.DataBindings.Add("Text", _card, "CyclesDone", false, DataSourceUpdateMode.OnPropertyChanged);
             label_RunsDone.DataBindings.Add("Text", _card, "RunsDone", false, DataSourceUpdateMode.OnPropertyChanged);
+            label_CyclesPerRun.DataBindings.Add("Text", _card, "CyclesPerRun", false, DataSourceUpdateMode.OnPropertyChanged);
 
             if (model == null)
             {

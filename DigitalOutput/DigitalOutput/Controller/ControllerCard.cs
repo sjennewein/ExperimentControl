@@ -18,6 +18,7 @@ namespace DigitalOutput.Controller
         private readonly DigitalMainwindow _myGui;
         public bool Networking = false;
         public ControllerPattern[] Patterns;
+
         private Client _tcpClient;
 
         public ControllerCard(ModelCard model, Buffer buffer, DigitalMainwindow gui)
@@ -55,6 +56,16 @@ namespace DigitalOutput.Controller
 
         public int CyclesDone { get; set; }
 
+        public int CyclesPerRun
+        {
+            get
+            {
+                if (_tcpClient != null)
+                    return _tcpClient.CyclesPerRun;
+                return 0;
+            }
+        }
+
         public int RunsDone { get; set; }
         public string Status { get; set; }
         public Color StatusColor { get; set; }
@@ -70,7 +81,7 @@ namespace DigitalOutput.Controller
             CyclesDone++;
             PropertyChangedEvent("CyclesDone");
 
-            if (!_tcpClient.Connection)
+            if (_tcpClient == null || !_tcpClient.Connection)
                 return;
 
             // if network connection exist pause hardware when a run is finished
@@ -92,8 +103,8 @@ namespace DigitalOutput.Controller
             if (Networking)
             {
                 if (_tcpClient == null || !_tcpClient.Connection) //check if no connection is established yet
-                {                    
-                    Connect();                    
+                {
+                    Connect();
                 }
 
                 _hardwareBuffer.Pause();
@@ -172,6 +183,7 @@ namespace DigitalOutput.Controller
         {
             _tcpClient = new Client("DigitalCard");
             _tcpClient.RunTriggered += delegate { ResumeHardwareOutput(); };
+            _tcpClient.DataReceived += delegate { PropertyChangedEvent("CyclesPerRun"); };
             _tcpClient.Connect(IPAddress.Parse(Ip), Port);
             RunsDone = 0;
         }
@@ -179,11 +191,12 @@ namespace DigitalOutput.Controller
         private void StartTriggerMode()
         {
             _tcpClient.StartLoop();
+            _tcpClient.ReadyForNextRun();
         }
 
         public void Disconnect()
         {
-            _tcpClient.Disconnect();           
+            _tcpClient.Disconnect();
         }
 
         private void PropertyChangedEvent(string propertyName)

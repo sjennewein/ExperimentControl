@@ -65,7 +65,10 @@ namespace APDTrigger_WinForms.Helper
             if (_tcpServer == null)
             {
                 _tcpServer = new Server(IPAddress.Any, 9898);
-                _tcpServer.ClientsChanged += delegate { PropertyChangedEvent("RegisteredClients"); };    
+                _tcpServer.ClientsChanged += delegate { PropertyChangedEvent("RegisteredClients"); };
+                _tcpServer.AllClientsAreReady += delegate { NextRun(); };
+                _tcpServer.CyclesPerRun = Cycles;
+                _tcpServer.RegisterClient("APDTrigger");
             }            
         }
 
@@ -195,14 +198,16 @@ namespace APDTrigger_WinForms.Helper
         public void Start(bool runFrequencyGenerator = false)
         {
             Initialize();
-            //_myCounterHardware.EmergencyStop += OnEmergencyStop;
+            
 
             _Worker = new Thread(BackgroundWork) {Name = "Worker"};
             _Worker.Start();
 
             if (runFrequencyGenerator)
                 _myCounterHardware.StartFrequencyGenerator();
-            //_isRunning = true;
+            
+           
+            
         }
 
         private void Initialize()
@@ -236,6 +241,13 @@ namespace APDTrigger_WinForms.Helper
             _myCounterHardware.AimTrigger();
             _myCounterHardware.PrepareAcquisition();
             _myCounterHardware.InitializeMeasurementTimer();
+
+            if (Mode == RunType.Network)
+            {
+                _tcpServer.ClientReady();
+                Console.WriteLine("BLABLABA");
+            }
+                
         }
 
         /// <summary>
@@ -296,7 +308,7 @@ namespace APDTrigger_WinForms.Helper
             }
         }
 
-        private void NextRun(object sender, EventArgs e)
+        private void NextRun()
         {
             _tcpServer.StartNextRun();
             _myCounterHardware.Resume();

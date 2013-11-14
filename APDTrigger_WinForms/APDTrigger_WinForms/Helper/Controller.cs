@@ -33,7 +33,7 @@ namespace APDTrigger_WinForms.Helper
 
 
         private readonly Control _myGUI;
-        private readonly Server _tcpServer;
+        private Server _tcpServer;
         public RunType Mode = RunType.Monitor;
         private int[] _Spectrum;
         private Thread _Worker;
@@ -57,9 +57,25 @@ namespace APDTrigger_WinForms.Helper
         public Controller(Control gui)
         {
             _myGUI = gui;
-            _saveFolder = _BaseSaveFolder + _today.Year + "\\" + _today.Month + "\\" + _today.Day + "\\";
-            _tcpServer = new Server(IPAddress.Any, 9898);
-            _tcpServer.ClientsChanged += delegate { PropertyChangedEvent("RegisteredClients"); };
+            _saveFolder = _BaseSaveFolder + _today.Year + "\\" + _today.Month + "\\" + _today.Day + "\\";            
+        }
+
+        public void ActivateNetwork()
+        {
+            if (_tcpServer == null)
+            {
+                _tcpServer = new Server(IPAddress.Any, 9898);
+                _tcpServer.ClientsChanged += delegate { PropertyChangedEvent("RegisteredClients"); };    
+            }            
+        }
+
+        public void DeactivateNetwork()
+        {
+            if (_tcpServer != null)
+            {
+                _tcpServer.Stop();
+                _tcpServer = null;
+            }
         }
 
         #region BindingProperties
@@ -247,8 +263,8 @@ namespace APDTrigger_WinForms.Helper
         {
             Stop();
 
-
-            _tcpServer.Stop();
+            if(_tcpServer != null)
+                _tcpServer.Stop();
         }
 
         /// <summary>

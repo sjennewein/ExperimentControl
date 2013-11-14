@@ -33,7 +33,7 @@ namespace DigitalOutput
         private void Initialize(ModelCard model = null)
         {
             _card = ControllerFabric.GenerateCard(_buffer, this, model);
-            _card.SomethingChanged += RunChanged;
+            _card.RunDataChanged += RunDataChanged;
 
             if (model == null)
             {
@@ -46,12 +46,14 @@ namespace DigitalOutput
                 textBox_Ip.DataBindings.RemoveAt(0);
                 textBox_Port.DataBindings.RemoveAt(0);
                 label_CycleDone.DataBindings.RemoveAt(0);
+                label_RunsDone.DataBindings.RemoveAt(0);
             }
 
             textBox_Ip.DataBindings.Add("Text", _card, "Ip", false, DataSourceUpdateMode.OnPropertyChanged);
             textBox_Port.DataBindings.Add("Text", _card, "Port", false, DataSourceUpdateMode.OnPropertyChanged);
             textBox_Flow.DataBindings.Add("Text", _card, "Flow", false, DataSourceUpdateMode.OnPropertyChanged);
             label_CycleDone.DataBindings.Add("Text", _card, "CyclesDone", false, DataSourceUpdateMode.OnPropertyChanged);
+            label_RunsDone.DataBindings.Add("Text", _card, "RunsDone", false, DataSourceUpdateMode.OnPropertyChanged);
 
             if (model == null)
             {
@@ -69,7 +71,7 @@ namespace DigitalOutput
             }
         }
 
-        private void RunChanged(object sender, EventArgs e)
+        private void RunDataChanged(object sender, EventArgs e)
         {
             label_Buffer.BackColor = Color.FromArgb(196, 20, 94);
             label_Buffer.Text = "Nope";
@@ -168,7 +170,7 @@ namespace DigitalOutput
                 textBox_Port.Enabled = true;
                 button_Connect.Enabled = true;
                 button_Disconnect.Enabled = true;
-                _card.Network = true;
+                _card.Networking = true;
             }
             else
             {               
@@ -176,7 +178,7 @@ namespace DigitalOutput
                 textBox_Port.Enabled = false;
                 button_Connect.Enabled = false;
                 button_Disconnect.Enabled = false;
-                _card.Network = false;
+                _card.Networking = false;
             }
         }
 
@@ -218,5 +220,11 @@ namespace DigitalOutput
         private delegate void GuiUpdate();
 
         #endregion
+
+        private void DigitalMainwindow_FormClosing(object sender, FormClosingEventArgs e)
+        {
+
+        }
+
     }
 }

@@ -9,8 +9,6 @@ namespace ColdNetworkStack.Server
     public class ClientProtocol
     {
         private readonly Server _parent;
-        //private readonly AutoResetEvent _receiveDone = new AutoResetEvent(false);
-        //private readonly AutoResetEvent _sendDone = new AutoResetEvent(false);
         private readonly AutoResetEvent _triggerSynchronization = new AutoResetEvent(false);
         private NetworkStream _NetworkStream;
         private bool _run;

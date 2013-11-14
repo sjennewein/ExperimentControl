@@ -11,10 +11,11 @@ namespace ColdNetworkStack.Client
     {
         private readonly TcpClient _client = new TcpClient();
         private readonly string _name;
-        private readonly AutoResetEvent _runFinished;
+        private readonly AutoResetEvent _nextRun;
         private NetworkStream _NetworkStream;
         private bool _loop;
         public bool Connection = false;
+        public int CyclesPerRun = 0;
 
         public Client(string name)
         {
@@ -66,8 +67,12 @@ namespace ColdNetworkStack.Client
 
         public void StartLoop()
         {
-            WriteNetworkStream(_client, Commands.EnterTriggerMode.ToString());
-            ReadNetworkStream(_client);
+            WriteNetworkStream(_client, Commands.EnterTriggerMode.ToString());  //enter trigger mode
+            ReadNetworkStream(_client);                                         //read ack from server
+            var answer = ReadNetworkStream(_client);                            //read how many cycles per run
+            CyclesPerRun = Convert.ToInt32(answer);
+            WriteNetworkStream(_client, Answers.Ack.ToString());                //send ack
+
             _loop = true;
             new Thread(RunLoop);
         }
@@ -75,20 +80,25 @@ namespace ColdNetworkStack.Client
         public void StopLoop()
         {
             _loop = false;
-            _runFinished.Set();
+            _nextRun.Set();
         }
 
         private void RunLoop()
         {
             while (_loop)
             {
-                _runFinished.WaitOne();
+                _nextRun.WaitOne();
                 if (_loop)
                     break;
                 WriteNetworkStream(_client, Commands.WaitingForTrigger.ToString());
                 if (ReadNetworkStream(_client) == Commands.Trigger.ToString())
-                    TriggerEvent(RunInitiated);
+                    TriggerEvent(RunTriggered);
             }
+        }
+
+        public void ReadyForNextRun()
+        {
+            _nextRun.Set();
         }
 
         private string ReadNetworkStream(TcpClient client)
@@ -141,7 +151,7 @@ namespace ColdNetworkStack.Client
                 triggerEvent(this, new EventArgs());
         }
 
-        public event EventHandler RunInitiated;
+        public event EventHandler RunTriggered;
 
         public event EventHandler Connected;
         public event EventHandler Disconnected;

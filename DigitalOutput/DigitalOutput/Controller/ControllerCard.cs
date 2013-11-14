@@ -13,12 +13,12 @@ namespace DigitalOutput.Controller
 {
     public class ControllerCard : INotifyPropertyChanged
     {
-        private readonly DigitalMainwindow _myGui;
         private readonly Buffer _hardwareBuffer;
         private readonly ModelCard _model;
-        public bool Network = false;
-        private Client _tcpClient;
+        private readonly DigitalMainwindow _myGui;
+        public bool Networking = false;
         public ControllerPattern[] Patterns;
+        private Client _tcpClient;
 
         public ControllerCard(ModelCard model, Buffer buffer, DigitalMainwindow gui)
         {
@@ -32,7 +32,7 @@ namespace DigitalOutput.Controller
             {
                 ModelPattern modelPattern = _model.Patterns[iPattern];
                 Patterns[iPattern] = new ControllerPattern(modelPattern, this);
-            }            
+            }
         }
 
         public string Ip
@@ -56,23 +56,59 @@ namespace DigitalOutput.Controller
         public int CyclesDone { get; set; }
 
         public int RunsDone { get; set; }
+        public string Status { get; set; }
+        public Color StatusColor { get; set; }
+
+        #region INotifyPropertyChanged Members
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        #endregion
 
         private void UpdateCycles()
         {
             CyclesDone++;
             PropertyChangedEvent("CyclesDone");
-            PropertyChangedEvent("RunsDone");
+
+            if (!_tcpClient.Connection)
+                return;
+
+            // if network connection exist pause hardware when a run is finished
+            if (CyclesDone >= _tcpClient.CyclesPerRun)
+            {
+                _hardwareBuffer.Pause();
+                TriggerEvent(UpdateDataForNextRun);
+                _tcpClient.ReadyForNextRun();
+                RunsDone++;
+                PropertyChangedEvent("RunsDone");
+            }
         }
 
         public void Start()
         {
             CyclesDone = 0;
             RunsDone = 0;
+
+            if (Networking)
+            {
+                if (_tcpClient == null || !_tcpClient.Connection) //check if no connection is established yet
+                {                    
+                    Connect();                    
+                }
+
+                _hardwareBuffer.Pause();
+                StartTriggerMode();
+            }
+
             _hardwareBuffer.Start(JSON.Instance.ToJSON(_model));
         }
 
         public void Stop()
         {
+            if (Networking)
+                if (_tcpClient.Connection)
+                    Disconnect();
+
             _hardwareBuffer.Stop();
         }
 
@@ -87,14 +123,16 @@ namespace DigitalOutput.Controller
             }
         }
 
+        public void ResumeHardwareOutput()
+        {
+            _hardwareBuffer.Resume();
+        }
+
         public void CopyToBuffer()
         {
             string data = JSON.Instance.ToJSON(_model);
             _hardwareBuffer.UpdateData(data);
         }
-
-        public string Status { get; set; }
-        public Color StatusColor { get; set; }
 
         /// <summary>
         /// Saves Values for UNDO
@@ -118,22 +156,34 @@ namespace DigitalOutput.Controller
             }
         }
 
-        public void SomethingHasChanged()
+        public void RunChanged()
         {
-            EventHandler somethingChanged = SomethingChanged;
-            if (somethingChanged != null)
-                somethingChanged(this, new EventArgs());
+            TriggerEvent(RunDataChanged);
+        }
+
+        private void TriggerEvent(EventHandler newEvent, EventArgs e = null)
+        {
+            EventHandler triggerEvent = RunDataChanged;
+            if (triggerEvent != null)
+                triggerEvent(this, e);
         }
 
         public void Connect()
         {
             _tcpClient = new Client("DigitalCard");
+            _tcpClient.RunTriggered += delegate { ResumeHardwareOutput(); };
             _tcpClient.Connect(IPAddress.Parse(Ip), Port);
+            RunsDone = 0;
+        }
+
+        private void StartTriggerMode()
+        {
+            _tcpClient.StartLoop();
         }
 
         public void Disconnect()
         {
-            _tcpClient.Disconnect();
+            _tcpClient.Disconnect();           
         }
 
         private void PropertyChangedEvent(string propertyName)
@@ -141,7 +191,7 @@ namespace DigitalOutput.Controller
             if (_myGui.InvokeRequired)
             {
                 GuiUpdate callback = PropertyChangedEvent;
-                _myGui.Invoke(callback, propertyName);                
+                _myGui.Invoke(callback, propertyName);
             }
             else
             {
@@ -151,10 +201,14 @@ namespace DigitalOutput.Controller
             }
         }
 
+        public event EventHandler RunDataChanged;
+
+        public event EventHandler UpdateDataForNextRun;
+
+        #region Nested type: GuiUpdate
+
         private delegate void GuiUpdate(string propertyName);
 
-        public event EventHandler SomethingChanged;
-
-        public event PropertyChangedEventHandler PropertyChanged;
+        #endregion
     }
 }

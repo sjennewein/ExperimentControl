@@ -292,12 +292,15 @@ namespace APDTrigger_WinForms
                 {
                     case "Measurement":
                         _myController.Mode = Controller.RunType.Measurement;
+                        _myController.DeactivateNetwork();
                         break;
                     case "Monitor":
                         _myController.Mode = Controller.RunType.Monitor;
+                        _myController.DeactivateNetwork();
                         break;
                     case "Network":
                         _myController.Mode = Controller.RunType.Network;
+                        _myController.ActivateNetwork();
                         break;
                 }
             }

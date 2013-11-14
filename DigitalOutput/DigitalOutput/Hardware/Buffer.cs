@@ -9,7 +9,7 @@ namespace DigitalOutput.Hardware
 {
     public class Buffer
     {
-        private readonly ManualResetEvent _loopGate = new ManualResetEvent(true);
+        private readonly ManualResetEvent _nextRunGate = new ManualResetEvent(true);
         private ModelCard _data;
         private Thread _myWorker;
         private UInt32[] _outputSequence;
@@ -27,6 +27,7 @@ namespace DigitalOutput.Hardware
         public void WorkingLoop()
         {
             TriggerEvent(Started);
+            _nextRunGate.WaitOne();
             while (_run)
             {
                 _running = true;
@@ -65,7 +66,7 @@ namespace DigitalOutput.Hardware
                 digitalOutputTask.Dispose();
 
                 TriggerEvent(CycleDone);
-                _loopGate.WaitOne();
+                _nextRunGate.WaitOne();
             }
             TriggerEvent(Stopped);
             _running = false;
@@ -73,12 +74,12 @@ namespace DigitalOutput.Hardware
 
         public void Pause()
         {
-            _loopGate.Reset();
+            _nextRunGate.Reset();
         }
 
         public void Resume()
         {
-            _loopGate.Set();
+            _nextRunGate.Set();
         }
 
         public void Start(string data)
@@ -96,6 +97,7 @@ namespace DigitalOutput.Hardware
         public void Stop()
         {
             _run = false;
+            _nextRunGate.Set();
         }
 
         private void TriggerEvent(EventHandler newEvent, EventArgs e = null)

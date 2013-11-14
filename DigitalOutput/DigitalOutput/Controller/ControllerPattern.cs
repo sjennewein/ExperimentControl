@@ -46,7 +46,7 @@ namespace DigitalOutput.Controller
 
         public void SomethingHasChanged()
         {
-            _parent.SomethingHasChanged();
+            _parent.RunChanged();
         }
 
         #region INotifyPropertyChanged Members

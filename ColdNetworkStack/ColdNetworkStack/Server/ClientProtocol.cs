@@ -83,7 +83,7 @@ namespace ColdNetworkStack.Server
         private void TriggerMode(TcpClient client)
         {
             WriteNetworkStream(client, Answers.Ack.ToString());
-            Thread.Sleep(1);
+            Thread.Sleep(5);
             WriteNetworkStream(client, _parent.CyclesPerRun.ToString());
             ReadNetworkStream(client);
 
@@ -94,6 +94,7 @@ namespace ColdNetworkStack.Server
                 switch (command)
                 {
                     case Commands.WaitingForTrigger:
+                        Console.WriteLine("Tcp client ready: " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
                         _parent.ClientReady();
                         break;
                     case Commands.Quit:
@@ -109,6 +110,7 @@ namespace ColdNetworkStack.Server
                     break;
 
                 WriteNetworkStream(client, Commands.Trigger.ToString());
+                Console.WriteLine("Sent Trigger: " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
             }
 
             WriteNetworkStream(client, Commands.Quit.ToString());
@@ -184,7 +186,7 @@ namespace ColdNetworkStack.Server
 
             try
             {
-                _NetworkStream.ReadTimeout = 120000; // two minutes timeout                    
+                _NetworkStream.ReadTimeout = 300000; // two minutes timeout                    
                 do
                 {
                     numberOfBytesRead = _NetworkStream.Read(readBuffer, 0, readBuffer.Length);
@@ -207,7 +209,7 @@ namespace ColdNetworkStack.Server
 
             try
             {
-                _NetworkStream.WriteTimeout = 120000;
+                _NetworkStream.WriteTimeout = 300000;
                 byte[] writeBuffer = Encoding.ASCII.GetBytes(message);
 
                 _NetworkStream.Write(writeBuffer, 0, writeBuffer.Length);

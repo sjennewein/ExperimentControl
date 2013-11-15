@@ -27,7 +27,7 @@ namespace APDTrigger_WinForms
             _myController.APDBinsize = 100;
             _myController.DetectionBins = 3;
             _myController.Threshold = 400;
-            _myController.Samples2Acquire = 50000;
+            _myController.Samples2Acquire = 5000;
             _myController.Cycles = 100;
             _myController.TotalRuns = 1;
             _myController.Frequency = 0.5;

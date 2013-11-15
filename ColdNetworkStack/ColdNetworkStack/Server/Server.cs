@@ -102,6 +102,7 @@ namespace ColdNetworkStack.Server
             {
                 Interlocked.Exchange(ref _readyClients, 0);
                 TriggerEvent(AllClientsAreReady);
+                Console.WriteLine("All clients returned: " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
             }
         }
 

@@ -17,6 +17,7 @@ namespace DigitalOutput.Hardware
         private bool _running;
         private string _serializedData;
         private bool _updated;
+        private volatile bool _waitingForNextRun = false;
 
         public void UpdateData(string newData)
         {
@@ -27,11 +28,11 @@ namespace DigitalOutput.Hardware
         public void WorkingLoop()
         {
             TriggerEvent(Started);
-            _nextRunGate.WaitOne();
+            _running = true;
             while (_run)
             {
-                _running = true;
-
+                
+                
                 if (_updated)
                 {
                     _data = (ModelCard) JSON.Instance.ToObject(_serializedData);
@@ -56,6 +57,11 @@ namespace DigitalOutput.Hardware
                 var writer = new DigitalSingleChannelWriter(digitalOutputTask.Stream);
                 writer.WriteMultiSamplePort(false, _outputSequence);
 
+                if(_waitingForNextRun)
+                    TriggerEvent(ReadyForNextRun);
+
+                _nextRunGate.WaitOne();
+                Console.WriteLine("starting next run: " + DateTime.Now);
 
                 //start and wait until everything is done
                 digitalOutputTask.Start();
@@ -65,8 +71,7 @@ namespace DigitalOutput.Hardware
                 digitalOutputTask.Stop();
                 digitalOutputTask.Dispose();
 
-                TriggerEvent(CycleDone);
-                _nextRunGate.WaitOne();
+                TriggerEvent(CycleDone);                
             }
             TriggerEvent(Stopped);
             _running = false;
@@ -75,11 +80,13 @@ namespace DigitalOutput.Hardware
         public void Pause()
         {
             _nextRunGate.Reset();
+            _waitingForNextRun = true;
         }
 
         public void Resume()
         {
             _nextRunGate.Set();
+            _waitingForNextRun = false;
         }
 
         public void Start(string data)
@@ -110,5 +117,6 @@ namespace DigitalOutput.Hardware
         public event EventHandler Started;
         public event EventHandler Stopped;
         public event EventHandler CycleDone;
+        public event EventHandler ReadyForNextRun;
     }
 }

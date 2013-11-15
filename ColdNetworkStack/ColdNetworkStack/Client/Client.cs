@@ -27,9 +27,10 @@ namespace ColdNetworkStack.Client
         {
             _client.Connect(ip, port);
             WriteNetworkStream(_client, Commands.Register.ToString());
-            ReadNetworkStream(_client);
+            Console.WriteLine(ReadNetworkStream(_client));
+            
             WriteNetworkStream(_client, _name);
-            ReadNetworkStream(_client);
+            Console.WriteLine(ReadNetworkStream(_client));
             Connection = true;
         }
 
@@ -69,9 +70,10 @@ namespace ColdNetworkStack.Client
         public void StartLoop()
         {
             WriteNetworkStream(_client, Commands.EnterTriggerMode.ToString());  //enter trigger mode
-            ReadNetworkStream(_client);                                         //read ack from server
+            Console.WriteLine(ReadNetworkStream(_client));                      //read ack from server
             var answer = ReadNetworkStream(_client);                            //read how many cycles per run
             CyclesPerRun = Convert.ToInt32(answer);
+            Console.WriteLine(answer);
             WriteNetworkStream(_client, Answers.Ack.ToString());                //send ack
             TriggerEvent(DataReceived);
 
@@ -94,7 +96,10 @@ namespace ColdNetworkStack.Client
                 if (!_loop)
                     break;
                 WriteNetworkStream(_client, Commands.WaitingForTrigger.ToString());
-                if (ReadNetworkStream(_client) == Commands.Trigger.ToString())
+                Console.WriteLine("Waiting for trigger: " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
+                var trigger = ReadNetworkStream(_client);
+                Console.WriteLine(trigger + ": " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
+                if (trigger == Commands.Trigger.ToString())
                     TriggerEvent(RunTriggered);
             }
         }
@@ -115,7 +120,7 @@ namespace ColdNetworkStack.Client
 
             try
             {
-                _NetworkStream.ReadTimeout = 120000; // two minutes timeout                    
+                _NetworkStream.ReadTimeout = 300000; // 5 minutes timeout                    
                 do
                 {
                     numberOfBytesRead = _NetworkStream.Read(readBuffer, 0, readBuffer.Length);
@@ -136,7 +141,7 @@ namespace ColdNetworkStack.Client
 
             try
             {
-                _NetworkStream.WriteTimeout = 120000;
+                _NetworkStream.WriteTimeout = 300000;
                 byte[] writeBuffer = Encoding.ASCII.GetBytes(message);
 
                 _NetworkStream.Write(writeBuffer, 0, writeBuffer.Length);

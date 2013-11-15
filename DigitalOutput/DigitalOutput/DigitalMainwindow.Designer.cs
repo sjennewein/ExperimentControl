@@ -41,6 +41,10 @@
             this.groupBox_Buffer = new System.Windows.Forms.GroupBox();
             this.button_Undo = new System.Windows.Forms.Button();
             this.groupBox_Information = new System.Windows.Forms.GroupBox();
+            this.label_CyclesPerRun = new System.Windows.Forms.Label();
+            this.label_Of = new System.Windows.Forms.Label();
+            this.label_RunsDone = new System.Windows.Forms.Label();
+            this.label_Run = new System.Windows.Forms.Label();
             this.label_CycleDone = new System.Windows.Forms.Label();
             this.label_Cycle = new System.Windows.Forms.Label();
             this.label_Status = new System.Windows.Forms.Label();
@@ -55,10 +59,6 @@
             this.label_collon = new System.Windows.Forms.Label();
             this.button_HulaHoop = new System.Windows.Forms.Button();
             this.groupBox_Loops = new System.Windows.Forms.GroupBox();
-            this.label_Run = new System.Windows.Forms.Label();
-            this.label_RunsDone = new System.Windows.Forms.Label();
-            this.label_Of = new System.Windows.Forms.Label();
-            this.label_CyclesPerRun = new System.Windows.Forms.Label();
             this.TabPanel.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox_ProgramFlow.SuspendLayout();
@@ -208,6 +208,42 @@
             this.groupBox_Information.TabStop = false;
             this.groupBox_Information.Text = "Information";
             // 
+            // label_CyclesPerRun
+            // 
+            this.label_CyclesPerRun.AutoSize = true;
+            this.label_CyclesPerRun.Location = new System.Drawing.Point(149, 57);
+            this.label_CyclesPerRun.Name = "label_CyclesPerRun";
+            this.label_CyclesPerRun.Size = new System.Drawing.Size(13, 13);
+            this.label_CyclesPerRun.TabIndex = 14;
+            this.label_CyclesPerRun.Text = "0";
+            // 
+            // label_Of
+            // 
+            this.label_Of.AutoSize = true;
+            this.label_Of.Location = new System.Drawing.Point(131, 57);
+            this.label_Of.Name = "label_Of";
+            this.label_Of.Size = new System.Drawing.Size(12, 13);
+            this.label_Of.TabIndex = 13;
+            this.label_Of.Text = "/";
+            // 
+            // label_RunsDone
+            // 
+            this.label_RunsDone.AutoSize = true;
+            this.label_RunsDone.Location = new System.Drawing.Point(81, 75);
+            this.label_RunsDone.Name = "label_RunsDone";
+            this.label_RunsDone.Size = new System.Drawing.Size(13, 13);
+            this.label_RunsDone.TabIndex = 12;
+            this.label_RunsDone.Text = "0";
+            // 
+            // label_Run
+            // 
+            this.label_Run.AutoSize = true;
+            this.label_Run.Location = new System.Drawing.Point(7, 75);
+            this.label_Run.Name = "label_Run";
+            this.label_Run.Size = new System.Drawing.Size(62, 13);
+            this.label_Run.TabIndex = 11;
+            this.label_Run.Text = "Runs done:";
+            // 
             // label_CycleDone
             // 
             this.label_CycleDone.AutoSize = true;
@@ -261,7 +297,7 @@
             // 
             this.textBox_Port.Enabled = false;
             this.textBox_Port.Location = new System.Drawing.Point(154, 73);
-            this.textBox_Port.MaxLength = 3;
+            this.textBox_Port.MaxLength = 5;
             this.textBox_Port.Name = "textBox_Port";
             this.textBox_Port.Size = new System.Drawing.Size(40, 20);
             this.textBox_Port.TabIndex = 15;
@@ -328,7 +364,7 @@
             // 
             this.textBox_Ip.Enabled = false;
             this.textBox_Ip.Location = new System.Drawing.Point(66, 73);
-            this.textBox_Ip.MaxLength = 3;
+            this.textBox_Ip.MaxLength = 15;
             this.textBox_Ip.Name = "textBox_Ip";
             this.textBox_Ip.Size = new System.Drawing.Size(82, 20);
             this.textBox_Ip.TabIndex = 0;
@@ -361,42 +397,6 @@
             this.groupBox_Loops.TabIndex = 11;
             this.groupBox_Loops.TabStop = false;
             this.groupBox_Loops.Text = "Hula Hoops";
-            // 
-            // label_Run
-            // 
-            this.label_Run.AutoSize = true;
-            this.label_Run.Location = new System.Drawing.Point(7, 75);
-            this.label_Run.Name = "label_Run";
-            this.label_Run.Size = new System.Drawing.Size(62, 13);
-            this.label_Run.TabIndex = 11;
-            this.label_Run.Text = "Runs done:";
-            // 
-            // label_RunsDone
-            // 
-            this.label_RunsDone.AutoSize = true;
-            this.label_RunsDone.Location = new System.Drawing.Point(81, 75);
-            this.label_RunsDone.Name = "label_RunsDone";
-            this.label_RunsDone.Size = new System.Drawing.Size(13, 13);
-            this.label_RunsDone.TabIndex = 12;
-            this.label_RunsDone.Text = "0";
-            // 
-            // label_Of
-            // 
-            this.label_Of.AutoSize = true;
-            this.label_Of.Location = new System.Drawing.Point(131, 57);
-            this.label_Of.Name = "label_Of";
-            this.label_Of.Size = new System.Drawing.Size(12, 13);
-            this.label_Of.TabIndex = 13;
-            this.label_Of.Text = "/";
-            // 
-            // label_CyclesPerRun
-            // 
-            this.label_CyclesPerRun.AutoSize = true;
-            this.label_CyclesPerRun.Location = new System.Drawing.Point(149, 57);
-            this.label_CyclesPerRun.Name = "label_CyclesPerRun";
-            this.label_CyclesPerRun.Size = new System.Drawing.Size(13, 13);
-            this.label_CyclesPerRun.TabIndex = 14;
-            this.label_CyclesPerRun.Text = "0";
             // 
             // DigitalMainwindow
             // 

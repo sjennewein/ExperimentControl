@@ -162,6 +162,9 @@ namespace APDTrigger_WinForms.Helper
         {
             get
             {
+                if (_tcpServer == null)
+                    return "";
+
                 var output = new StringBuilder();
                 foreach (string client in _tcpServer.RegisteredClients)
                 {
@@ -222,8 +225,13 @@ namespace APDTrigger_WinForms.Helper
             _binnedSpectrumData = null;
             _histogramData = new int[600];
 
-            _myCounterHardware = new Counter(Threshold, DetectionBins, APDBinsize, Binning, monitorMode,
-                                             Samples2Acquire, Frequency);
+            if(Mode == RunType.Network)
+                _myCounterHardware = new Counter(Threshold, DetectionBins, APDBinsize, Binning, monitorMode,
+                                                 Samples2Acquire, Frequency, Cycles);
+            else
+                _myCounterHardware = new Counter(Threshold, DetectionBins, APDBinsize, Binning, monitorMode,
+                                                 Samples2Acquire, Frequency);
+            
             _myCounterHardware.APDStopped += delegate { TriggerEvent(APDStopped); };
             _myCounterHardware.NewAPDValue += OnNewApdValue;
             _myCounterHardware.CycleFinished += OnCyleFinished;
@@ -311,6 +319,7 @@ namespace APDTrigger_WinForms.Helper
         private void NextRun()
         {
             _tcpServer.StartNextRun();
+            
             _myCounterHardware.Resume();
         }
 
@@ -322,6 +331,9 @@ namespace APDTrigger_WinForms.Helper
         private void OnCyleFinished(object sender, EventArgs e)
         {
             var data = (RecaptureResult) e;
+            
+            _cyclesDone++;
+            PropertyChangedEvent("CyclesDone");
 
             if (_cyclesDone >= Cycles) //check if the whole run has finished
             {
@@ -343,7 +355,10 @@ namespace APDTrigger_WinForms.Helper
 
                 //stop the counter for a certain amount of time
                 if (Mode == RunType.Network)
-                    _myCounterHardware.Pause();
+                {                    
+                    _tcpServer.ClientReady();
+                }
+                    
 
                 _runsDone++;
                 PropertyChangedEvent("RunsDone");
@@ -361,8 +376,7 @@ namespace APDTrigger_WinForms.Helper
 
             UpdateRecaptureResult(data);
 
-            _cyclesDone++;
-            PropertyChangedEvent("CyclesDone");
+            
         }
 
         /// <summary>

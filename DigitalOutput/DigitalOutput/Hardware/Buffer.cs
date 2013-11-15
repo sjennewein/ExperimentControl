@@ -18,6 +18,11 @@ namespace DigitalOutput.Hardware
         private string _serializedData;
         private bool _updated;
         private volatile bool _waitingForNextRun = false;
+        private volatile int _cyclesPerRun;
+        private volatile int _cycleCounter;
+
+        public int CyclesPerRun { set { _cyclesPerRun = value; } }
+              
 
         public void UpdateData(string newData)
         {
@@ -30,9 +35,7 @@ namespace DigitalOutput.Hardware
             TriggerEvent(Started);
             _running = true;
             while (_run)
-            {
-                
-                
+            {                               
                 if (_updated)
                 {
                     _data = (ModelCard) JSON.Instance.ToObject(_serializedData);
@@ -71,6 +74,11 @@ namespace DigitalOutput.Hardware
                 digitalOutputTask.Stop();
                 digitalOutputTask.Dispose();
 
+                _cycleCounter++;
+
+                if (_cyclesPerRun > 0 && _cycleCounter >= _cyclesPerRun)
+                    Pause();
+
                 TriggerEvent(CycleDone);                
             }
             TriggerEvent(Stopped);
@@ -79,12 +87,14 @@ namespace DigitalOutput.Hardware
 
         public void Pause()
         {
+            Console.WriteLine("pausing hardware : " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
             _nextRunGate.Reset();
             _waitingForNextRun = true;
         }
 
         public void Resume()
         {
+            _cycleCounter = 0;
             _nextRunGate.Set();
             _waitingForNextRun = false;
         }

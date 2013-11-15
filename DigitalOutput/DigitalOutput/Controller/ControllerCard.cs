@@ -90,8 +90,8 @@ namespace DigitalOutput.Controller
             if (CyclesDone >= _tcpClient.CyclesPerRun)
             {
                 TriggerEvent(UpdateDataForNextRun);
-                Console.WriteLine("pausing hardware : " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
-                _hardwareBuffer.Pause();
+                
+                //_hardwareBuffer.Pause();
 
                 CyclesDone = 0;
                 
@@ -111,11 +111,11 @@ namespace DigitalOutput.Controller
                 if (_tcpClient == null || !_tcpClient.Connection) //check if no connection is established yet
                 {
                     Connect();
-                    Console.WriteLine("created tcp object");
                 }
 
                 _hardwareBuffer.Pause();
                 StartTriggerMode();
+                return;
             }
 
             _hardwareBuffer.Start(JSON.Instance.ToJSON(_model));
@@ -192,11 +192,18 @@ namespace DigitalOutput.Controller
         {
             _tcpClient = new Client("DigitalCard");
             _tcpClient.RunTriggered += delegate { ResumeHardwareOutput(); };
-            _tcpClient.DataReceived += delegate { PropertyChangedEvent("CyclesPerRun"); };
+            _tcpClient.DataReceived += delegate { ReceiveTcpData(); };
             _hardwareBuffer.ReadyForNextRun += delegate { EverythingPreparedForNextRun(); };
             _tcpClient.Connect(IPAddress.Parse(Ip), Port);
             
             RunsDone = 0;
+        }
+
+        private void ReceiveTcpData()
+        {
+            PropertyChangedEvent("CyclesPerRun");
+            _hardwareBuffer.CyclesPerRun = CyclesPerRun;
+            _hardwareBuffer.Start(JSON.Instance.ToJSON(_model));
         }
 
         public void EverythingPreparedForNextRun()

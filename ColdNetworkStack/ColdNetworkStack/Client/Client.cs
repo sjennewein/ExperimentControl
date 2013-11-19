@@ -133,12 +133,13 @@ namespace ColdNetworkStack.Client
 
             try
             {
-                _NetworkStream.WriteTimeout = 300000;
-                byte[] writeBuffer = Encoding.ASCII.GetBytes(message);
-                Int32 length = writeBuffer.Length;
-                byte[] payload = BitConverter.GetBytes(length);
-                Array.Copy(writeBuffer, 0, payload, 4, writeBuffer.Length); //copy the message behind the header
-                _NetworkStream.Write(payload, 0, payload.Length);
+                byte[] payload = Encoding.ASCII.GetBytes(message);
+                Int32 length = payload.Length;
+                byte[] header = BitConverter.GetBytes(length);
+                byte[] packet = new byte[sizeof(Int32) + length];
+                Array.Copy(header, packet, header.Length);
+                Array.Copy(payload, 0, packet, header.Length, payload.Length); //copy the message behind the header
+                _NetworkStream.Write(packet, 0, packet.Length);
             }
             catch (Exception e)
             {

@@ -106,7 +106,7 @@ namespace ColdNetworkStack.Client
                 _NetworkStream.ReadTimeout = 300000; // two minutes timeout     
                 
                 _NetworkStream.Read(readHeader, 0, 4);
-                Int16 bytesToRead = Convert.ToInt16(readHeader);
+                Int32 bytesToRead = BitConverter.ToInt32(readHeader, 0);
                 
                 byte[] readBuffer = new byte[bytesToRead];
                 

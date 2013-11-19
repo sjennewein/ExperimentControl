@@ -75,6 +75,7 @@ namespace ColdNetworkStack.Client
                     break;
                 WriteNetworkStream(_client, Commands.WaitingForTrigger.ToString());
                 Console.WriteLine("Waiting for trigger: " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
+                ReadNetworkStream(_client);
                 var trigger = ReadNetworkStream(_client);
                 Console.WriteLine(trigger + ": " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
                 if (trigger == Commands.Trigger.ToString())

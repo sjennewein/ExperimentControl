@@ -12,11 +12,12 @@ namespace ColdNetworkStack.Server
         private readonly TcpListener _listener;
         private readonly AutoResetEvent _myClientGate = new AutoResetEvent(false);
         private readonly List<String> _registeredClients = new List<string>();
-        public string AnalogData = "";
+        
         public int CyclesPerRun = 0;
-        public string DigitalData = "";
+        
         public string TriggerData = "";
         private long _readyClients;
+        private long _startedClients;
         private bool _serverRun = true;
 
         public List<String> RegisteredClients { get { return _registeredClients; } } 
@@ -101,9 +102,20 @@ namespace ColdNetworkStack.Server
             if (Interlocked.Read(ref _readyClients) == _registeredClients.Count)
             {
                 Interlocked.Exchange(ref _readyClients, 0);
-                TriggerEvent(AllClientsAreReady);
+                
                 Console.WriteLine("All clients returned: " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
             }
+        }
+
+        public void ClientStarted()
+        {
+            Interlocked.Add(ref _startedClients, 1);
+            if(Interlocked.Read(ref _startedClients) == (_registeredClients.Count - 1))
+            {
+                Interlocked.Exchange(ref _startedClients, 0);
+                TriggerEvent(AllClientsAreReady);    
+            }
+            
         }
 
         public void StopTrigger()

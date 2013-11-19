@@ -95,26 +95,34 @@ namespace ColdNetworkStack.Client
 
         private string ReadNetworkStream(TcpClient client)
         {
-            var readBuffer = new byte[1024];
+            var readHeader = new byte[4];
             var completeMessage = new StringBuilder();
-            int numberOfBytesRead = 0;
+            int totalBytesRead = 0;
 
             if (_NetworkStream == null)
                 _NetworkStream = client.GetStream();
 
             try
             {
-                _NetworkStream.ReadTimeout = 300000; // 5 minutes timeout                    
+                _NetworkStream.ReadTimeout = 300000; // two minutes timeout     
+                
+                _NetworkStream.Read(readHeader, 0, 4);
+                Int16 bytesToRead = Convert.ToInt16(readHeader);
+                
+                byte[] readBuffer = new byte[bytesToRead];
+                
                 do
                 {
-                    numberOfBytesRead = _NetworkStream.Read(readBuffer, 0, readBuffer.Length);
+                    int numberOfBytesRead = _NetworkStream.Read(readBuffer, 0, readBuffer.Length);
                     completeMessage.AppendFormat("{0}", Encoding.ASCII.GetString(readBuffer, 0, numberOfBytesRead));
-                } while (_NetworkStream.DataAvailable);
+                    totalBytesRead += numberOfBytesRead;
+                } while (bytesToRead == totalBytesRead);
             }
             catch (Exception e)
             {
                 Trace.WriteLine(e.Message);
             }
+
             return completeMessage.ToString();
         }
 
@@ -123,12 +131,15 @@ namespace ColdNetworkStack.Client
             if (_NetworkStream == null)
                 _NetworkStream = client.GetStream();
 
+
             try
             {
                 _NetworkStream.WriteTimeout = 300000;
                 byte[] writeBuffer = Encoding.ASCII.GetBytes(message);
-
-                _NetworkStream.Write(writeBuffer, 0, writeBuffer.Length);
+                Int32 length = writeBuffer.Length;
+                byte[] payload = BitConverter.GetBytes(length);
+                Array.Copy(writeBuffer, 0, payload, 4, writeBuffer.Length); //copy the message behind the header
+                _NetworkStream.Write(payload, 0, payload.Length);
             }
             catch (Exception e)
             {

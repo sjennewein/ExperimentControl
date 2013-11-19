@@ -144,7 +144,7 @@ namespace ColdNetworkStack.Server
                     int numberOfBytesRead = _NetworkStream.Read(readBuffer, 0, readBuffer.Length);
                     completeMessage.AppendFormat("{0}", Encoding.ASCII.GetString(readBuffer, 0, numberOfBytesRead));
                     totalBytesRead += numberOfBytesRead;
-                } while (bytesToRead == totalBytesRead);
+                } while (totalBytesRead < bytesToRead);
             }
             catch (Exception e)
             {

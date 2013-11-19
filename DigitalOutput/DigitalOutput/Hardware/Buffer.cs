@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 using DigitalOutput.Model;
 using NationalInstruments.DAQmx;
@@ -20,7 +21,6 @@ namespace DigitalOutput.Hardware
         private volatile bool _newRun = false;
         private volatile int _cyclesPerRun;
         private volatile int _cycleCounter;
-
         public int CyclesPerRun { set { _cyclesPerRun = value; } }
               
 
@@ -35,14 +35,7 @@ namespace DigitalOutput.Hardware
             TriggerEvent(Started);
             _running = true;
             while (_run)
-            {
-                if(_newRun)
-                {                    
-                    _nextRunGate.WaitOne();
-                    _nextRunGate.Reset();    
-                }
-                
-
+            {                                
                 if (_updated)
                 {
                     _data = (ModelCard) JSON.Instance.ToObject(_serializedData);
@@ -67,33 +60,43 @@ namespace DigitalOutput.Hardware
                 var writer = new DigitalSingleChannelWriter(digitalOutputTask.Stream);
                 writer.WriteMultiSamplePort(false, _outputSequence);
 
+                if(_newRun)
+                    TriggerEvent(DataProcessed);
                 
                 _nextRunGate.WaitOne();
 
-                if(_newRun)
+                
+
+                Console.WriteLine("starting next run: " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
+
+                //start and wait until everything is done
+                digitalOutputTask.Start();
+                if (_newRun)
                 {
                     _newRun = false;
                     TriggerEvent(RunLaunched);
                 }
-
-                Console.WriteLine("starting next run: " + DateTime.Now);
-
-                //start and wait until everything is done
-                digitalOutputTask.Start();
                 digitalOutputTask.WaitUntilDone(60000);
 
                 //free hardware
                 digitalOutputTask.Stop();
                 digitalOutputTask.Dispose();
 
+                Console.WriteLine("run finished: " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
                 _cycleCounter++;                
-
+                Console.WriteLine(_cycleCounter);
                 TriggerEvent(CycleDone);
                 
                 if (_cyclesPerRun > 0 && _cycleCounter >= _cyclesPerRun)
                 {
                     Pause();
                     TriggerEvent(RunDone);
+                }
+
+                if (_newRun)
+                {
+                    _nextRunGate.WaitOne();
+                    _nextRunGate.Reset();
                 }
             }
             TriggerEvent(Stopped);
@@ -113,9 +116,9 @@ namespace DigitalOutput.Hardware
         }
 
         public void StartNextRun()
-        {           
-            _nextRunGate.Set();
-            _newRun = false;
+        {
+            _cycleCounter = 0;
+            _nextRunGate.Set();            
         }
 
         public void Start(string data)
@@ -148,5 +151,6 @@ namespace DigitalOutput.Hardware
         public event EventHandler CycleDone;        
         public event EventHandler RunLaunched;
         public event EventHandler RunDone;
+        public event EventHandler DataProcessed;
     }
 }

@@ -12,6 +12,7 @@ namespace ColdNetworkStack.Client
         private readonly TcpClient _client = new TcpClient();
         private readonly string _name;
         private readonly AutoResetEvent _nextRun = new AutoResetEvent(false);
+        private readonly AutoResetEvent _launchApd = new AutoResetEvent(false);
         private NetworkStream _NetworkStream;
         private Thread _workerThread;
         private bool _loop = true;
@@ -26,11 +27,11 @@ namespace ColdNetworkStack.Client
         public void Connect(IPAddress ip, int port)
         {
             _client.Connect(ip, port);
-            WriteNetworkStream(_client, Commands.Register.ToString());
-            Console.WriteLine(ReadNetworkStream(_client));
+            WriteNetworkStream(_client, Commands.Register.ToString());  //write command
+            ReadNetworkStream(_client);                                 //read ack
             
-            WriteNetworkStream(_client, _name);
-            Console.WriteLine(ReadNetworkStream(_client));
+            WriteNetworkStream(_client, _name);                         //write name
+            ReadNetworkStream(_client);                                 //read ack
             Connection = true;
         }
 
@@ -47,12 +48,14 @@ namespace ColdNetworkStack.Client
 
         public void StartLoop()
         {
-            WriteNetworkStream(_client, Commands.CyclesPerRun.ToString());  //enter trigger mode
+            WriteNetworkStream(_client, Commands.CyclesPerRun.ToString());      //enter trigger mode
             Console.WriteLine(ReadNetworkStream(_client));                      //read ack from server
             var answer = ReadNetworkStream(_client);                            //read how many cycles per run
             CyclesPerRun = Convert.ToInt32(answer);
-            Console.WriteLine(answer);
+            
             WriteNetworkStream(_client, Answers.Ack.ToString());                //send ack
+            
+            
             TriggerEvent(DataReceived);
 
             _loop = true;
@@ -68,6 +71,7 @@ namespace ColdNetworkStack.Client
 
         private void RunLoop()
         {
+            Console.WriteLine("starting loop");
             while (_loop)
             {
                 _nextRun.WaitOne();
@@ -80,6 +84,9 @@ namespace ColdNetworkStack.Client
                 Console.WriteLine(trigger + ": " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
                 if (trigger == Commands.Trigger.ToString())
                     TriggerEvent(LaunchNextRun);
+                _launchApd.WaitOne();
+                //Thread.Sleep(5);
+                WriteNetworkStream(_client, Answers.Ack.ToString());
             }
         }
 
@@ -90,7 +97,8 @@ namespace ColdNetworkStack.Client
 
         public void RunIsLaunched()
         {
-            WriteNetworkStream(_client, Answers.Ack.ToString());
+            _launchApd.Set();
+            Console.WriteLine("Telling the server that i received the trigger");
         }
 
         private string ReadNetworkStream(TcpClient client)

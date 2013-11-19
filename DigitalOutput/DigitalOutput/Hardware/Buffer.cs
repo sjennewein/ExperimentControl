@@ -17,7 +17,7 @@ namespace DigitalOutput.Hardware
         private bool _running;
         private string _serializedData;
         private bool _updated;
-        private volatile bool _waitingForNextRun = false;
+        private volatile bool _newRun = false;
         private volatile int _cyclesPerRun;
         private volatile int _cycleCounter;
 
@@ -35,7 +35,14 @@ namespace DigitalOutput.Hardware
             TriggerEvent(Started);
             _running = true;
             while (_run)
-            {                               
+            {
+                if(_newRun)
+                {                    
+                    _nextRunGate.WaitOne();
+                    _nextRunGate.Reset();    
+                }
+                
+
                 if (_updated)
                 {
                     _data = (ModelCard) JSON.Instance.ToObject(_serializedData);
@@ -60,10 +67,15 @@ namespace DigitalOutput.Hardware
                 var writer = new DigitalSingleChannelWriter(digitalOutputTask.Stream);
                 writer.WriteMultiSamplePort(false, _outputSequence);
 
-                if(_waitingForNextRun)
-                    TriggerEvent(ReadyForNextRun);
-
+                
                 _nextRunGate.WaitOne();
+
+                if(_newRun)
+                {
+                    _newRun = false;
+                    TriggerEvent(RunLaunched);
+                }
+
                 Console.WriteLine("starting next run: " + DateTime.Now);
 
                 //start and wait until everything is done
@@ -74,12 +86,15 @@ namespace DigitalOutput.Hardware
                 digitalOutputTask.Stop();
                 digitalOutputTask.Dispose();
 
-                _cycleCounter++;
+                _cycleCounter++;                
 
+                TriggerEvent(CycleDone);
+                
                 if (_cyclesPerRun > 0 && _cycleCounter >= _cyclesPerRun)
+                {
                     Pause();
-
-                TriggerEvent(CycleDone);                
+                    TriggerEvent(RunDone);
+                }
             }
             TriggerEvent(Stopped);
             _running = false;
@@ -89,14 +104,18 @@ namespace DigitalOutput.Hardware
         {
             Console.WriteLine("pausing hardware : " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
             _nextRunGate.Reset();
-            _waitingForNextRun = true;
+            _newRun = true;
         }
 
-        public void Resume()
+        public void ProcessNewData()
         {
-            _cycleCounter = 0;
             _nextRunGate.Set();
-            _waitingForNextRun = false;
+        }
+
+        public void StartNextRun()
+        {           
+            _nextRunGate.Set();
+            _newRun = false;
         }
 
         public void Start(string data)
@@ -126,7 +145,8 @@ namespace DigitalOutput.Hardware
 
         public event EventHandler Started;
         public event EventHandler Stopped;
-        public event EventHandler CycleDone;
-        public event EventHandler ReadyForNextRun;
+        public event EventHandler CycleDone;        
+        public event EventHandler RunLaunched;
+        public event EventHandler RunDone;
     }
 }

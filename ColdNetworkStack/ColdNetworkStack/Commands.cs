@@ -2,20 +2,14 @@
 {
     public enum Commands
     {
-        Nothing,
         Connect,
         Register,
         UnRegister,
+        CyclesPerRun,
         EnterTriggerMode,
         Trigger,
-        Save,
-        Load,
-        Digital,
-        Analog,
-        WaitingForTrigger,
-        RunFinished,
+        WaitingForTrigger,        
         Data,
-        Disconnect,
-        Quit
+        Disconnect        
     }    
 }

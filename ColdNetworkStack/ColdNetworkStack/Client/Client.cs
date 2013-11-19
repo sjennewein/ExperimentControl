@@ -43,33 +43,11 @@ namespace ColdNetworkStack.Client
             WriteNetworkStream(_client, Commands.Disconnect.ToString());
             _client.Close();
             Connection = false;
-        }
-
-        public void SendDigitalData(string data)
-        {
-            WriteNetworkStream(_client, Commands.Data.ToString());
-            ReadNetworkStream(_client);
-            WriteNetworkStream(_client, Commands.Save.ToString());
-            ReadNetworkStream(_client);
-            WriteNetworkStream(_client, Commands.Digital.ToString());
-            ReadNetworkStream(_client);
-            WriteNetworkStream(_client, data);
-        }
-
-        public void SendAnalogData(string data)
-        {
-            WriteNetworkStream(_client, Commands.Data.ToString());
-            ReadNetworkStream(_client);
-            WriteNetworkStream(_client, Commands.Save.ToString());
-            ReadNetworkStream(_client);
-            WriteNetworkStream(_client, Commands.Analog.ToString());
-            ReadNetworkStream(_client);
-            WriteNetworkStream(_client, data);
-        }
+        }    
 
         public void StartLoop()
         {
-            WriteNetworkStream(_client, Commands.EnterTriggerMode.ToString());  //enter trigger mode
+            WriteNetworkStream(_client, Commands.CyclesPerRun.ToString());  //enter trigger mode
             Console.WriteLine(ReadNetworkStream(_client));                      //read ack from server
             var answer = ReadNetworkStream(_client);                            //read how many cycles per run
             CyclesPerRun = Convert.ToInt32(answer);
@@ -100,13 +78,18 @@ namespace ColdNetworkStack.Client
                 var trigger = ReadNetworkStream(_client);
                 Console.WriteLine(trigger + ": " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
                 if (trigger == Commands.Trigger.ToString())
-                    TriggerEvent(RunTriggered);
+                    TriggerEvent(LaunchNextRun);
             }
         }
 
         public void ReadyForNextRun()
         {
             _nextRun.Set();
+        }
+
+        public void RunIsLaunched()
+        {
+            WriteNetworkStream(_client, Answers.Ack.ToString());
         }
 
         private string ReadNetworkStream(TcpClient client)
@@ -159,7 +142,7 @@ namespace ColdNetworkStack.Client
                 triggerEvent(this, new EventArgs());
         }
 
-        public event EventHandler RunTriggered;
+        public event EventHandler LaunchNextRun;
         public event EventHandler DataReceived;
         public event EventHandler Connected;
         public event EventHandler Disconnected;

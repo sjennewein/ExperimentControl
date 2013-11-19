@@ -48,6 +48,9 @@ namespace ColdNetworkStack.Server
                     case Commands.Register:
                         RegisterClient(client);
                         break;
+                    case Commands.CyclesPerRun:
+                        CyclesPerRun(client);
+                        break;
                     case Commands.Data:
                         HandleData(client);
                         break;
@@ -70,12 +73,18 @@ namespace ColdNetworkStack.Server
             var command = (Commands) Enum.Parse(typeof (Commands), ReadNetworkStream(client));
         }
 
+        private void CyclesPerRun(TcpClient client)
+        {
+            WriteNetworkStream(client, _parent.CyclesPerRun.ToString());
+            ReadNetworkStream(client);
+        }
+
+
         private void TriggerMode(TcpClient client)
         {
             WriteNetworkStream(client, Answers.Ack.ToString());
             //Thread.Sleep(5);
-            WriteNetworkStream(client, _parent.CyclesPerRun.ToString());
-            ReadNetworkStream(client);
+            
             _parent.ClientReady();
 
             _triggerSynchronization.WaitOne(); //all clients wait until all returned                

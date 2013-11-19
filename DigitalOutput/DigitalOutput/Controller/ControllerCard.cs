@@ -29,8 +29,8 @@ namespace DigitalOutput.Controller
             _hardwareBuffer = buffer;
             _myGui = gui;
             _hardwareBuffer.CycleDone += delegate { UpdateCycles(); };
+            _hardwareBuffer.RunDone += delegate { UpdateRuns(); };
             
-
             for (int iPattern = 0; iPattern < _model.Patterns.Length; iPattern++)
             {
                 ModelPattern modelPattern = _model.Patterns[iPattern];
@@ -81,24 +81,21 @@ namespace DigitalOutput.Controller
         private void UpdateCycles()
         {
             CyclesDone++;
+            PropertyChangedEvent("CyclesDone");                        
+        }
+
+        private void UpdateRuns()
+        {
+            RunsDone++;
+            CyclesDone = 0;
+
             PropertyChangedEvent("CyclesDone");
-
-            if (_tcpClient == null || !_tcpClient.Connection)
-                return;
-
-            // if network connection exist pause hardware when a run is finished
-            if (CyclesDone >= _tcpClient.CyclesPerRun)
-            {
-                TriggerEvent(UpdateDataForNextRun);
-                
-                //_hardwareBuffer.Pause();
-
-                CyclesDone = 0;
-                
-                RunsDone++;
-                PropertyChangedEvent("CyclesDone");
-                PropertyChangedEvent("RunsDone");
-            }
+            PropertyChangedEvent("RunsDone"); 
+            //TriggerEvent(UpdateDataForNextRun); this will trigger the hulahoop in the future
+            //for the moment i open the gate directly
+            _hardwareBuffer.ProcessNewData();
+            //then tell the tcp client that the card is ready
+            _tcpClient.ReadyForNextRun();
         }
 
         public void Start()
@@ -141,12 +138,16 @@ namespace DigitalOutput.Controller
             }
         }
 
-        public void ResumeHardwareOutput()
-        {
-            Thread.Sleep(1);
-            Console.WriteLine("resuming hardware: " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
-            _hardwareBuffer.Resume();
+        public void LaunchNextRun()
+        {                        
+            _hardwareBuffer.StartNextRun();
         }
+
+        private void OnRunIsLaunched()
+        {
+            _tcpClient.RunIsLaunched();
+        }
+
 
         public void CopyToBuffer()
         {
@@ -191,9 +192,9 @@ namespace DigitalOutput.Controller
         public void Connect()
         {
             _tcpClient = new Client("DigitalCard");
-            _tcpClient.RunTriggered += delegate { ResumeHardwareOutput(); };
+            _tcpClient.LaunchNextRun += delegate { LaunchNextRun(); };
             _tcpClient.DataReceived += delegate { ReceiveTcpData(); };
-            _hardwareBuffer.ReadyForNextRun += delegate { EverythingPreparedForNextRun(); };
+            _hardwareBuffer.RunLaunched += delegate { OnRunIsLaunched(); };
             _tcpClient.Connect(IPAddress.Parse(Ip), Port);
             
             RunsDone = 0;
@@ -204,12 +205,7 @@ namespace DigitalOutput.Controller
             PropertyChangedEvent("CyclesPerRun");
             _hardwareBuffer.CyclesPerRun = CyclesPerRun;
             _hardwareBuffer.Start(JSON.Instance.ToJSON(_model));
-        }
-
-        public void EverythingPreparedForNextRun()
-        {
-            _tcpClient.ReadyForNextRun();
-        }
+        }  
 
         private void StartTriggerMode()
         {

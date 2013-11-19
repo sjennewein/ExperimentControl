@@ -102,7 +102,7 @@ namespace ColdNetworkStack.Server
             if (Interlocked.Read(ref _readyClients) == _registeredClients.Count)
             {
                 Interlocked.Exchange(ref _readyClients, 0);
-                
+                StartNextRun();
                 Console.WriteLine("All clients returned: " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
             }
         }
@@ -113,7 +113,7 @@ namespace ColdNetworkStack.Server
             if(Interlocked.Read(ref _startedClients) == (_registeredClients.Count - 1))
             {
                 Interlocked.Exchange(ref _startedClients, 0);
-                TriggerEvent(AllClientsAreReady);    
+                TriggerEvent(AllClientsAreLaunched);
             }
             
         }
@@ -124,7 +124,7 @@ namespace ColdNetworkStack.Server
                 client.StopTriggerMode();
         }
 
-        public void StartNextRun()
+        private void StartNextRun()
         {
             foreach (ClientProtocol client in _clientTalks)
                 client.SendTrigger();
@@ -138,7 +138,7 @@ namespace ColdNetworkStack.Server
         }
 
         public event EventHandler AllClientsAreReady;
-
+        public event EventHandler AllClientsAreLaunched;
         public event EventHandler ClientsChanged;
     }
 }

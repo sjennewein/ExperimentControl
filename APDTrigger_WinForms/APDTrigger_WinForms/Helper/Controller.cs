@@ -57,7 +57,7 @@ namespace APDTrigger_WinForms.Helper
         public Controller(Control gui)
         {
             _myGUI = gui;
-            _saveFolder = _BaseSaveFolder + _today.Year + "\\" + _today.Month + "\\" + _today.Day + "\\";            
+            _saveFolder = _BaseSaveFolder + _today.Year + "\\" + _today.Month + "\\" + _today.Day + "\\";
         }
 
         public void ActivateNetwork()
@@ -66,10 +66,10 @@ namespace APDTrigger_WinForms.Helper
             {
                 _tcpServer = new Server(IPAddress.Any, 9898);
                 _tcpServer.ClientsChanged += delegate { PropertyChangedEvent("RegisteredClients"); };
-                _tcpServer.AllClientsAreReady += delegate { NextRun(); };
+                _tcpServer.AllClientsAreLaunched += delegate { StartAPDTrigger(); };
                 _tcpServer.CyclesPerRun = Cycles;
                 _tcpServer.RegisterClient("APDTrigger");
-            }            
+            }
         }
 
         public void DeactivateNetwork()
@@ -201,16 +201,16 @@ namespace APDTrigger_WinForms.Helper
         public void Start(bool runFrequencyGenerator = false)
         {
             Initialize();
-            
+
 
             _Worker = new Thread(BackgroundWork) {Name = "Worker"};
             _Worker.Start();
 
             if (runFrequencyGenerator)
                 _myCounterHardware.StartFrequencyGenerator();
-            
-           
-            
+
+
+
         }
 
         private void Initialize()
@@ -225,13 +225,13 @@ namespace APDTrigger_WinForms.Helper
             _binnedSpectrumData = null;
             _histogramData = new int[600];
 
-            if(Mode == RunType.Network)
+            if (Mode == RunType.Network)
                 _myCounterHardware = new Counter(Threshold, DetectionBins, APDBinsize, Binning, monitorMode,
                                                  Samples2Acquire, Frequency, Cycles);
             else
                 _myCounterHardware = new Counter(Threshold, DetectionBins, APDBinsize, Binning, monitorMode,
                                                  Samples2Acquire, Frequency);
-            
+
             _myCounterHardware.APDStopped += delegate { TriggerEvent(APDStopped); };
             _myCounterHardware.NewAPDValue += OnNewApdValue;
             _myCounterHardware.CycleFinished += OnCyleFinished;
@@ -255,7 +255,7 @@ namespace APDTrigger_WinForms.Helper
                 _tcpServer.ClientReady();
                 Console.WriteLine("BLABLABA");
             }
-                
+
         }
 
         /// <summary>
@@ -283,7 +283,7 @@ namespace APDTrigger_WinForms.Helper
         {
             Stop();
 
-            if(_tcpServer != null)
+            if (_tcpServer != null)
                 _tcpServer.Stop();
         }
 
@@ -316,14 +316,12 @@ namespace APDTrigger_WinForms.Helper
             }
         }
 
-        private void NextRun()
+        private void StartAPDTrigger()
         {
-            _tcpServer.StartNextRun();
-            
             _myCounterHardware.Resume();
         }
 
-        /// <summary>
+    /// <summary>
         /// Updates the values for the cycle counter
         /// </summary>
         /// <param name="sender"></param>

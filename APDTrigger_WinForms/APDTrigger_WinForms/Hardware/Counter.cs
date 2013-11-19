@@ -50,7 +50,7 @@ namespace APDTrigger.Hardware
         private int[] _mySpectrum;
         private Timer _myTimer;
         private int _newDataPoint;
-        private volatile bool _running;
+        private volatile bool _running;        
 
         /// <summary>
         ///     Provides the functionality of a standard ASPHERIX experiment in terms of the counter card
@@ -214,8 +214,13 @@ namespace APDTrigger.Hardware
                 try
                 {
                     //used for pausing between runs signaled from the controller
+                    Console.WriteLine("waiting" + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));                    
                     _pauseCycling.WaitOne();
+                  
+                    
+                    
 
+                    //Console.WriteLine("Check fluoresence");
                     ReadHighFrequencyCounter();
 
                     if (_monitor) //if we only monitor then ignore all fancy measurement functions
@@ -230,15 +235,18 @@ namespace APDTrigger.Hardware
                     //check if enough bins have been over the threshold => atom in the trap
                     if (_detectedBins >= _detectionBins)
                     {
-                        Console.WriteLine("Run started: " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
+                      
+                      
                         _detectedBins = 0;
 
                         //send a trigger to the digital output card
                         _myTriggerTask.Start();
+                      
                         _myTriggerTask.Stop();
 
-
+                      
                         MeasureSpectrum();
+                      
                         var result = EvaluateRecapture();
 
                         _cycleCounter++;
@@ -246,6 +254,7 @@ namespace APDTrigger.Hardware
                         if (_cyclesPerRun > 0 && _cycleCounter >= _cyclesPerRun)
                             Pause();
 
+                      
                         CycleFinishedEvent(result);
                     }
                 }
@@ -324,7 +333,7 @@ namespace APDTrigger.Hardware
         /// </summary>
         public void Pause()
         {
-            _pauseCycling.Reset();
+            _pauseCycling.Reset();            
         }
 
         /// <summary>
@@ -332,8 +341,7 @@ namespace APDTrigger.Hardware
         /// </summary>
         public void Resume()
         {
-            _cycleCounter = 0;
-            Thread.Sleep(500);
+            _cycleCounter = 0;            
             _pauseCycling.Set();
         }
 
@@ -341,8 +349,7 @@ namespace APDTrigger.Hardware
         /// Acquires the data from the spectrum/recapture measurement
         /// </summary>
         private void MeasureSpectrum()
-        {
-            Console.WriteLine("Measure spectrum: " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
+        {            
             var data = new int[_myClockEdges];
             int readOutSamples = 0;
             try
@@ -388,6 +395,9 @@ namespace APDTrigger.Hardware
         private RecaptureResult EvaluateRecapture()
         {
             var result = new RecaptureResult {Data = RecaptureResult.State.Lost};
+            
+            if (_myBinnedSpectrum == null)  //nasty workaround
+                return result;
 
             if (_myBinnedSpectrum[1] + _myBinnedSpectrum[2] > 2*_threshold)
                 result.Data = RecaptureResult.State.Captured;

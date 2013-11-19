@@ -95,6 +95,11 @@ namespace DigitalOutput.Controller
             //for the moment i open the gate directly
             _hardwareBuffer.ProcessNewData();
             //then tell the tcp client that the card is ready
+           
+        }
+
+        private void OnOutputDataProcessed()
+        {
             _tcpClient.ReadyForNextRun();
         }
 
@@ -111,7 +116,7 @@ namespace DigitalOutput.Controller
                 }
 
                 _hardwareBuffer.Pause();
-                StartTriggerMode();
+                _tcpClient.StartLoop();
                 return;
             }
 
@@ -141,6 +146,7 @@ namespace DigitalOutput.Controller
         public void LaunchNextRun()
         {                        
             _hardwareBuffer.StartNextRun();
+            Console.WriteLine("Run started" + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
         }
 
         private void OnRunIsLaunched()
@@ -195,6 +201,7 @@ namespace DigitalOutput.Controller
             _tcpClient.LaunchNextRun += delegate { LaunchNextRun(); };
             _tcpClient.DataReceived += delegate { ReceiveTcpData(); };
             _hardwareBuffer.RunLaunched += delegate { OnRunIsLaunched(); };
+            _hardwareBuffer.DataProcessed += delegate { OnOutputDataProcessed(); };
             _tcpClient.Connect(IPAddress.Parse(Ip), Port);
             
             RunsDone = 0;
@@ -207,11 +214,7 @@ namespace DigitalOutput.Controller
             _hardwareBuffer.Start(JSON.Instance.ToJSON(_model));
         }  
 
-        private void StartTriggerMode()
-        {
-            _tcpClient.StartLoop();
-            _tcpClient.ReadyForNextRun();
-        }
+      
 
         public void Disconnect()
         {            

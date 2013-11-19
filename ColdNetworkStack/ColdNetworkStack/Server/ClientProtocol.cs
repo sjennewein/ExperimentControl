@@ -68,92 +68,24 @@ namespace ColdNetworkStack.Server
         {
             WriteNetworkStream(client, Answers.Ack.ToString());
             var command = (Commands) Enum.Parse(typeof (Commands), ReadNetworkStream(client));
-
-            switch (command)
-            {
-                case Commands.Load:
-                    LoadData(client);
-                    break;
-                case Commands.Save:
-                    SaveData(client);
-                    break;
-            }
         }
 
         private void TriggerMode(TcpClient client)
         {
             WriteNetworkStream(client, Answers.Ack.ToString());
-            Thread.Sleep(5);
+            //Thread.Sleep(5);
             WriteNetworkStream(client, _parent.CyclesPerRun.ToString());
             ReadNetworkStream(client);
+            _parent.ClientReady();
 
-            _trigger = true;
-            while (_trigger)
-            {
-                var command = (Commands) Enum.Parse(typeof (Commands), ReadNetworkStream(client));
-                switch (command)
-                {
-                    case Commands.WaitingForTrigger:
-                        Console.WriteLine("Tcp client ready: " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
-                        _parent.ClientReady();
-                        break;
-                    case Commands.Quit:
-                        _trigger = false;
-                        break;
-                    default:
-                        return;
-                }
+            _triggerSynchronization.WaitOne(); //all clients wait until all returned                
 
-                _triggerSynchronization.WaitOne(); //all clients wait until all returned                
+            if (!_trigger)
+                return;
 
-                if (!_trigger)
-                    break;
-
-                WriteNetworkStream(client, Commands.Trigger.ToString());
-                Console.WriteLine("Sent Trigger: " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
-            }
-
-            WriteNetworkStream(client, Commands.Quit.ToString());
-        }
-
-        private void SaveData(TcpClient client)
-        {
-            WriteNetworkStream(client, Answers.Ack.ToString());
-            var command = (Commands) Enum.Parse(typeof (Commands), ReadNetworkStream(client));
-            WriteNetworkStream(client, Answers.Ack.ToString());
-
-            switch (command)
-            {
-                case Commands.Digital:
-                    _parent.DigitalData = ReadNetworkStream(client);
-                    break;
-                case Commands.Analog:
-                    _parent.AnalogData = ReadNetworkStream(client);
-                    break;
-            }
-
-            WriteNetworkStream(client, Answers.Ack.ToString());
-        }
-
-        private void LoadData(TcpClient client)
-        {
-            WriteNetworkStream(client, Answers.Ack.ToString());
-            var command = (Commands) Enum.Parse(typeof (Commands), ReadNetworkStream(client));
-            WriteNetworkStream(client, Answers.Ack.ToString());
-
-            switch (command)
-            {
-                case Commands.Digital:
-                    WriteNetworkStream(client, _parent.DigitalData);
-                    break;
-                case Commands.Analog:
-                    WriteNetworkStream(client, _parent.AnalogData);
-                    break;
-                case Commands.Trigger:
-                    WriteNetworkStream(client, _parent.TriggerData);
-                    break;
-            }
-        }
+            WriteNetworkStream(client, Commands.Trigger.ToString());
+            ReadNetworkStream(client);
+        }        
 
         private void RegisterClient(TcpClient client)
         {
@@ -219,6 +151,5 @@ namespace ColdNetworkStack.Server
                 Trace.WriteLine(e.Message);
             }
         }
-        
     }
 }

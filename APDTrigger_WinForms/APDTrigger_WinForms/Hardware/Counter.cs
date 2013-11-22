@@ -305,19 +305,25 @@ namespace APDTrigger.Hardware
         /// </summary>
         private void ReadHighFrequencyCounter()
         {
-            int[] readOutData;
+            int[] readOutData;            
             try
             {
                 _myThresholdTask.Start();
                 var thresholdReader = new CounterReader(_myThresholdTask.Stream);
-                //read 2 elements because the first one is mostly zero   
-                readOutData = thresholdReader.ReadMultiSampleInt32(2);
+                //read 2 elements because the first one is mostly zero  this seems to be only a problem
+                //with the PCI cards the pci-express card doesn't have that problem
+                readOutData = thresholdReader.ReadMultiSampleInt32(1);
             }
             finally
             {
                 _myThresholdTask.Stop();
             }
 
+            //foreach (var i in readOutData)
+            //{
+            //    Console.WriteLine(i);
+            //}
+            //Console.WriteLine("next Run");
 
             if (readOutData.Length >= 1)
             {

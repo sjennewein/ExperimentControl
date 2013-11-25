@@ -252,8 +252,7 @@ namespace APDTrigger_WinForms.Helper
 
             if (Mode == RunType.Network)
             {
-                _tcpServer.ClientReady();
-                Console.WriteLine("BLABLABA");
+                _tcpServer.ClientReady();                
             }
 
         }

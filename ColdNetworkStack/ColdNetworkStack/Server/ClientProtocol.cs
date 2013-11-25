@@ -41,7 +41,17 @@ namespace ColdNetworkStack.Server
             while (_run)
             {
                 string input = ReadNetworkStream(client);
-                var command = (Commands) Enum.Parse(typeof (Commands), input);
+
+                Commands command;
+                try
+                {
+                     command = (Commands)Enum.Parse(typeof(Commands), input);    
+                }
+                catch
+                {
+                    command = Commands.Disconnect;
+                }
+                
 
                 switch (command)
                 {
@@ -88,7 +98,7 @@ namespace ColdNetworkStack.Server
         {
             WriteNetworkStream(client, Answers.Ack.ToString());
             //Thread.Sleep(5); might be needed
-            
+
             _parent.ClientReady();
 
             _triggerSynchronization.WaitOne(); //all clients wait until all returned                
@@ -100,7 +110,7 @@ namespace ColdNetworkStack.Server
             Console.Write(ReadNetworkStream(client));
 
             _parent.ClientStarted();
-        }        
+        }
 
         private void RegisterClient(TcpClient client)
         {
@@ -124,7 +134,7 @@ namespace ColdNetworkStack.Server
 
         private string ReadNetworkStream(TcpClient client)
         {
-            var readHeader = new byte[4];
+            var header = new byte[4];
             var completeMessage = new StringBuilder();
             int totalBytesRead = 0;
 
@@ -134,11 +144,11 @@ namespace ColdNetworkStack.Server
             try
             {
                 _NetworkStream.ReadTimeout = 300000; // two minutes timeout     
-                
-                _NetworkStream.Read(readHeader, 0, 4);
-                Int32 bytesToRead = BitConverter.ToInt32(readHeader, 0);
-                byte[] readBuffer = new byte[bytesToRead];
-                
+
+                _NetworkStream.Read(header, 0, header.Length);
+                Int32 bytesToRead = BitConverter.ToInt32(header, 0);
+                var readBuffer = new byte[bytesToRead];
+             
                 do
                 {
                     int numberOfBytesRead = _NetworkStream.Read(readBuffer, 0, readBuffer.Length);
@@ -165,10 +175,11 @@ namespace ColdNetworkStack.Server
                 _NetworkStream.WriteTimeout = 300000;
                 byte[] payload = Encoding.ASCII.GetBytes(message);
                 Int32 length = payload.Length;
+                
                 byte[] header = BitConverter.GetBytes(length);
-                byte[] packet = new byte[sizeof(Int32) + length];
-                Array.Copy(header,packet,header.Length);
-                Array.Copy(payload,0,packet,header.Length,payload.Length); //copy the message behind the header
+                var packet = new byte[header.Length + payload.Length];
+                Array.Copy(header, packet, header.Length);
+                Array.Copy(payload, 0, packet, header.Length, payload.Length); //copy the message behind the header
                 _NetworkStream.Write(packet, 0, packet.Length);
             }
             catch (Exception e)

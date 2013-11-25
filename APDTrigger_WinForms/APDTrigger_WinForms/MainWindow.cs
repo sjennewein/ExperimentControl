@@ -12,11 +12,11 @@ namespace APDTrigger_WinForms
     public partial class MainWindow : Form
     {
         private readonly Controller _myController;
-        public bool AutoUpdate = false;
-
+        public bool AutoUpdate;
+        private bool _apdIsRunning;
         private DisplayType _myChart2Display = DisplayType.Histogram;
         private int _pointCount;
-        
+
         public MainWindow()
         {
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
@@ -32,10 +32,9 @@ namespace APDTrigger_WinForms
             _myController.TotalRuns = 1;
             _myController.Frequency = 0.5;
             stop_button.Enabled = false;
+            button_StopFrequency.Enabled = false;
 
-            _myController.Finished += OnFinished;
-            FormClosing += OnQuit;
-                //hopefully enough to close all hardware handles when closing the application            
+            _myController.APDStopped += OnApdStopped;
 
             textBox_binningInput.DataBindings.Add("Text", _myController, "Binning", true,
                                                   DataSourceUpdateMode.OnPropertyChanged);
@@ -62,11 +61,16 @@ namespace APDTrigger_WinForms
             textBox_Atoms.DataBindings.Add("Text", _myController, "Atoms", true, DataSourceUpdateMode.OnPropertyChanged);
             textBox_NoAtoms.DataBindings.Add("Text", _myController, "NoAtoms", true,
                                              DataSourceUpdateMode.OnPropertyChanged);
-            textBox_TimeBetweenRun.DataBindings.Add("Text", _myController, "TimeBetweenRuns", true,
+            textBox_Frequency.DataBindings.Add("Text", _myController, "Frequency", true,
                                                DataSourceUpdateMode.OnPropertyChanged);
+            textBox_tcpClient.DataBindings.Add("Text", _myController, "RegisteredClients", true,
+                                               DataSourceUpdateMode.OnPropertyChanged);
+<<<<<<< HEAD
             textBox_Frequency.DataBindings.Add("Text", _myController, "Frequency", true,
                                                DataSourceUpdateMode.OnPropertyChanged);
 
+=======
+>>>>>>> stephan
             InitializeApdSignalChart();
             InitializeApdHistogram();
         }
@@ -94,7 +98,6 @@ namespace APDTrigger_WinForms
             apdSignal.YAxes[0].Title.Color = Color.Black;
             apdSignal.YAxes[0].Title.Shadow.Visible = false;
             apdSignal.YAxes[0].Units.Visible = false;
-            //apdSignal.YAxes[0].SetRange(0,30);
 
             apdSignal.XAxis.SetRange(0, 5);
             apdSignal.XAxis.Title.Text = "Time [mm:ss]";
@@ -166,8 +169,9 @@ namespace APDTrigger_WinForms
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void start_button_Click(object sender, EventArgs e)
+        private void button_Start_Click(object sender, EventArgs e)
         {
+            _apdIsRunning = true;
             DisableAllInputs();
             stop_button.Enabled = true;
             _myController.Start();
@@ -180,7 +184,7 @@ namespace APDTrigger_WinForms
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void stop_button_Click(object sender, EventArgs e)
+        private void button_Stop_Click(object sender, EventArgs e)
         {
             _myController.Stop();
         }
@@ -190,11 +194,11 @@ namespace APDTrigger_WinForms
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void OnFinished(object sender, EventArgs e)
+        private void OnApdStopped(object sender, EventArgs e)
         {
             if (InvokeRequired)
             {
-                GuiUpdate callback = OnFinished;
+                GuiUpdate callback = OnApdStopped;
                 Invoke(callback, new[] {sender, e});
             }
             else
@@ -202,8 +206,9 @@ namespace APDTrigger_WinForms
                 ApdSignalUpdate.Stop();
                 ApdHistogramUpdate.Stop();
                 EnableAllInputs();
-                start_button.Enabled = true;
                 stop_button.Enabled = false;
+                button_StopFrequency.Enabled = false;
+                _apdIsRunning = false;
             }
         }
 
@@ -253,7 +258,7 @@ namespace APDTrigger_WinForms
         /// </summary>
         private void UpdateApdSignal()
         {
-            double dataInterval = _myController.Binning/800.0;
+            double dataInterval = _myController.Binning/500.0;
             //System.Console.WriteLine(_myController.Data[0]);
             apdSignal.BeginUpdate();
             _pointCount++;
@@ -277,7 +282,7 @@ namespace APDTrigger_WinForms
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void triggerRadioButton_CheckedChanged(object sender, EventArgs e)
+        private void radioButton_Mode_CheckedChanged(object sender, EventArgs e)
         {
             foreach (Control control in groupBox_Trigger.Controls)
             {
@@ -292,10 +297,16 @@ namespace APDTrigger_WinForms
                 switch (radio.Text)
                 {
                     case "Measurement":
-                        _myController.Run = Controller.RunType.Measurement;
+                        _myController.Mode = Controller.RunType.Measurement;
+                        _myController.DeactivateNetwork();
                         break;
                     case "Monitor":
-                        _myController.Run = Controller.RunType.Monitor;
+                        _myController.Mode = Controller.RunType.Monitor;
+                        _myController.DeactivateNetwork();
+                        break;
+                    case "Network":
+                        _myController.Mode = Controller.RunType.Network;
+                        _myController.ActivateNetwork();
                         break;
                 }
             }
@@ -306,7 +317,7 @@ namespace APDTrigger_WinForms
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void apdSignalChart_DoubleClick(object sender, EventArgs e)
+        private void chart_ApdSignal_DoubleClick(object sender, EventArgs e)
         {
             Form contextMenu = new ApdSignalContextMenu(this, apdSignal);
             contextMenu.ShowDialog();
@@ -317,7 +328,7 @@ namespace APDTrigger_WinForms
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void saveCheckBox_CheckedChanged(object sender, EventArgs e)
+        private void checkBox_Save_CheckedChanged(object sender, EventArgs e)
         {
             var originalSender = (CheckBox) sender;
             if (originalSender.Checked)
@@ -335,7 +346,7 @@ namespace APDTrigger_WinForms
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ApdSignalUpdate_Tick(object sender, EventArgs e)
+        private void timer_ApdSignal_Tick(object sender, EventArgs e)
         {
             UpdateApdSignal();
         }
@@ -357,15 +368,20 @@ namespace APDTrigger_WinForms
             radioButton_Monitor.Enabled = false;
             radioButton_Measurement.Enabled = false;
             CheckBox_SaveSignal.Enabled = false;
-            radioButton_No.Enabled = false;
-            radioButton_Yes.Enabled = false;
             textBox_apdInput.Enabled = false;
             textBox_acquireInput.Enabled = false;
             checkBox_SaveHistogram.Enabled = false;
+<<<<<<< HEAD
             textBox_TimeBetweenRun.Enabled = false;
             button_StartFrequency.Enabled = false;
             button_StopFrequency.Enabled = false;
             textBox_Frequency.Enabled = false;
+=======
+            button_StartFrequency.Enabled = false;
+            button_StopFrequency.Enabled = false;
+            textBox_Frequency.Enabled = false;
+            radioButton_Network.Enabled = false;
+>>>>>>> stephan
         }
 
         /// <summary>
@@ -385,11 +401,10 @@ namespace APDTrigger_WinForms
             radioButton_Monitor.Enabled = true;
             radioButton_Measurement.Enabled = true;
             CheckBox_SaveSignal.Enabled = true;
-            radioButton_No.Enabled = true;
-            radioButton_Yes.Enabled = true;
             textBox_apdInput.Enabled = true;
             textBox_acquireInput.Enabled = true;
             checkBox_SaveHistogram.Enabled = true;
+<<<<<<< HEAD
             textBox_TimeBetweenRun.Enabled = true;
             button_StartFrequency.Enabled = true;
             button_StopFrequency.Enabled = true;
@@ -405,6 +420,12 @@ namespace APDTrigger_WinForms
         private void OnQuit(object sender, EventArgs e)
         {
             _myController.Quit();
+=======
+            button_StartFrequency.Enabled = true;
+            button_StopFrequency.Enabled = true;
+            textBox_Frequency.Enabled = true;
+            radioButton_Network.Enabled = true;
+>>>>>>> stephan
         }
 
         /// <summary>
@@ -412,38 +433,9 @@ namespace APDTrigger_WinForms
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ApdHistogramUpdate_Tick(object sender, EventArgs e)
+        private void timer_ApdHistogram_Tick(object sender, EventArgs e)
         {
             UpdateApdHistogram();
-        }
-
-        /// <summary>
-        /// Callback function that checks which radiobutton for the recapture measurement is checked
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void radioButton_Recapture_CheckedChanged(object sender, EventArgs e)
-        {
-            foreach (Control control in groupBox_Recapture.Controls)
-            {
-                if ((control is RadioButton) == false)
-                    continue;
-
-                var radio = control as RadioButton;
-
-                if (radio.Checked == false)
-                    continue;
-
-                switch (radio.Text)
-                {
-                    case "Yes":
-                        _myController.Recapture = true;
-                        break;
-                    case "No":
-                        _myController.Recapture = false;
-                        break;
-                }
-            }
         }
 
         private void checkBox_SaveHistogram_CheckedChanged(object sender, EventArgs e)
@@ -506,6 +498,35 @@ namespace APDTrigger_WinForms
                 apdHistogram.XAxis.SetRange(0,
                                             Math.Ceiling((double) _myController.Samples2Acquire/_myController.APDBinsize));
             }
+        }
+
+        private void button_StartFrequency_Click(object sender, EventArgs e)
+        {
+            _apdIsRunning = true;
+            radioButton_Monitor.Checked = true;
+            _myController.Start(true);
+            DisableAllInputs();
+            button_StopFrequency.Enabled = true;
+            ApdHistogramUpdate.Start();
+            ApdSignalUpdate.Start();
+        }
+
+        private void button_StopFrequency_Click(object sender, EventArgs e)
+        {
+            _myController.Stop();
+        }
+
+        private void MainWindow_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (_apdIsRunning)
+            {
+                e.Cancel = true;
+                MessageBox.Show("You have to stop the APD first!");
+                return;
+            }
+
+
+            _myController.Quit();
         }
 
         #region Nested type: DisplayType

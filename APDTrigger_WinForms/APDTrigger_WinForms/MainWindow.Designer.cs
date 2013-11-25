@@ -31,6 +31,7 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             this.groupBox_Trigger = new System.Windows.Forms.GroupBox();
+            this.radioButton_Network = new System.Windows.Forms.RadioButton();
             this.checkBox_SaveHistogram = new System.Windows.Forms.CheckBox();
             this.CheckBox_SaveSignal = new System.Windows.Forms.CheckBox();
             this.label8 = new System.Windows.Forms.Label();
@@ -52,9 +53,6 @@
             this.textBox_acquireInput = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.textBox_apdInput = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
-            this.radioButton_No = new System.Windows.Forms.RadioButton();
-            this.radioButton_Yes = new System.Windows.Forms.RadioButton();
             this.apdSignal = new Arction.LightningChartBasic.LightningChartBasic();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.textBox_NoAtoms = new System.Windows.Forms.TextBox();
@@ -79,13 +77,20 @@
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+<<<<<<< HEAD
             this.label17 = new System.Windows.Forms.Label();
             this.textBox_TimeBetweenRun = new System.Windows.Forms.TextBox();
+=======
+>>>>>>> stephan
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.button_StopFrequency = new System.Windows.Forms.Button();
             this.button_StartFrequency = new System.Windows.Forms.Button();
             this.label18 = new System.Windows.Forms.Label();
             this.textBox_Frequency = new System.Windows.Forms.TextBox();
+<<<<<<< HEAD
+=======
+            this.textBox_tcpClient = new System.Windows.Forms.TextBox();
+>>>>>>> stephan
             this.groupBox_Trigger.SuspendLayout();
             this.groupBox_Recapture.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -96,6 +101,7 @@
             // 
             // groupBox_Trigger
             // 
+            this.groupBox_Trigger.Controls.Add(this.radioButton_Network);
             this.groupBox_Trigger.Controls.Add(this.checkBox_SaveHistogram);
             this.groupBox_Trigger.Controls.Add(this.CheckBox_SaveSignal);
             this.groupBox_Trigger.Controls.Add(this.label8);
@@ -119,6 +125,17 @@
             this.groupBox_Trigger.TabStop = false;
             this.groupBox_Trigger.Text = "Trigger Settings";
             // 
+            // radioButton_Network
+            // 
+            this.radioButton_Network.AutoSize = true;
+            this.radioButton_Network.Location = new System.Drawing.Point(75, 213);
+            this.radioButton_Network.Name = "radioButton_Network";
+            this.radioButton_Network.Size = new System.Drawing.Size(65, 17);
+            this.radioButton_Network.TabIndex = 16;
+            this.radioButton_Network.Text = "Network";
+            this.radioButton_Network.UseVisualStyleBackColor = true;
+            this.radioButton_Network.CheckedChanged += new System.EventHandler(this.radioButton_Mode_CheckedChanged);
+            // 
             // checkBox_SaveHistogram
             // 
             this.checkBox_SaveHistogram.AutoSize = true;
@@ -141,7 +158,7 @@
             this.CheckBox_SaveSignal.TabIndex = 14;
             this.CheckBox_SaveSignal.Text = "Save APD-Signal: ";
             this.CheckBox_SaveSignal.UseVisualStyleBackColor = true;
-            this.CheckBox_SaveSignal.CheckedChanged += new System.EventHandler(this.saveCheckBox_CheckedChanged);
+            this.CheckBox_SaveSignal.CheckedChanged += new System.EventHandler(this.checkBox_Save_CheckedChanged);
             // 
             // label8
             // 
@@ -162,25 +179,41 @@
             // radioButton_Monitor
             // 
             this.radioButton_Monitor.Checked = true;
+<<<<<<< HEAD
             this.radioButton_Monitor.Location = new System.Drawing.Point(96, 213);
+=======
+            this.radioButton_Monitor.Location = new System.Drawing.Point(6, 190);
+>>>>>>> stephan
             this.radioButton_Monitor.Name = "radioButton_Monitor";
             this.radioButton_Monitor.Size = new System.Drawing.Size(65, 17);
             this.radioButton_Monitor.TabIndex = 0;
             this.radioButton_Monitor.TabStop = true;
             this.radioButton_Monitor.Text = "Monitor";
             this.radioButton_Monitor.UseVisualStyleBackColor = true;
+<<<<<<< HEAD
             this.radioButton_Monitor.CheckedChanged += new System.EventHandler(this.triggerRadioButton_CheckedChanged);
+=======
+            this.radioButton_Monitor.CheckedChanged += new System.EventHandler(this.radioButton_Mode_CheckedChanged);
+>>>>>>> stephan
             // 
             // radioButton_Measurement
             // 
             this.radioButton_Measurement.AutoSize = true;
+<<<<<<< HEAD
             this.radioButton_Measurement.Location = new System.Drawing.Point(6, 213);
+=======
+            this.radioButton_Measurement.Location = new System.Drawing.Point(75, 190);
+>>>>>>> stephan
             this.radioButton_Measurement.Name = "radioButton_Measurement";
             this.radioButton_Measurement.Size = new System.Drawing.Size(89, 17);
             this.radioButton_Measurement.TabIndex = 8;
             this.radioButton_Measurement.Text = "Measurement";
             this.radioButton_Measurement.UseVisualStyleBackColor = true;
+<<<<<<< HEAD
             this.radioButton_Measurement.CheckedChanged += new System.EventHandler(this.triggerRadioButton_CheckedChanged);
+=======
+            this.radioButton_Measurement.CheckedChanged += new System.EventHandler(this.radioButton_Mode_CheckedChanged);
+>>>>>>> stephan
             // 
             // stop_button
             // 
@@ -190,7 +223,7 @@
             this.stop_button.TabIndex = 7;
             this.stop_button.Text = "Stop";
             this.stop_button.UseVisualStyleBackColor = true;
-            this.stop_button.Click += new System.EventHandler(this.stop_button_Click);
+            this.stop_button.Click += new System.EventHandler(this.button_Stop_Click);
             // 
             // start_button
             // 
@@ -200,7 +233,7 @@
             this.start_button.TabIndex = 6;
             this.start_button.Text = "Start";
             this.start_button.UseVisualStyleBackColor = true;
-            this.start_button.Click += new System.EventHandler(this.start_button_Click);
+            this.start_button.Click += new System.EventHandler(this.button_Start_Click);
             // 
             // label3
             // 
@@ -272,12 +305,9 @@
             this.groupBox_Recapture.Controls.Add(this.textBox_acquireInput);
             this.groupBox_Recapture.Controls.Add(this.label5);
             this.groupBox_Recapture.Controls.Add(this.textBox_apdInput);
-            this.groupBox_Recapture.Controls.Add(this.label7);
-            this.groupBox_Recapture.Controls.Add(this.radioButton_No);
-            this.groupBox_Recapture.Controls.Add(this.radioButton_Yes);
             this.groupBox_Recapture.Location = new System.Drawing.Point(12, 288);
             this.groupBox_Recapture.Name = "groupBox_Recapture";
-            this.groupBox_Recapture.Size = new System.Drawing.Size(168, 103);
+            this.groupBox_Recapture.Size = new System.Drawing.Size(168, 69);
             this.groupBox_Recapture.TabIndex = 1;
             this.groupBox_Recapture.TabStop = false;
             this.groupBox_Recapture.Text = "Recapture Settings";
@@ -285,7 +315,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(3, 80);
+            this.label6.Location = new System.Drawing.Point(3, 45);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(100, 13);
             this.label6.TabIndex = 19;
@@ -293,7 +323,7 @@
             // 
             // textBox_acquireInput
             // 
-            this.textBox_acquireInput.Location = new System.Drawing.Point(109, 77);
+            this.textBox_acquireInput.Location = new System.Drawing.Point(109, 42);
             this.textBox_acquireInput.Name = "textBox_acquireInput";
             this.textBox_acquireInput.Size = new System.Drawing.Size(53, 20);
             this.textBox_acquireInput.TabIndex = 18;
@@ -301,7 +331,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(35, 58);
+            this.label5.Location = new System.Drawing.Point(35, 23);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(68, 13);
             this.label5.TabIndex = 17;
@@ -309,49 +339,10 @@
             // 
             // textBox_apdInput
             // 
-            this.textBox_apdInput.Location = new System.Drawing.Point(109, 55);
+            this.textBox_apdInput.Location = new System.Drawing.Point(109, 20);
             this.textBox_apdInput.Name = "textBox_apdInput";
             this.textBox_apdInput.Size = new System.Drawing.Size(53, 20);
             this.textBox_apdInput.TabIndex = 16;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(28, 19);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(60, 13);
-            this.label7.TabIndex = 15;
-            this.label7.Text = "Recapture:";
-            // 
-            // radioButton_No
-            // 
-            this.radioButton_No.AutoSize = true;
-            this.radioButton_No.CheckAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.radioButton_No.Checked = true;
-            this.radioButton_No.Location = new System.Drawing.Point(135, 19);
-            this.radioButton_No.Name = "radioButton_No";
-            this.radioButton_No.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.radioButton_No.Size = new System.Drawing.Size(25, 30);
-            this.radioButton_No.TabIndex = 11;
-            this.radioButton_No.TabStop = true;
-            this.radioButton_No.Text = "No";
-            this.radioButton_No.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
-            this.radioButton_No.UseVisualStyleBackColor = true;
-            this.radioButton_No.CheckedChanged += new System.EventHandler(this.radioButton_Recapture_CheckedChanged);
-            // 
-            // radioButton_Yes
-            // 
-            this.radioButton_Yes.AutoSize = true;
-            this.radioButton_Yes.CheckAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.radioButton_Yes.Location = new System.Drawing.Point(104, 19);
-            this.radioButton_Yes.Name = "radioButton_Yes";
-            this.radioButton_Yes.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.radioButton_Yes.Size = new System.Drawing.Size(29, 30);
-            this.radioButton_Yes.TabIndex = 9;
-            this.radioButton_Yes.Text = "Yes";
-            this.radioButton_Yes.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
-            this.radioButton_Yes.UseVisualStyleBackColor = true;
-            this.radioButton_Yes.CheckedChanged += new System.EventHandler(this.radioButton_Recapture_CheckedChanged);
             // 
             // apdSignal
             // 
@@ -390,7 +381,7 @@
             this.apdSignal.YAxesLayout = Arction.LightningChartBasic.YAxesLayout.LayeredCommonXAxis;
             this.apdSignal.ZoomFactor = 2D;
             this.apdSignal.ZoomRectLine = ((Arction.LightningChartBasic.LineStyle)(resources.GetObject("apdSignal.ZoomRectLine")));
-            this.apdSignal.DoubleClick += new System.EventHandler(this.apdSignalChart_DoubleClick);
+            this.apdSignal.DoubleClick += new System.EventHandler(this.chart_ApdSignal_DoubleClick);
             // 
             // groupBox3
             // 
@@ -576,12 +567,12 @@
             // ApdSignalUpdate
             // 
             this.ApdSignalUpdate.Interval = 20;
-            this.ApdSignalUpdate.Tick += new System.EventHandler(this.ApdSignalUpdate_Tick);
+            this.ApdSignalUpdate.Tick += new System.EventHandler(this.timer_ApdSignal_Tick);
             // 
             // ApdHistogramUpdate
             // 
             this.ApdHistogramUpdate.Interval = 1000;
-            this.ApdHistogramUpdate.Tick += new System.EventHandler(this.ApdHistogramUpdate_Tick);
+            this.ApdHistogramUpdate.Tick += new System.EventHandler(this.timer_ApdHistogram_Tick);
             // 
             // groupBox_Histogram
             // 
@@ -636,30 +627,78 @@
             // 
             // groupBox1
             // 
+<<<<<<< HEAD
             this.groupBox1.Controls.Add(this.label17);
             this.groupBox1.Controls.Add(this.textBox_TimeBetweenRun);
             this.groupBox1.Location = new System.Drawing.Point(12, 498);
+=======
+            this.groupBox1.Controls.Add(this.textBox_tcpClient);
+            this.groupBox1.Location = new System.Drawing.Point(12, 363);
+>>>>>>> stephan
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(167, 68);
             this.groupBox1.TabIndex = 6;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Network Settings";
+            this.groupBox1.Text = "Network";
             // 
-            // label17
+            // groupBox2
             // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(2, 22);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(100, 13);
-            this.label17.TabIndex = 17;
-            this.label17.Text = "Time between runs:";
+            this.groupBox2.Controls.Add(this.button_StopFrequency);
+            this.groupBox2.Controls.Add(this.button_StartFrequency);
+            this.groupBox2.Controls.Add(this.label18);
+            this.groupBox2.Controls.Add(this.textBox_Frequency);
+            this.groupBox2.Location = new System.Drawing.Point(12, 463);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(168, 95);
+            this.groupBox2.TabIndex = 8;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Frequency Generator";
             // 
-            // textBox_TimeBetweenRun
+            // button_StopFrequency
             // 
-            this.textBox_TimeBetweenRun.Location = new System.Drawing.Point(107, 19);
-            this.textBox_TimeBetweenRun.Name = "textBox_TimeBetweenRun";
-            this.textBox_TimeBetweenRun.Size = new System.Drawing.Size(53, 20);
-            this.textBox_TimeBetweenRun.TabIndex = 16;
+            this.button_StopFrequency.Location = new System.Drawing.Point(103, 66);
+            this.button_StopFrequency.Name = "button_StopFrequency";
+            this.button_StopFrequency.Size = new System.Drawing.Size(59, 23);
+            this.button_StopFrequency.TabIndex = 17;
+            this.button_StopFrequency.Text = "Stop";
+            this.button_StopFrequency.UseVisualStyleBackColor = true;
+            this.button_StopFrequency.Click += new System.EventHandler(this.button_StopFrequency_Click);
+            // 
+            // button_StartFrequency
+            // 
+            this.button_StartFrequency.Location = new System.Drawing.Point(6, 66);
+            this.button_StartFrequency.Name = "button_StartFrequency";
+            this.button_StartFrequency.Size = new System.Drawing.Size(59, 23);
+            this.button_StartFrequency.TabIndex = 16;
+            this.button_StartFrequency.Text = "Start";
+            this.button_StartFrequency.UseVisualStyleBackColor = true;
+            this.button_StartFrequency.Click += new System.EventHandler(this.button_StartFrequency_Click);
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(18, 16);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(82, 13);
+            this.label18.TabIndex = 21;
+            this.label18.Text = "Frequency (Hz):";
+            // 
+            // textBox_Frequency
+            // 
+            this.textBox_Frequency.Location = new System.Drawing.Point(109, 13);
+            this.textBox_Frequency.Name = "textBox_Frequency";
+            this.textBox_Frequency.Size = new System.Drawing.Size(53, 20);
+            this.textBox_Frequency.TabIndex = 20;
+            this.textBox_Frequency.Text = "1000";
+            // 
+            // textBox_tcpClient
+            // 
+            this.textBox_tcpClient.Location = new System.Drawing.Point(10, 20);
+            this.textBox_tcpClient.Multiline = true;
+            this.textBox_tcpClient.Name = "textBox_tcpClient";
+            this.textBox_tcpClient.ReadOnly = true;
+            this.textBox_tcpClient.Size = new System.Drawing.Size(100, 68);
+            this.textBox_tcpClient.TabIndex = 0;
             // 
             // groupBox2
             // 
@@ -726,6 +765,7 @@
             this.Controls.Add(this.groupBox_Trigger);
             this.Name = "MainWindow";
             this.Text = "APD Trigger";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainWindow_FormClosing);
             this.groupBox_Trigger.ResumeLayout(false);
             this.groupBox_Trigger.PerformLayout();
             this.groupBox_Recapture.ResumeLayout(false);
@@ -757,11 +797,8 @@
         private System.Windows.Forms.TextBox thresholdInput;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox textBox_binningInput;
-        private System.Windows.Forms.RadioButton radioButton_Yes;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox textBox_cyclesInput;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.RadioButton radioButton_No;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox textBox_runsInput;
         private System.Windows.Forms.Label label6;
@@ -793,13 +830,21 @@
         private System.Windows.Forms.RadioButton radioButton1;
         private System.Windows.Forms.Button button_Rescale;
         private System.Windows.Forms.GroupBox groupBox1;
+<<<<<<< HEAD
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.TextBox textBox_TimeBetweenRun;
+=======
+        private System.Windows.Forms.RadioButton radioButton_Network;
+>>>>>>> stephan
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Button button_StopFrequency;
         private System.Windows.Forms.Button button_StartFrequency;
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.TextBox textBox_Frequency;
+<<<<<<< HEAD
+=======
+        private System.Windows.Forms.TextBox textBox_tcpClient;
+>>>>>>> stephan
     }
 }
 

@@ -23,7 +23,6 @@ namespace APDTrigger_WinForms.Helper
 
         public string Serialize()
         {
-
             var parameter = new JSONParameters();
             parameter.UseExtensions = false;
             return JSON.Instance.ToJSON(this, parameter);

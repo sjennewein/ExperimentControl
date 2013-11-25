@@ -213,14 +213,10 @@ namespace APDTrigger.Hardware
             {
                 try
                 {
-                    //used for pausing between runs signaled from the controller
-                    Console.WriteLine("waiting" + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));                    
+                    //used for pausing between runs signaled from the controller                    
                     _pauseCycling.WaitOne();
                   
-                    
-                    
-
-                    //Console.WriteLine("Check fluoresence");
+                                                           
                     ReadHighFrequencyCounter();
 
                     if (_monitor) //if we only monitor then ignore all fancy measurement functions
@@ -317,17 +313,11 @@ namespace APDTrigger.Hardware
             finally
             {
                 _myThresholdTask.Stop();
-            }
-
-            //foreach (var i in readOutData)
-            //{
-            //    Console.WriteLine(i);
-            //}
-            //Console.WriteLine("next Run");
+            } 
 
             if (readOutData.Length >= 1)
             {
-                _newDataPoint = readOutData[1];
+                _newDataPoint = readOutData[0];
 
 
                 NewAPDValueEvent();

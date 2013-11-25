@@ -65,12 +65,6 @@ namespace APDTrigger_WinForms
                                                DataSourceUpdateMode.OnPropertyChanged);
             textBox_tcpClient.DataBindings.Add("Text", _myController, "RegisteredClients", true,
                                                DataSourceUpdateMode.OnPropertyChanged);
-<<<<<<< HEAD
-            textBox_Frequency.DataBindings.Add("Text", _myController, "Frequency", true,
-                                               DataSourceUpdateMode.OnPropertyChanged);
-
-=======
->>>>>>> stephan
             InitializeApdSignalChart();
             InitializeApdHistogram();
         }
@@ -239,7 +233,7 @@ namespace APDTrigger_WinForms
                 case DisplayType.Spectrum:
                     if (_myController.BinnedSpectrum != null)
                         for (int iBucket = 0;
-                             iBucket < _myController.BinnedSpectrum.Length;
+                             iBucket < Math.Ceiling((double) _myController.Samples2Acquire/_myController.APDBinsize);
                              iBucket++)
                         {
                             bs.AddValue(iBucket, _myController.BinnedSpectrum[iBucket], "", true);
@@ -371,17 +365,10 @@ namespace APDTrigger_WinForms
             textBox_apdInput.Enabled = false;
             textBox_acquireInput.Enabled = false;
             checkBox_SaveHistogram.Enabled = false;
-<<<<<<< HEAD
-            textBox_TimeBetweenRun.Enabled = false;
-            button_StartFrequency.Enabled = false;
-            button_StopFrequency.Enabled = false;
-            textBox_Frequency.Enabled = false;
-=======
             button_StartFrequency.Enabled = false;
             button_StopFrequency.Enabled = false;
             textBox_Frequency.Enabled = false;
             radioButton_Network.Enabled = false;
->>>>>>> stephan
         }
 
         /// <summary>
@@ -404,28 +391,10 @@ namespace APDTrigger_WinForms
             textBox_apdInput.Enabled = true;
             textBox_acquireInput.Enabled = true;
             checkBox_SaveHistogram.Enabled = true;
-<<<<<<< HEAD
-            textBox_TimeBetweenRun.Enabled = true;
-            button_StartFrequency.Enabled = true;
-            button_StopFrequency.Enabled = true;
-            textBox_Frequency.Enabled = true;
-
-        }
-
-        /// <summary>
-        /// Callback function when the program is closed
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnQuit(object sender, EventArgs e)
-        {
-            _myController.Quit();
-=======
             button_StartFrequency.Enabled = true;
             button_StopFrequency.Enabled = true;
             textBox_Frequency.Enabled = true;
             radioButton_Network.Enabled = true;
->>>>>>> stephan
         }
 
         /// <summary>
@@ -550,20 +519,5 @@ namespace APDTrigger_WinForms
         internal delegate void myGuiCallback(object state);
 
         #endregion
-
-        private void button_StartFrequency_Click(object sender, EventArgs e)
-        {
-            radioButton_Monitor.Checked = true;
-            _myController.Start(true);
-            DisableAllInputs();
-            button_StopFrequency.Enabled = true;
-            ApdHistogramUpdate.Start();
-            ApdSignalUpdate.Start();
-        }
-
-        private void button_StopFrequency_Click(object sender, EventArgs e)
-        {
-            _myController.Stop();            
-        }
     }
 }

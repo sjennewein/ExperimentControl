@@ -77,20 +77,12 @@
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-<<<<<<< HEAD
-            this.label17 = new System.Windows.Forms.Label();
-            this.textBox_TimeBetweenRun = new System.Windows.Forms.TextBox();
-=======
->>>>>>> stephan
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.button_StopFrequency = new System.Windows.Forms.Button();
             this.button_StartFrequency = new System.Windows.Forms.Button();
             this.label18 = new System.Windows.Forms.Label();
             this.textBox_Frequency = new System.Windows.Forms.TextBox();
-<<<<<<< HEAD
-=======
             this.textBox_tcpClient = new System.Windows.Forms.TextBox();
->>>>>>> stephan
             this.groupBox_Trigger.SuspendLayout();
             this.groupBox_Recapture.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -179,41 +171,25 @@
             // radioButton_Monitor
             // 
             this.radioButton_Monitor.Checked = true;
-<<<<<<< HEAD
-            this.radioButton_Monitor.Location = new System.Drawing.Point(96, 213);
-=======
             this.radioButton_Monitor.Location = new System.Drawing.Point(6, 190);
->>>>>>> stephan
             this.radioButton_Monitor.Name = "radioButton_Monitor";
             this.radioButton_Monitor.Size = new System.Drawing.Size(65, 17);
             this.radioButton_Monitor.TabIndex = 0;
             this.radioButton_Monitor.TabStop = true;
             this.radioButton_Monitor.Text = "Monitor";
             this.radioButton_Monitor.UseVisualStyleBackColor = true;
-<<<<<<< HEAD
-            this.radioButton_Monitor.CheckedChanged += new System.EventHandler(this.triggerRadioButton_CheckedChanged);
-=======
             this.radioButton_Monitor.CheckedChanged += new System.EventHandler(this.radioButton_Mode_CheckedChanged);
->>>>>>> stephan
             // 
             // radioButton_Measurement
             // 
             this.radioButton_Measurement.AutoSize = true;
-<<<<<<< HEAD
-            this.radioButton_Measurement.Location = new System.Drawing.Point(6, 213);
-=======
             this.radioButton_Measurement.Location = new System.Drawing.Point(75, 190);
->>>>>>> stephan
             this.radioButton_Measurement.Name = "radioButton_Measurement";
             this.radioButton_Measurement.Size = new System.Drawing.Size(89, 17);
             this.radioButton_Measurement.TabIndex = 8;
             this.radioButton_Measurement.Text = "Measurement";
             this.radioButton_Measurement.UseVisualStyleBackColor = true;
-<<<<<<< HEAD
-            this.radioButton_Measurement.CheckedChanged += new System.EventHandler(this.triggerRadioButton_CheckedChanged);
-=======
             this.radioButton_Measurement.CheckedChanged += new System.EventHandler(this.radioButton_Mode_CheckedChanged);
->>>>>>> stephan
             // 
             // stop_button
             // 
@@ -627,16 +603,10 @@
             // 
             // groupBox1
             // 
-<<<<<<< HEAD
-            this.groupBox1.Controls.Add(this.label17);
-            this.groupBox1.Controls.Add(this.textBox_TimeBetweenRun);
-            this.groupBox1.Location = new System.Drawing.Point(12, 498);
-=======
             this.groupBox1.Controls.Add(this.textBox_tcpClient);
             this.groupBox1.Location = new System.Drawing.Point(12, 363);
->>>>>>> stephan
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(167, 68);
+            this.groupBox1.Size = new System.Drawing.Size(167, 94);
             this.groupBox1.TabIndex = 6;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Network";
@@ -699,56 +669,6 @@
             this.textBox_tcpClient.ReadOnly = true;
             this.textBox_tcpClient.Size = new System.Drawing.Size(100, 68);
             this.textBox_tcpClient.TabIndex = 0;
-            // 
-            // groupBox2
-            // 
-            this.groupBox2.Controls.Add(this.button_StopFrequency);
-            this.groupBox2.Controls.Add(this.button_StartFrequency);
-            this.groupBox2.Controls.Add(this.label18);
-            this.groupBox2.Controls.Add(this.textBox_Frequency);
-            this.groupBox2.Location = new System.Drawing.Point(12, 397);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(168, 95);
-            this.groupBox2.TabIndex = 7;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Frequency Generator";
-            // 
-            // button_StopFrequency
-            // 
-            this.button_StopFrequency.Location = new System.Drawing.Point(103, 66);
-            this.button_StopFrequency.Name = "button_StopFrequency";
-            this.button_StopFrequency.Size = new System.Drawing.Size(59, 23);
-            this.button_StopFrequency.TabIndex = 17;
-            this.button_StopFrequency.Text = "Stop";
-            this.button_StopFrequency.UseVisualStyleBackColor = true;
-            this.button_StopFrequency.Click += new System.EventHandler(this.button_StopFrequency_Click);
-            // 
-            // button_StartFrequency
-            // 
-            this.button_StartFrequency.Location = new System.Drawing.Point(6, 66);
-            this.button_StartFrequency.Name = "button_StartFrequency";
-            this.button_StartFrequency.Size = new System.Drawing.Size(59, 23);
-            this.button_StartFrequency.TabIndex = 16;
-            this.button_StartFrequency.Text = "Start";
-            this.button_StartFrequency.UseVisualStyleBackColor = true;
-            this.button_StartFrequency.Click += new System.EventHandler(this.button_StartFrequency_Click);
-            // 
-            // label18
-            // 
-            this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(18, 16);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(82, 13);
-            this.label18.TabIndex = 21;
-            this.label18.Text = "Frequency (Hz):";
-            // 
-            // textBox_Frequency
-            // 
-            this.textBox_Frequency.Location = new System.Drawing.Point(109, 13);
-            this.textBox_Frequency.Name = "textBox_Frequency";
-            this.textBox_Frequency.Size = new System.Drawing.Size(53, 20);
-            this.textBox_Frequency.TabIndex = 20;
-            this.textBox_Frequency.Text = "1000";
             // 
             // MainWindow
             // 
@@ -830,21 +750,13 @@
         private System.Windows.Forms.RadioButton radioButton1;
         private System.Windows.Forms.Button button_Rescale;
         private System.Windows.Forms.GroupBox groupBox1;
-<<<<<<< HEAD
-        private System.Windows.Forms.Label label17;
-        private System.Windows.Forms.TextBox textBox_TimeBetweenRun;
-=======
         private System.Windows.Forms.RadioButton radioButton_Network;
->>>>>>> stephan
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Button button_StopFrequency;
         private System.Windows.Forms.Button button_StartFrequency;
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.TextBox textBox_Frequency;
-<<<<<<< HEAD
-=======
         private System.Windows.Forms.TextBox textBox_tcpClient;
->>>>>>> stephan
     }
 }
 

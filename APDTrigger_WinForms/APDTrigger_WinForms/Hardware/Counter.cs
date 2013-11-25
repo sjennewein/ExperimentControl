@@ -38,12 +38,7 @@ namespace APDTrigger.Hardware
         private readonly Task _mySampleClock;
         private readonly Task _myThresholdTask;
         private readonly Task _myTriggerTask;
-<<<<<<< HEAD
-        private readonly Task _mySampleClock;
-        private readonly Task _myFrequencyGenerator;
-=======
         private readonly ManualResetEvent _pauseCycling = new ManualResetEvent(true);
->>>>>>> stephan
         private readonly double _threshold;
         private readonly double _triggerBin;
         private volatile int _cycleCounter;
@@ -54,14 +49,8 @@ namespace APDTrigger.Hardware
         private int[] _myBinnedSpectrum;
         private int[] _mySpectrum;
         private Timer _myTimer;
-<<<<<<< HEAD
-        private bool _running;
-        private readonly double _frequency;
-        private readonly ManualResetEvent _pauseCycling = new ManualResetEvent(true);
-=======
         private int _newDataPoint;
         private volatile bool _running;        
->>>>>>> stephan
 
         /// <summary>
         ///     Provides the functionality of a standard ASPHERIX experiment in terms of the counter card
@@ -73,11 +62,7 @@ namespace APDTrigger.Hardware
         /// <param name="monitor"> </param>        
         /// <param name="clockEdges"> </param>
         public Counter(double threshold, int detectionBins, int apdBinSize, double triggerBin, bool monitor,
-<<<<<<< HEAD
-                       bool recapture, int clockEdges, double frequency)
-=======
                        int clockEdges, double frequency, int cyclesPerRun = 0)
->>>>>>> stephan
         {
             _cyclesPerRun = cyclesPerRun;
             _myThresholdTask = new Task("ThresholdTask");
@@ -141,12 +126,8 @@ namespace APDTrigger.Hardware
             /*     The trigger is fired when the read in counts are over a certain threshold     */
             /*************************************************************************************/
 
-<<<<<<< HEAD
-            _myTriggerTask.COChannels.CreatePulseChannelTicks("/Dev3/ctr1", "Trigger", "", COPulseIdleState.Low, 0, 200, 200);
-=======
             _myTriggerTask.COChannels.CreatePulseChannelTicks("/Dev3/ctr1", "Trigger", "", COPulseIdleState.Low, 0, 200,
                                                               200);
->>>>>>> stephan
             _myTriggerTask.Timing.ConfigureImplicit(SampleQuantityMode.FiniteSamples, 1);
         }
 
@@ -165,42 +146,6 @@ namespace APDTrigger.Hardware
             _myAcquisitionTask.CIChannels.All.DuplicateCountPrevention = true;
 
             _myAcquisitionTask.CIChannels.All.DataTransferMechanism = CIDataTransferMechanism.Dma;
-<<<<<<< HEAD
-
-            //use the sample clock (ctr0)
-            _myAcquisitionTask.Timing.ConfigureSampleClock("/Dev3/PFI12", 1000000, clockActiveEdge,
-                                               SampleQuantityMode.FiniteSamples, _myClockEdges);
-
-            
-            InitializeSampleClock();
-            
-
-            //var device = DaqSystem.Local.LoadDevice("Dev3");
-            //Console.WriteLine(device.NumberOfDmaChannels);
-        }
-
-        private void InitializeSampleClock()
-        {
-            //create 1MHz sampling clock internally
-            _mySampleClock.COChannels.CreatePulseChannelFrequency("/Dev3/ctr0", "ClkOutput",
-                                                                      COPulseFrequencyUnits.Hertz, COPulseIdleState.Low,
-                                                                      0, 1000000, 0.5);
-            _mySampleClock.Triggers.PauseTrigger.ConfigureDigitalLevelTrigger("/Dev3/PFI9", DigitalLevelPauseTriggerCondition.Low);
-            _mySampleClock.Timing.ConfigureImplicit(SampleQuantityMode.ContinuousSamples);
-        }
-
-        public void StartFrequencyGenerator()
-        {
-            _myFrequencyGenerator.COChannels.CreatePulseChannelFrequency("/Dev3/ctr1", "Trigger",
-                                                                         COPulseFrequencyUnits.Hertz,
-                                                                         COPulseIdleState.Low, 0, _frequency, 0.5);
-            _myFrequencyGenerator.Timing.ConfigureImplicit(SampleQuantityMode.ContinuousSamples);
-            
-
-
-            
-            _myFrequencyGenerator.Start();          
-=======
 
 
             _myAcquisitionTask.Timing.ConfigureSampleClock("/Dev3/PFI12", 1000000, clockActiveEdge,
@@ -228,7 +173,6 @@ namespace APDTrigger.Hardware
 
 
             _myFrequencyGenerator.Start();
->>>>>>> stephan
         }
 
         /// <summary>
@@ -248,40 +192,7 @@ namespace APDTrigger.Hardware
         /// </summary>
         public void StopAPDTrigger()
         {
-<<<<<<< HEAD
-            if (_running)
-            {
-                _running = false;
-                _myTimer.Change(Timeout.Infinite, Timeout.Infinite);
-                
-
-                Thread.Sleep(100); //wait until all timer processes are finished
-                _myTimer.Dispose();
-                
-                _myTriggerTask.Stop();
-                _myTriggerTask.Dispose();
-                
-                _myThresholdTask.Stop();
-                _myThresholdTask.Dispose();
-
-                _myAcquisitionTask.Stop();
-                _myAcquisitionTask.Dispose();
-
-                _mySampleClock.Stop();
-                _mySampleClock.Dispose();
-
-                _myFrequencyGenerator.Stop();
-                _myFrequencyGenerator.Dispose();
-
-                //send finishing event
-                EventHandler finished = Finished;
-                if (null != finished)
-                    finished(this, new EventArgs());
-                
-            }
-=======
             _running = false;
->>>>>>> stephan
         }
 
         /// <summary>
@@ -390,44 +301,23 @@ namespace APDTrigger.Hardware
         /// </summary>
         private void ReadHighFrequencyCounter()
         {
-<<<<<<< HEAD
-            int[] data = new int[2];
-            int readOutSamples = 0;
-=======
             int[] readOutData;            
->>>>>>> stephan
             try
             {
                 _myThresholdTask.Start();
                 var thresholdReader = new CounterReader(_myThresholdTask.Stream);
-<<<<<<< HEAD
-                thresholdReader.MemoryOptimizedReadMultiSampleInt32(data.Length, ref data, out readOutSamples);
-                
-                //read 2 elements because the first one is mostly zero   
-                //readOutData = thresholdReader.ReadMultiSampleInt32(2);                
-=======
                 //read 2 elements because the first one is mostly zero  this seems to be only a problem
                 //with the PCI cards the pci-express card doesn't have that problem
                 readOutData = thresholdReader.ReadMultiSampleInt32(1);
->>>>>>> stephan
             }
             finally
             {
                 _myThresholdTask.Stop();
             } 
 
-            if (data.Length >= 1)
+            if (readOutData.Length >= 1)
             {
-<<<<<<< HEAD
-                _NewSample = data[1]; 
-
-                EventHandler dataUpdate = NewData;
-                if (null != dataUpdate)
-                    dataUpdate(this, new EventArgs());
-            }
-=======
                 _newDataPoint = readOutData[0];
->>>>>>> stephan
 
 
                 NewAPDValueEvent();
@@ -462,39 +352,20 @@ namespace APDTrigger.Hardware
             {
                 _mySampleClock.Start();
                 _myAcquisitionTask.Start();
-<<<<<<< HEAD
-                CounterReader acquisitionReader = new CounterReader(_myAcquisitionTask.Stream);
-                acquisitionReader.MemoryOptimizedReadMultiSampleInt32(data.Length, ref data, out readOutSamples);
-                //Thread.Sleep(10);
-                Console.WriteLine("Good: " + readOutSamples);    
-            }
-            catch (Exception e)
-            {
-                Trace.WriteLine(e.Message);
-=======
                 var acquisitionReader = new CounterReader(_myAcquisitionTask.Stream);
                 acquisitionReader.MemoryOptimizedReadMultiSampleInt32(_myClockEdges, ref data, out readOutSamples);
             }
             catch
             {
                 return;
->>>>>>> stephan
             }
             finally
             {
                 _myAcquisitionTask.Stop();
                 _mySampleClock.Stop();
             }
-<<<<<<< HEAD
-            //_myAcquisitionTask.WaitUntilDone(100);
-            
-            
-                        
-            
-=======
 
 
->>>>>>> stephan
             _myAcquiredData = data;
 
 

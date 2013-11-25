@@ -94,11 +94,6 @@ namespace APDTrigger_WinForms.Helper
         public int Samples2Acquire { get; set; }
         public int APDBinsize { get; set; }
 
-<<<<<<< HEAD
-        public int TimeBetweenRuns { get; set; }
-        
-=======
->>>>>>> stephan
         //FrequencyGenerator
         public double Frequency { get; set; }
 
@@ -226,28 +221,6 @@ namespace APDTrigger_WinForms.Helper
             _recapturerate = 0;
             _runsDone = 0;
             _cyclesDone = 0;
-<<<<<<< HEAD
-            _mySpectrum = null;
-            _myBinnedSpectrum = null;
-            _myHistogramData = new int[600];
-
-            _myCounterHardware = new Counter(Threshold, DetectionBins, APDBinsize, Binning, monitorMode, Recapture,
-                                             Samples2Acquire, Frequency);
-            _myCounterHardware.Finished += OnFinished;
-            _myCounterHardware.NewData += OnNewData;
-            _myCounterHardware.CycleFinished += OnCyleDone;
-            _myCounterHardware.RecaptureMeasurementDone += OnRecaptureDone;
-            //_myCounterHardware.EmergencyStop += OnEmergencyStop;
-
-            _myWorker = new Thread(BackgroundWork);
-            _myWorker.Name = "Worker";
-            _myWorker.Start();
-
-            if(runFrequencyGenerator)
-                _myCounterHardware.StartFrequencyGenerator();
-
-            _isRunning = true;
-=======
             _Spectrum = null;
             _binnedSpectrumData = null;
             _histogramData = new int[600];
@@ -265,7 +238,6 @@ namespace APDTrigger_WinForms.Helper
 
             if (Mode == RunType.Network)
                 _myCounterHardware.Pause();
->>>>>>> stephan
         }
 
         //initializing the card is done in a separate thread otherwise the GUI lags from time to time

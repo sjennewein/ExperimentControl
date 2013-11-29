@@ -213,14 +213,10 @@ namespace APDTrigger.Hardware
             {
                 try
                 {
-                    //used for pausing between runs signaled from the controller
-                    Console.WriteLine("waiting" + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));                    
+                    //used for pausing between runs signaled from the controller                    
                     _pauseCycling.WaitOne();
                   
-                    
-                    
-
-                    //Console.WriteLine("Check fluoresence");
+                                                           
                     ReadHighFrequencyCounter();
 
                     if (_monitor) //if we only monitor then ignore all fancy measurement functions
@@ -305,23 +301,23 @@ namespace APDTrigger.Hardware
         /// </summary>
         private void ReadHighFrequencyCounter()
         {
-            int[] readOutData;
+            int[] readOutData;            
             try
             {
                 _myThresholdTask.Start();
                 var thresholdReader = new CounterReader(_myThresholdTask.Stream);
-                //read 2 elements because the first one is mostly zero   
-                readOutData = thresholdReader.ReadMultiSampleInt32(2);
+                //read 2 elements because the first one is mostly zero  this seems to be only a problem
+                //with the PCI cards the pci-express card doesn't have that problem
+                readOutData = thresholdReader.ReadMultiSampleInt32(1);
             }
             finally
             {
                 _myThresholdTask.Stop();
-            }
-
+            } 
 
             if (readOutData.Length >= 1)
             {
-                _newDataPoint = readOutData[1];
+                _newDataPoint = readOutData[0];
 
 
                 NewAPDValueEvent();

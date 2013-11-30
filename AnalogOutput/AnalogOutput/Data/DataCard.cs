@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace AnalogOutput.Model
+namespace AnalogOutput.Data
 {
-    class Channel
+    public class DataCard
     {
+        public DataPattern[] Patterns;
     }
 }

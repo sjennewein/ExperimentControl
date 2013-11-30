@@ -52,8 +52,41 @@
     <Compile Include="AnalogOutput.Designer.cs">
       <DependentUpon>AnalogOutput.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controller.cs" />
+    <Compile Include="GUI\ChannelHeader.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\ChannelHeader.Designer.cs">
+      <DependentUpon>ChannelHeader.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\TabFabric.cs" />
+    <Compile Include="GUI\Step.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Step.Designer.cs">
+      <DependentUpon>Step.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Logic\LogicCard.cs" />
+    <Compile Include="Logic\LogicChannel.cs" />
+    <Compile Include="Logic\LogicFabric.cs" />
+    <Compile Include="Logic\LogicPattern.cs" />
+    <Compile Include="Data\DataCard.cs" />
+    <Compile Include="Data\DataChannel.cs" />
+    <Compile Include="Data\DataFabric.cs" />
+    <Compile Include="Data\DataPattern.cs" />
+    <Compile Include="Data\DataStep.cs" />
+    <Compile Include="Logic\LogicStep.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="AnalogOutput.resx">
+      <DependentUpon>AnalogOutput.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\ChannelHeader.resx">
+      <DependentUpon>ChannelHeader.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Step.resx">
+      <DependentUpon>Step.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -73,9 +106,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Model\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

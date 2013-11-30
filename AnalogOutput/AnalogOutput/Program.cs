@@ -15,7 +15,7 @@ namespace AnalogOutput
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new AnalogMainwindow());
+            Application.Run(new AnalogOutput());
         }
     }
 }

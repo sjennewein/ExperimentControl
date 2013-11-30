@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace AnalogOutput.GUI
+namespace AnalogOutput.Model
 {
-    class Helper
+    class Channel
     {
     }
 }

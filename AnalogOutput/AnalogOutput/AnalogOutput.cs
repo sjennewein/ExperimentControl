@@ -9,9 +9,9 @@ using System.Windows.Forms;
 
 namespace AnalogOutput
 {
-    public partial class AnalogMainwindow : Form
+    public partial class AnalogOutput : Form
     {
-        public AnalogMainwindow()
+        public AnalogOutput()
         {
             InitializeComponent();
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using AnalogOutput.Data;
+using fastJSON;
 
 namespace AnalogOutput.Logic
 {
@@ -21,6 +22,13 @@ namespace AnalogOutput.Logic
                 Patterns[iPattern] =  new LogicPattern(pattern, this);
             }
         }
+
+        public string ToJson()
+        {
+            return JSON.Instance.ToJSON(_data);
+        }
+
+        public string Flow { get { return _data.Flow; } set { _data.Flow = value; } }
     }
 
  

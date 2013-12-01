@@ -42,7 +42,7 @@
             // label_Voltage
             // 
             this.label_Voltage.AutoSize = true;
-            this.label_Voltage.Location = new System.Drawing.Point(3, 70);
+            this.label_Voltage.Location = new System.Drawing.Point(1, 59);
             this.label_Voltage.Name = "label_Voltage";
             this.label_Voltage.Size = new System.Drawing.Size(62, 13);
             this.label_Voltage.TabIndex = 0;
@@ -51,7 +51,7 @@
             // label_Duration
             // 
             this.label_Duration.AutoSize = true;
-            this.label_Duration.Location = new System.Drawing.Point(3, 94);
+            this.label_Duration.Location = new System.Drawing.Point(1, 83);
             this.label_Duration.Name = "label_Duration";
             this.label_Duration.Size = new System.Drawing.Size(70, 13);
             this.label_Duration.TabIndex = 1;
@@ -60,21 +60,25 @@
             // radioButton_File
             // 
             this.radioButton_File.AutoSize = true;
-            this.radioButton_File.Location = new System.Drawing.Point(65, 27);
+            this.radioButton_File.CheckAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.radioButton_File.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.radioButton_File.Location = new System.Drawing.Point(3, 24);
             this.radioButton_File.Name = "radioButton_File";
-            this.radioButton_File.Size = new System.Drawing.Size(41, 17);
+            this.radioButton_File.Size = new System.Drawing.Size(27, 30);
             this.radioButton_File.TabIndex = 2;
             this.radioButton_File.Text = "File";
+            this.radioButton_File.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.radioButton_File.UseVisualStyleBackColor = true;
             this.radioButton_File.CheckedChanged += new System.EventHandler(this.radioButton_InputMethod_CheckedChanged);
             // 
             // radioButton_GUI
             // 
             this.radioButton_GUI.AutoSize = true;
+            this.radioButton_GUI.CheckAlign = System.Drawing.ContentAlignment.TopCenter;
             this.radioButton_GUI.Checked = true;
-            this.radioButton_GUI.Location = new System.Drawing.Point(65, 47);
+            this.radioButton_GUI.Location = new System.Drawing.Point(34, 24);
             this.radioButton_GUI.Name = "radioButton_GUI";
-            this.radioButton_GUI.Size = new System.Drawing.Size(60, 17);
+            this.radioButton_GUI.Size = new System.Drawing.Size(46, 30);
             this.radioButton_GUI.TabIndex = 3;
             this.radioButton_GUI.TabStop = true;
             this.radioButton_GUI.Text = "Manual";
@@ -83,9 +87,9 @@
             // 
             // button_File
             // 
-            this.button_File.Location = new System.Drawing.Point(3, 27);
+            this.button_File.Location = new System.Drawing.Point(82, 26);
             this.button_File.Name = "button_File";
-            this.button_File.Size = new System.Drawing.Size(41, 37);
+            this.button_File.Size = new System.Drawing.Size(41, 26);
             this.button_File.TabIndex = 4;
             this.button_File.Text = "Load";
             this.button_File.UseVisualStyleBackColor = true;
@@ -94,14 +98,15 @@
             // 
             // textBox_Voltage
             // 
-            this.textBox_Voltage.Location = new System.Drawing.Point(72, 67);
+            this.textBox_Voltage.Location = new System.Drawing.Point(70, 56);
             this.textBox_Voltage.Name = "textBox_Voltage";
             this.textBox_Voltage.Size = new System.Drawing.Size(53, 20);
             this.textBox_Voltage.TabIndex = 5;
+            this.textBox_Voltage.Validating += new System.ComponentModel.CancelEventHandler(this.textBox_Voltage_Validating);
             // 
             // textBox_Duration
             // 
-            this.textBox_Duration.Location = new System.Drawing.Point(72, 91);
+            this.textBox_Duration.Location = new System.Drawing.Point(70, 80);
             this.textBox_Duration.Name = "textBox_Duration";
             this.textBox_Duration.Size = new System.Drawing.Size(53, 20);
             this.textBox_Duration.TabIndex = 6;
@@ -110,7 +115,7 @@
             // label_Name
             // 
             this.label_Name.AutoSize = true;
-            this.label_Name.Location = new System.Drawing.Point(3, 8);
+            this.label_Name.Location = new System.Drawing.Point(3, 6);
             this.label_Name.Name = "label_Name";
             this.label_Name.Size = new System.Drawing.Size(38, 13);
             this.label_Name.TabIndex = 7;
@@ -118,9 +123,9 @@
             // 
             // textBox_Name
             // 
-            this.textBox_Name.Location = new System.Drawing.Point(44, 5);
+            this.textBox_Name.Location = new System.Drawing.Point(44, 3);
             this.textBox_Name.Name = "textBox_Name";
-            this.textBox_Name.Size = new System.Drawing.Size(81, 20);
+            this.textBox_Name.Size = new System.Drawing.Size(79, 20);
             this.textBox_Name.TabIndex = 8;
             // 
             // Step
@@ -138,7 +143,7 @@
             this.Controls.Add(this.label_Duration);
             this.Controls.Add(this.label_Voltage);
             this.Name = "Step";
-            this.Size = new System.Drawing.Size(126, 113);
+            this.Size = new System.Drawing.Size(126, 103);
             this.ResumeLayout(false);
             this.PerformLayout();
 

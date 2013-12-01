@@ -17,8 +17,8 @@ namespace AnalogOutput.GUI
             int columns = pattern.Channels[0].Steps.Length;
             int rows = pattern.Channels.Length;
 
-            const int rowHeight = 115;
-            const int columnWidth = 128;
+            const int rowHeight = 103;
+            const int columnWidth = 127;
 
             var newElements = new Control[rows * columns + rows];
             int elementCounter = 0;
@@ -52,13 +52,27 @@ namespace AnalogOutput.GUI
         }
 
         public static void GenerateTabView(TabControl tab, LogicCard card)
-        {            
+        {
+
+            GenerateFlow(card);
+
             foreach (var pattern in card.Patterns)
             {
                 GenerateTabPage(pattern);
             }
 
             tab.Controls.AddRange(GeneratedPages.ToArray());
+            GeneratedPages.Clear();
+        }
+
+        private static void GenerateFlow(LogicCard card)
+        {
+            var flow = new TextBox() {Multiline = true, Size = new Size(200,500), Location = new Point(20,20)};
+            flow.DataBindings.Add("Text", card, "Flow");
+            var newTab = new TabPage("Flow");
+            newTab.AutoScroll = true;
+            newTab.Controls.Add(flow);
+            GeneratedPages.Add(newTab);
         }
     }
 }

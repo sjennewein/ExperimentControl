@@ -8,5 +8,6 @@ namespace AnalogOutput.Data
     public class DataCard
     {
         public DataPattern[] Patterns;
+        public string Flow;
     }
 }

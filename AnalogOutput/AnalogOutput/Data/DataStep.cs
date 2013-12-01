@@ -14,9 +14,10 @@ namespace AnalogOutput.Data
     public class DataStep
     {
         public StepType Type = StepType.GUI;
-        public float Value;
-        public float Duration;
+        public double Value;
+        public double Duration;
         public string Description = "";
         public string FileName = "";
+        public double[] Ramp;
     }
 }

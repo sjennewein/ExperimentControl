@@ -86,7 +86,7 @@ namespace DigitalOutput.Hardware
                 //check if more than the minimum of steps has been generated if not throw exception
                 throw new Exception("Run contains no data");
 
-            hardwareOutput.Add(hardwareOutput[0]);
+            hardwareOutput.Add(hardwareOutput[0]); //add the first step at the end. otherwise the NI hardware does rubbish
 
             return hardwareOutput.ToArray();
         }

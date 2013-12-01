@@ -78,7 +78,7 @@
             this.Controls.Add(this.label_IntialValue);
             this.Controls.Add(this.label_Name);
             this.Name = "ChannelHeader";
-            this.Size = new System.Drawing.Size(126, 113);
+            this.Size = new System.Drawing.Size(126, 103);
             this.ResumeLayout(false);
             this.PerformLayout();
 

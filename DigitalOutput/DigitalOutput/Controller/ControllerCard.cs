@@ -106,15 +106,14 @@ namespace DigitalOutput.Controller
             Console.WriteLine("Run started" + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
         }
 
-
         private void OnRunIsLaunched()
         {
-            _tcpClient.RunIsLaunched();
+            _tcpClient.Resume();
         }
 
         private void OnOutputDataProcessed()
         {
-            _tcpClient.ReadyForNextRun();
+            _tcpClient.Resume();
         }
 
         public void Connect()

@@ -63,5 +63,10 @@ namespace AnalogOutput
             TabFabric.GenerateTabView(tabControl_pattern, _controller.Hardware);
             ResumeLayout();
         }
+
+        private void button_Start_Click(object sender, EventArgs e)
+        {
+            _controller.Start();
+        }
     }
 }

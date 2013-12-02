@@ -1,10 +1,11 @@
-﻿using System;
+﻿//using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using AnalogOutput.Data;
+using AnalogOutput.Hardware;
 using AnalogOutput.Logic;
 using fastJSON;
 using Ionic.Zip;
@@ -14,6 +15,7 @@ namespace AnalogOutput
     public class Controller
     {
         public LogicCard Hardware;
+        private Buffer _outputDevice = new Buffer();
         
         public void Initialize(string data = null)
         {
@@ -54,6 +56,12 @@ namespace AnalogOutput
                 Initialize(cardData);
                 //HoopManager.Load(zip); // has to be restored before the card fabric is called
             }
+        }
+
+        public void Start()
+        {
+            string json = Hardware.ToJson();            
+            _outputDevice.Start(json);
         }
     }
 }

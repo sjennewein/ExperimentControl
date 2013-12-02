@@ -28,7 +28,7 @@ namespace AnalogOutput.Logic
             set { _data.Value = value; }
         }
 
-        public double Duration
+        public int Duration
         {
             get { return _data.Duration; }
             set { _data.Duration = value; }

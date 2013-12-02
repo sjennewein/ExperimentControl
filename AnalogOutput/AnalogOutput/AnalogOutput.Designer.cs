@@ -51,6 +51,7 @@
             this.button_Start.TabIndex = 1;
             this.button_Start.Text = "Start";
             this.button_Start.UseVisualStyleBackColor = true;
+            this.button_Start.Click += new System.EventHandler(this.button_Start_Click);
             // 
             // button_Stop
             // 

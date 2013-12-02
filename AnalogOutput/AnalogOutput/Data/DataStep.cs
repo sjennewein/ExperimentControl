@@ -15,7 +15,7 @@ namespace AnalogOutput.Data
     {
         public StepType Type = StepType.GUI;
         public double Value;
-        public double Duration;
+        public int Duration;
         public string Description = "";
         public string FileName = "";
         public double[] Ramp;

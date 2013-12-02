@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using AnalogOutput.Data;
 using fastJSON;
 using NationalInstruments.DAQmx;
@@ -13,7 +14,10 @@ namespace AnalogOutput.Hardware
         private bool _updated;
         private string _serializedData;
         private bool _run;
+        private bool _running;
+        private Thread _myWorker;
         private DataCard _data;
+        private double[,] _outputSequence;
          
 
         public void UpdateData(string data)
@@ -30,7 +34,7 @@ namespace AnalogOutput.Hardware
                 if (_updated)
                 {
                     _data = (DataCard) JSON.Instance.ToObject(_serializedData);
-                    //_outputSequence = Translator.GenerateOutput(_data);
+                    _outputSequence = Translator.GenerateDAQmxSequence(_data);
                     _updated = false;
                 }
                 using (Task myTask = new Task())
@@ -40,6 +44,18 @@ namespace AnalogOutput.Hardware
                     //writer.WriteMultiSample(false, );
                 }
             }
+        }
+
+        public void Start(string data)
+        {
+            if (!_running)
+            {
+                _serializedData = data;
+                _updated = true;
+                _myWorker = new Thread(WorkingLoop);
+                _myWorker.Start();
+            }
+            _run = true;
         }
 
         private void TriggerEvent(EventHandler newEvent, EventArgs e = null)

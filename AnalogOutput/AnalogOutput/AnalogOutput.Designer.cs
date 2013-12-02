@@ -33,14 +33,15 @@
             this.button_Stop = new System.Windows.Forms.Button();
             this.button_Load = new System.Windows.Forms.Button();
             this.button_Save = new System.Windows.Forms.Button();
+            this.panel_Network = new System.Windows.Forms.Panel();
             this.SuspendLayout();
             // 
             // tabControl_pattern
             // 
-            this.tabControl_pattern.Location = new System.Drawing.Point(12, 113);
+            this.tabControl_pattern.Location = new System.Drawing.Point(12, 104);
             this.tabControl_pattern.Name = "tabControl_pattern";
             this.tabControl_pattern.SelectedIndex = 0;
-            this.tabControl_pattern.Size = new System.Drawing.Size(1260, 789);
+            this.tabControl_pattern.Size = new System.Drawing.Size(1260, 851);
             this.tabControl_pattern.TabIndex = 0;
             // 
             // button_Start
@@ -82,11 +83,20 @@
             this.button_Save.UseVisualStyleBackColor = true;
             this.button_Save.Click += new System.EventHandler(this.button_Save_Click);
             // 
+            // panel_Network
+            // 
+            this.panel_Network.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel_Network.Location = new System.Drawing.Point(865, 12);
+            this.panel_Network.Name = "panel_Network";
+            this.panel_Network.Size = new System.Drawing.Size(245, 86);
+            this.panel_Network.TabIndex = 5;
+            // 
             // AnalogOutput
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1284, 750);
+            this.ClientSize = new System.Drawing.Size(1284, 976);
+            this.Controls.Add(this.panel_Network);
             this.Controls.Add(this.button_Save);
             this.Controls.Add(this.button_Load);
             this.Controls.Add(this.button_Stop);
@@ -105,6 +115,7 @@
         private System.Windows.Forms.Button button_Stop;
         private System.Windows.Forms.Button button_Load;
         private System.Windows.Forms.Button button_Save;
+        private System.Windows.Forms.Panel panel_Network;
     }
 }
 

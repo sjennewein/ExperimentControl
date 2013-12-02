@@ -7,14 +7,17 @@ using System.Windows.Forms;
 using AnalogOutput.Data;
 using AnalogOutput.Hardware;
 using AnalogOutput.Logic;
+using ColdNetworkStack.Client;
 using fastJSON;
 using Ionic.Zip;
+using ColdNetworkStack.Client;
 
 namespace AnalogOutput
 {
     public class Controller
     {
-        public LogicCard Hardware;
+        public LogicCard Hardware = null;
+        public LogicNetwork Network = new LogicNetwork();
         private Buffer _outputDevice = new Buffer();
         
         public void Initialize(string data = null)

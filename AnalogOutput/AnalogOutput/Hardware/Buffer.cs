@@ -40,9 +40,11 @@ namespace AnalogOutput.Hardware
                 using (Task myTask = new Task())
                 {
                     myTask.AOChannels.CreateVoltageChannel("Dev1/ao0:7", "aoChannel", -10.0, 10.0, AOVoltageUnits.Volts);
+                    myTask.Timing.ConfigureSampleClock("", 500000, SampleClockActiveEdge.Rising,SampleQuantityMode.FiniteSamples, _outputSequence.GetLength(1));
                     AnalogMultiChannelWriter writer = new AnalogMultiChannelWriter(myTask.Stream);
-                    //writer.WriteMultiSample(false, );
+                    writer.WriteMultiSample(false, _outputSequence);
                 }
+
             }
         }
 
@@ -56,6 +58,11 @@ namespace AnalogOutput.Hardware
                 _myWorker.Start();
             }
             _run = true;
+        }
+
+        public void Stop()
+        {
+            _run = false;            
         }
 
         private void TriggerEvent(EventHandler newEvent, EventArgs e = null)

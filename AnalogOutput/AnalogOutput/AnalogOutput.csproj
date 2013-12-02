@@ -68,11 +68,18 @@
       <DependentUpon>AnalogOutput.cs</DependentUpon>
     </Compile>
     <Compile Include="Controller.cs" />
+    <Compile Include="Data\DataNetwork.cs" />
     <Compile Include="GUI\ChannelHeader.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="GUI\ChannelHeader.Designer.cs">
       <DependentUpon>ChannelHeader.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Networking.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Networking.Designer.cs">
+      <DependentUpon>Networking.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\TabFabric.cs" />
     <Compile Include="GUI\Step.cs">
@@ -86,6 +93,7 @@
     <Compile Include="Logic\LogicCard.cs" />
     <Compile Include="Logic\LogicChannel.cs" />
     <Compile Include="Logic\LogicFabric.cs" />
+    <Compile Include="Logic\LogicNetwork.cs" />
     <Compile Include="Logic\LogicPattern.cs" />
     <Compile Include="Data\DataCard.cs" />
     <Compile Include="Data\DataChannel.cs" />
@@ -100,6 +108,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\ChannelHeader.resx">
       <DependentUpon>ChannelHeader.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Networking.resx">
+      <DependentUpon>Networking.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Step.resx">
       <DependentUpon>Step.cs</DependentUpon>
@@ -125,7 +136,16 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\..\ColdNetworkStack\ColdNetworkStack\ColdNetworkStack.csproj">
+      <Project>{455240AB-B9CB-4909-B0E7-AFB52198E91E}</Project>
+      <Name>ColdNetworkStack</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Hulahoop\Hulahoop\Hulahoop.csproj">
+      <Project>{84F2B64F-19A4-4D98-BBE5-DE570A5A4D2A}</Project>
+      <Name>Hulahoop</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

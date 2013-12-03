@@ -11,8 +11,7 @@ namespace ColdNetworkStack.Client
     {
         private readonly TcpClient _client = new TcpClient();
         private readonly string _name;
-        private readonly AutoResetEvent _nextRun = new AutoResetEvent(false);
-        private readonly AutoResetEvent _launchApd = new AutoResetEvent(false);
+        private readonly AutoResetEvent _signal = new AutoResetEvent(false);
         private NetworkStream _NetworkStream;
         private Thread _workerThread;
         private bool _loop = true;
@@ -66,7 +65,7 @@ namespace ColdNetworkStack.Client
         public void StopLoop()
         {
             _loop = false;
-            _nextRun.Set();
+            _signal.Set();
         }
 
         private void RunLoop()
@@ -74,7 +73,7 @@ namespace ColdNetworkStack.Client
             Console.WriteLine("starting loop");
             while (_loop)
             {
-                _nextRun.WaitOne();
+                _signal.WaitOne();
                 if (!_loop)
                     break;
                 WriteNetworkStream(_client, Commands.WaitingForTrigger.ToString());
@@ -84,22 +83,17 @@ namespace ColdNetworkStack.Client
                 Console.WriteLine(trigger + ": " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
                 if (trigger == Commands.Trigger.ToString())
                     TriggerEvent(LaunchNextRun);
-                _launchApd.WaitOne();
+                _signal.WaitOne();
                 //Thread.Sleep(5);
                 WriteNetworkStream(_client, Answers.Ack.ToString());
             }
         }
 
-        public void ReadyForNextRun()
+        public void Resume()
         {
-            _nextRun.Set();
+            _signal.Set();
         }
 
-        public void RunIsLaunched()
-        {
-            _launchApd.Set();
-            Console.WriteLine("Telling the server that i received the trigger");
-        }
 
         private string ReadNetworkStream(TcpClient client)
         {
@@ -165,7 +159,7 @@ namespace ColdNetworkStack.Client
 
         public event EventHandler LaunchNextRun;
         public event EventHandler DataReceived;
-        public event EventHandler Connected;
-        public event EventHandler Disconnected;
+        //public event EventHandler Connected;
+        //public event EventHandler Disconnected;
     }
 }

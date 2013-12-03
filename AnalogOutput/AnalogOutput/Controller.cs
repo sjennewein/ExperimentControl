@@ -1,31 +1,47 @@
 ﻿//using System;
-using System.Collections.Generic;
+
+using System.ComponentModel;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
 using AnalogOutput.Data;
 using AnalogOutput.Hardware;
 using AnalogOutput.Logic;
-using ColdNetworkStack.Client;
 using fastJSON;
+using Hulahoop.Controller;
 using Ionic.Zip;
-using ColdNetworkStack.Client;
 
 namespace AnalogOutput
 {
-    public class Controller
+    public class Controller : INotifyPropertyChanged
     {
+        private readonly Buffer _daqmx = new Buffer();
         public LogicCard Hardware = null;
         public LogicNetwork Network = new LogicNetwork();
-        private Buffer _outputDevice = new Buffer();
-        
+
+        public Controller()
+        {
+            Network.DataUpdated += delegate { RemoteStart(); };
+            Network.StartRun += delegate { OnNwStartRun(); };
+            _daqmx.CycleFinished += delegate { OnHwCycleFinished(); };
+            _daqmx.RunFinished += delegate { OnHwRunFinished(); };
+            _daqmx.RunStarted += delegate { OnHwRunStarted(); };
+        }
+
+        public int CycleCounter { get; set; }
+        public int RunCounter { get; set; }
+
+        public int CyclesPerRun
+        {
+            get { return Network.Data; }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public void Initialize(string data = null)
         {
             DataCard card = null;
 
-            if(data != null)
-                card = (DataCard)JSON.Instance.ToObject(data);
+            if (data != null)
+                card = (DataCard) JSON.Instance.ToObject(data);
 
             Hardware = LogicFabric.GenerateCard(card);
         }
@@ -36,7 +52,7 @@ namespace AnalogOutput
             using (var zip = new ZipFile())
             {
                 zip.AddEntry("AnalogData.txt", json);
-               // HoopManager.Save(zip);
+                // HoopManager.Save(zip);
                 zip.Save(fileName);
             }
         }
@@ -63,8 +79,67 @@ namespace AnalogOutput
 
         public void Start()
         {
-            string json = Hardware.ToJson();            
-            _outputDevice.Start(json);
+            CycleCounter = 0;
+            RunCounter = 0;
+
+            if (Network.Activated)
+            {
+                Network.Connect();
+                _daqmx.Pause();
+                Network.ListenToTrigger();
+
+                return;
+            }
+            string json = Hardware.ToJson();
+            _daqmx.Start(false, json);
+        }
+
+        public void Stop()
+        {
+            if (Network.Activated)
+            {
+                Network.Disconnect();
+            }
+            _daqmx.Stop();
+        }
+
+        private void RemoteStart()
+        {
+            string json = Hardware.ToJson();
+            _daqmx.Start(true, json, CyclesPerRun);
+        }
+
+        private void OnNwStartRun()
+        {
+            _daqmx.Resume();
+        }
+
+        private void OnHwRunStarted()
+        {
+            Network.HardwareStarted();
+        }
+
+        private void OnHwCycleFinished()
+        {
+            CycleCounter++;
+            PropertyChangedEvent("CycleCounter");
+        }
+
+        private void OnHwRunFinished()
+        {
+            RunCounter++;
+            CycleCounter = 0;
+            PropertyChangedEvent("RunCounter");
+            HoopManager.Increment();
+            _daqmx.Resume();
+            Network.StartNextRun();
+        }
+
+        private void PropertyChangedEvent(string propertyName)
+        {
+            PropertyChangedEventHandler propertyChanged = PropertyChanged;
+            if (null != propertyChanged)
+                propertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

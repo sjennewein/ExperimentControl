@@ -29,7 +29,7 @@ namespace AnalogOutput.Hardware
             int columnCounter = 0;
             foreach (var line in unrolledFlow)
             {
-                var pattern = patterns[line];
+                var pattern = patterns[line.ToLower()];
                 int rows = pattern.GetLength(0);
                 int columns = pattern.GetLength(1);
                 for (int iColumn = 0; iColumn < columns; iColumn++)
@@ -87,20 +87,24 @@ namespace AnalogOutput.Hardware
                     continue;
 
 
-                unrolledFlow.Add(command); //add the pattern x-times according to loop counter
+                unrolledFlow.Add(command.ToLower()); //add the pattern x-times according to loop counter
             }
         }
-
+        /// <summary>
+        /// Returns the length in samples
+        /// </summary>
+        /// <param name="pattern"></param>
+        /// <returns></returns>
         private static int GetLength(DataPattern pattern)
         {
             int pLength = 0;
             foreach (DataChannel channel in pattern.Channels)
             {
-                int cLength = 0;
+                int cLength = 1; //start from one there is an extra step at the beginning 
 
                 foreach (DataStep step in channel.Steps)
                 {
-                    cLength += step.Duration;
+                    cLength += step.Duration / 2;
                 }
 
                 if (pLength < cLength)
@@ -114,7 +118,7 @@ namespace AnalogOutput.Hardware
 
         private static double[,] GeneratePattern(DataPattern pattern)
         {
-            int length = (GetLength(pattern) / 2) + 1; // there is an initial value for each channel
+            int length = GetLength(pattern); // there is an initial value for each channel
             double[,] sequence = new double[pattern.Channels.Length,length];
 
             for (int iChannel = 0; iChannel < pattern.Channels.Length; iChannel++)
@@ -141,6 +145,14 @@ namespace AnalogOutput.Hardware
                         double lastValue = sequence[iChannel, sampleCounter - 1];
 
                         int samples = step.Duration / 2;
+                        
+                        if(samples == 1)
+                        {
+                            sequence[iChannel, sampleCounter] = step.Value;
+                            sampleCounter++;
+                            continue;
+                        }
+                        
                         double stepSize = (step.Value - lastValue) / (samples - 1);
 
                         for (int iSample = 0; iSample < samples; iSample++)
@@ -149,7 +161,7 @@ namespace AnalogOutput.Hardware
                             sampleCounter++;
                         }
                     }
-                }
+                }                
             }
 
             return sequence;

@@ -32,6 +32,7 @@ namespace AnalogOutput.Hardware
         private void WorkingLoop()
         {
             TriggerEvent(Started);
+            _running = true;
             while (_run)
             {
 
@@ -44,9 +45,9 @@ namespace AnalogOutput.Hardware
 
                 using (Task myTask = new Task())
                 {
-                    myTask.AOChannels.CreateVoltageChannel("Dev1/ao0:7", "aoChannel", -10.0, 10.0, AOVoltageUnits.Volts);
+                    myTask.AOChannels.CreateVoltageChannel("Dev2/ao0:7", "aoChannel", -10.0, 10.0, AOVoltageUnits.Volts);
                     myTask.Timing.ConfigureSampleClock("", 500000, SampleClockActiveEdge.Rising,SampleQuantityMode.FiniteSamples, _outputSequence.GetLength(1));
-                    myTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger("/Dev1/PFI6", DigitalEdgeStartTriggerEdge.Rising);
+                    myTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger("/Dev2/PFI8", DigitalEdgeStartTriggerEdge.Rising);
                     AnalogMultiChannelWriter writer = new AnalogMultiChannelWriter(myTask.Stream);
                     writer.WriteMultiSample(false, _outputSequence);
 

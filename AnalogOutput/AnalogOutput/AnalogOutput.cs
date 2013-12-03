@@ -94,5 +94,10 @@ namespace AnalogOutput
             label_Sync.BackColor = Color.FromArgb(127, 210, 21);
             label_Sync.Text = "SYNCED";
         }
+
+        private void button_Stop_Click(object sender, EventArgs e)
+        {
+            _controller.Stop();
+        }
     }
 }

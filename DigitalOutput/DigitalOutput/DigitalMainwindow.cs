@@ -16,7 +16,7 @@ namespace DigitalOutput
     public partial class DigitalMainwindow : Form
     {
         private readonly Buffer _buffer = new Buffer();
-        private readonly HulahoopDigital _loops = new HulahoopDigital();
+        private readonly HulaHoopWindow _loops = new HulaHoopWindow();
         private ControllerCard _card;
 
         public DigitalMainwindow()
@@ -66,7 +66,7 @@ namespace DigitalOutput
             else
             {
                 SuspendLayout();
-                _loops.ReLoad();
+                _loops.ReDraw();
                 Helper.DisposeTabs(TabPanel);
                 Helper.GenerateTabView(TabPanel, _card);
                 ResumeLayout();

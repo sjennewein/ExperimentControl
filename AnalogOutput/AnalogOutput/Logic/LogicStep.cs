@@ -16,6 +16,19 @@ namespace AnalogOutput.Logic
         {
             _data = data;
             _parent = parent;
+            if (_data.DurationIterator != null)
+                foreach (var iterator in HoopManager.Iterators)
+                {
+                    if(iterator.Name() == _data.DurationIterator)
+                        iterator.Register(this);
+                }
+
+            if (_data.ValueIterator != null)
+                foreach (var iterator in HoopManager.Iterators)
+                {
+                    if (iterator.Name() == _data.ValueIterator)
+                        iterator.Register(this);
+                }
         }
 
         public StepType Type
@@ -27,13 +40,28 @@ namespace AnalogOutput.Logic
         public double Value
         {
             get { return _data.Value; }
-            set { _data.Value = value; }
+            set
+            {
+                if (Math.Abs(value) > 10)
+                    throw new Exception("Only values between -10 and 10 are allowed!");
+
+                _data.Value = value;
+            }
         }
 
         public int Duration
         {
             get { return _data.Duration; }
-            set { _data.Duration = value; }
+            set
+            {
+                if (value < 0)
+                    throw new Exception("Negative duration is not allowed!");
+
+                if (value%2 != 0)
+                    throw new Exception("Value is not a multiple of 2!");
+
+                _data.Duration = value;
+            }
         }
 
         public string FileName
@@ -70,7 +98,39 @@ namespace AnalogOutput.Logic
             }
         }
 
+        #region INotifyPropertyChanged Members
+
         public event PropertyChangedEventHandler PropertyChanged;
+
+        #endregion
+
+        #region IteratorObserver Members
+
+        public void NewValue(double value, string sender)
+        {
+            if (sender == DurationIterator)
+                Duration = (int) value;
+
+            if (sender == ValueIterator)
+                Value = value;
+        }
+
+        public void NewName(string newName, string oldName)
+        {
+            if (oldName == DurationIterator)
+            {
+                _data.DurationIterator = newName;
+                PropertyChangedEvent("DurationIterator");
+            }
+
+            if (oldName == ValueIterator)
+            {
+                _data.ValueIterator = newName;
+                PropertyChangedEvent("ValueIterator");
+            }
+        }
+
+        #endregion
 
         public void LoadFile()
         {
@@ -78,8 +138,14 @@ namespace AnalogOutput.Logic
             double[] myRamp = Array.ConvertAll(lines, double.Parse);
             _data.Ramp = myRamp;
 
-            if(myRamp.Length % 2 != 0)
+            if (myRamp.Length%2 != 0)
                 throw new Exception("The ramp has an odd number of samples!");
+            
+            foreach (var sample in myRamp)
+            {
+                if(Math.Abs(sample) > 10)
+                    throw new Exception("Only values from -10 to 10 are allowed!");
+            }
 
             Duration = myRamp.Length;
             PropertyChangedEvent("Duration");
@@ -92,44 +158,20 @@ namespace AnalogOutput.Logic
                 propertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public void NewValue(double value, string sender)
-        {
-            if (sender == DurationIterator)
-                Duration = (int)value;
-
-            if (sender == ValueIterator)
-                Value = value;
-        }
-
-        public void NewName(string newName, string oldName)
-        {            
-            if (oldName == DurationIterator)
-            {
-                _data.DurationIterator = newName;      
-                PropertyChangedEvent("DurationIterator");
-            }
-
-            if (oldName == ValueIterator)
-            {
-                _data.ValueIterator = newName;
-                PropertyChangedEvent("ValueIterator");
-            }
-        }
-
         private void RegisterToSubject(string iteratorName)
         {
-            foreach (ControllerIterator iterator in HoopManager.LinearIterators)
+            foreach (IteratorSubject iterator in HoopManager.Iterators)
             {
-                if (iterator.Name == iteratorName)
+                if (iterator.Name() == iteratorName)
                     iterator.Register(this);
             }
         }
 
         private void UnregisterFromSubject(string iteratorName)
         {
-            foreach (ControllerIterator iterator in HoopManager.LinearIterators)
+            foreach (IteratorSubject iterator in HoopManager.Iterators)
             {
-                if (iterator.Name == iteratorName)
+                if (iterator.Name() == iteratorName)
                     iterator.UnRegister(this);
             }
         }

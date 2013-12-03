@@ -1,7 +1,6 @@
-﻿//using System;
-
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.IO;
+using System.Windows.Forms;
 using AnalogOutput.Data;
 using AnalogOutput.Hardware;
 using AnalogOutput.Logic;
@@ -16,9 +15,11 @@ namespace AnalogOutput
         private readonly Buffer _daqmx = new Buffer();
         public LogicCard Hardware = null;
         public LogicNetwork Network = new LogicNetwork();
+        private Form _myGui;
 
-        public Controller()
+        public Controller(Form gui)
         {
+            _myGui = gui;
             Network.DataUpdated += delegate { RemoteStart(); };
             Network.StartRun += delegate { OnNwStartRun(); };
             _daqmx.CycleFinished += delegate { OnHwCycleFinished(); };
@@ -48,19 +49,21 @@ namespace AnalogOutput
 
         public void Save(string fileName)
         {
-            string json = Hardware.ToJson();
+            string hardwareJSON = Hardware.ToJson();
+            string networkJSON = Network.ToJSON();
             using (var zip = new ZipFile())
             {
-                zip.AddEntry("AnalogData.txt", json);
-                // HoopManager.Save(zip);
+                zip.AddEntry("NetworkData.txt", networkJSON);
+                zip.AddEntry("AnalogData.txt", hardwareJSON);
+                HoopManager.Save(zip);
                 zip.Save(fileName);
             }
         }
 
         public void Load(string fileName)
         {
-            string cardData = "";
-
+            string analogData = null;
+            string networkData = null;
             using (ZipFile zip = ZipFile.Read(fileName))
             {
                 using (var ms = new MemoryStream())
@@ -69,12 +72,23 @@ namespace AnalogOutput
                     entry.Extract(ms);
                     ms.Flush();
                     ms.Position = 0;
-                    cardData = new StreamReader(ms).ReadToEnd();
+                    analogData = new StreamReader(ms).ReadToEnd();
                     ms.Close();
                 }
-                Initialize(cardData);
-                //HoopManager.Load(zip); // has to be restored before the card fabric is called
+
+                using (var ms = new MemoryStream())
+                {
+                    ZipEntry entry = zip["NetworkData.txt"];
+                    entry.Extract(ms);
+                    ms.Flush();
+                    ms.Position = 0;
+                    networkData = new StreamReader(ms).ReadToEnd();
+                    ms.Close();
+                }
+                Network.FromJSON(networkData);
+                HoopManager.Load(zip); // has to be restored before the card fabric is called
             }
+            Initialize(analogData);
         }
 
         public void Start()
@@ -109,6 +123,11 @@ namespace AnalogOutput
             _daqmx.Start(true, json, CyclesPerRun);
         }
 
+        public void CopyToBuffer()
+        {
+            _daqmx.UpdateData(Hardware.ToJson());
+        }
+
         private void OnNwStartRun()
         {
             _daqmx.Resume();
@@ -137,9 +156,19 @@ namespace AnalogOutput
 
         private void PropertyChangedEvent(string propertyName)
         {
-            PropertyChangedEventHandler propertyChanged = PropertyChanged;
-            if (null != propertyChanged)
-                propertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            if (_myGui.InvokeRequired)
+            {
+                GuiUpdate callback = PropertyChangedEvent;
+                _myGui.Invoke(callback, propertyName);
+            }
+            else
+            {
+                PropertyChangedEventHandler propertyChanged = PropertyChanged;
+                if (null != propertyChanged)
+                    propertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
         }
+
+        private delegate void GuiUpdate(string propertyName);
     }
 }

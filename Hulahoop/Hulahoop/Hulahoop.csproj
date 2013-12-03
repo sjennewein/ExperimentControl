@@ -52,14 +52,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controller\ControllerIterator.cs" />
-    <Compile Include="Controller\ControllerEveryXRun.cs" />
+    <Compile Include="Controller\ControllerLinearIterator.cs" />
+    <Compile Include="Controller\ControllerFileIterator.cs" />
     <Compile Include="Controller\HoopManager.cs" />
-    <Compile Include="HulaHoopAnalog.cs">
+    <Compile Include="HulaHoopWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="HulaHoopAnalog.Designer.cs">
-      <DependentUpon>HulaHoopAnalog.cs</DependentUpon>
+    <Compile Include="HulaHoopWindow.Designer.cs">
+      <DependentUpon>HulaHoopWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="HulahoopDigital.cs">
       <SubType>Form</SubType>
@@ -81,7 +81,7 @@
     </Compile>
     <Compile Include="Interface\IteratorObserver.cs" />
     <Compile Include="Interface\IteratorSubject.cs" />
-    <Compile Include="Model\ModelIterator.cs" />
+    <Compile Include="Model\ModelLinearIterator.cs" />
     <Compile Include="Model\ModelFileIterator.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -91,8 +91,8 @@
     <EmbeddedResource Include="GUI\FileIteratorGui.resx">
       <DependentUpon>FileIteratorGui.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HulaHoopAnalog.resx">
-      <DependentUpon>HulaHoopAnalog.cs</DependentUpon>
+    <EmbeddedResource Include="HulaHoopWindow.resx">
+      <DependentUpon>HulaHoopWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HulahoopDigital.resx">
       <DependentUpon>HulahoopDigital.cs</DependentUpon>

@@ -36,7 +36,7 @@ namespace AnalogOutput.Hardware
                 {                    
                     for (int iRow = 0; iRow < rows; iRow++)
                     {
-                        if(Math.Abs(pattern[iRow,iColumn] - 0.0) > 0.0001)
+                        if(Math.Abs(pattern[iRow,iColumn] - 0) > 0.0001)
                             daqmxSequence[iRow, columnCounter] = pattern[iRow,iColumn];
                     }
                     columnCounter++;

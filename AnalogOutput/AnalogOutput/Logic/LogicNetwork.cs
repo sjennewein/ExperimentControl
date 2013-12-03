@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Net;
 using AnalogOutput.Data;
 using ColdNetworkStack.Client;
@@ -6,7 +7,7 @@ using fastJSON;
 
 namespace AnalogOutput.Logic
 {
-    public class LogicNetwork
+    public class LogicNetwork : INotifyPropertyChanged 
     {
         private readonly Client _client = new Client("AnalogOutput");
 
@@ -44,6 +45,8 @@ namespace AnalogOutput.Logic
         public void FromJSON(string json)
         {
             _data = (DataNetwork) JSON.Instance.ToObject(json);
+            PropertyChangedEvent("Ip");
+            PropertyChangedEvent("Port");
         }
 
         public void Connect()
@@ -90,7 +93,16 @@ namespace AnalogOutput.Logic
                 triggerEvent(this, new EventArgs());
         }
 
+        private void PropertyChangedEvent(string propertyName)
+        {
+            PropertyChangedEventHandler propertyChanged = PropertyChanged;
+            if (null != propertyChanged)
+                propertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
         public event EventHandler DataUpdated;
         public event EventHandler StartRun;
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

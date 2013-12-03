@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using AnalogOutput.Data;
 using AnalogOutput.Logic;
 using Hulahoop.Controller;
+using Hulahoop.Interface;
 
 namespace AnalogOutput.GUI
 {
@@ -17,8 +18,30 @@ namespace AnalogOutput.GUI
             _controller = controller;
             InitializeComponent();
             textBox_Name.DataBindings.Add("Text", _controller, "Description");
-            textBox_Duration.DataBindings.Add("Text", _controller, "Duration");
-            textBox_Voltage.DataBindings.Add("Text", _controller, "Value");
+
+            if (String.IsNullOrEmpty(_controller.DurationIterator))
+            {
+                textBox_Duration.DataBindings.Add("Text", _controller,"Duration");  
+  
+            }
+            else
+            {
+                textBox_Duration.Validating -= textBox_Duration_Validating;
+                textBox_Duration.DataBindings.Add("Text", _controller, "DurationIterator");
+                textBox_Duration.ReadOnly = true;
+            }
+
+            if (String.IsNullOrEmpty(_controller.ValueIterator))
+            {
+                textBox_Voltage.DataBindings.Add("Text", _controller, "Value");
+            }
+            else
+            {
+                textBox_Voltage.Validating -= textBox_Voltage_Validating;
+                textBox_Voltage.DataBindings.Add("Text", _controller, "ValueIterator");
+                textBox_Voltage.ReadOnly = true;
+            }
+            
             textBox_Duration.ContextMenu = new ContextMenu();
             textBox_Voltage.ContextMenu = new ContextMenu();
             textBox_Voltage.ContextMenu.Popup += OnContextMenu;
@@ -123,9 +146,9 @@ namespace AnalogOutput.GUI
 
             var contextMenu = new ContextMenu();
 
-            foreach (ControllerIterator iterator in HoopManager.LinearIterators)
+            foreach (IteratorSubject iterator in HoopManager.Iterators)
             {
-                var item = new MenuItem(iterator.Name, SwitchToHooping);
+                var item = new MenuItem(iterator.Name(), SwitchToHooping);
                 contextMenu.MenuItems.Add(item);
             }
 
@@ -142,14 +165,19 @@ namespace AnalogOutput.GUI
             textBox.ReadOnly = true;
             textBox.DataBindings.RemoveAt(0);
 
+           
+            
+
             switch (textBox.Name)
             {
                 case "textBox_Voltage":
-                    _controller.ValueIterator = item.Text;                    
+                    _controller.ValueIterator = item.Text;
+                    textBox_Voltage.Validating -= textBox_Voltage_Validating;
                     textBox.DataBindings.Add("Text", _controller, "ValueIterator");
                     break;
                 case "textBox_Duration":
-                    _controller.DurationIterator = item.Text;                    
+                    _controller.DurationIterator = item.Text;
+                    textBox_Duration.Validating -= textBox_Duration_Validating;
                     textBox.DataBindings.Add("Text", _controller, "DurationIterator");
                     break;
             }
@@ -163,21 +191,23 @@ namespace AnalogOutput.GUI
 
             
             
+
             textBox.ReadOnly = false;
             textBox.DataBindings.RemoveAt(0);
 
-            switch(textBox.Name)
+            switch (textBox.Name)
             {
                 case "textBox_Voltage":
-                    _controller.ValueIterator = null;                    
+                    _controller.ValueIterator = null;
+                    textBox_Voltage.Validating += textBox_Voltage_Validating;
                     textBox.DataBindings.Add("Text", _controller, "ValueIterator");
-                    break;                    
+                    break;
                 case "textBox_Duration":
                     _controller.DurationIterator = null;
+                    textBox_Duration.Validating += textBox_Duration_Validating;
                     textBox.DataBindings.Add("Text", _controller, "DurationIterator");
                     break;
             }
-            
         }
     }
 }

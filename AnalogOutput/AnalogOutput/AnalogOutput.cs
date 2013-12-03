@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 using AnalogOutput.GUI;
 using Hulahoop;
@@ -7,11 +8,12 @@ namespace AnalogOutput
 {
     public partial class AnalogOutput : Form
     {
-        private readonly Controller _controller = new Controller();
-        private readonly HulaHoopAnalog _loops = new HulaHoopAnalog();
+        private readonly Controller _controller;
+        private readonly HulaHoopWindow _loops = new HulaHoopWindow();
 
         public AnalogOutput()
         {
+            _controller = new Controller(this);
             InitializeComponent();
             Initialize();
         }
@@ -25,6 +27,9 @@ namespace AnalogOutput
             panel_Network.Controls.Add(new Networking(_controller.Network));
             tabControl_pattern.Controls.Clear();
             TabFabric.GenerateTabView(tabControl_pattern, _controller.Hardware);
+            label_CycleCounter.DataBindings.Add("Text", _controller, "CycleCounter");
+            label_RunCounter.DataBindings.Add("Text", _controller, "RunCounter");
+            label_CyclePerRun.DataBindings.Add("Text", _controller, "CyclesPerRun");
             ResumeLayout();
         }
 
@@ -53,11 +58,22 @@ namespace AnalogOutput
 
             _controller.Load(loadFileDialog.FileName);
 
+
+            label_CycleCounter.DataBindings.Clear();
+            label_RunCounter.DataBindings.Clear();
+            label_CyclePerRun.DataBindings.Clear();
+            _loops.ReDraw();
             Initialize();
         }
 
         private void button_Start_Click(object sender, EventArgs e)
         {
+            if (string.IsNullOrEmpty(_controller.Hardware.Flow))
+            {
+                MessageBox.Show("No flow defined!", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            } 
+
             _controller.Start();
         }
 
@@ -65,6 +81,18 @@ namespace AnalogOutput
         {
             _loops.Visible = true;
             _loops.Focus();
+        }
+
+        private void button_Sync_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(_controller.Hardware.Flow))
+            {
+                MessageBox.Show("No flow defined!", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }               
+            _controller.CopyToBuffer();
+            label_Sync.BackColor = Color.FromArgb(127, 210, 21);
+            label_Sync.Text = "SYNCED";
         }
     }
 }

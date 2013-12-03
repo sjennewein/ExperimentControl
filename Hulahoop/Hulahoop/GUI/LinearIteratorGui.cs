@@ -12,16 +12,16 @@ namespace Hulahoop.GUI
 {
     public partial class LinearIteratorGui : UserControl
     {
-        private ControllerIterator _controller;
+        private ControllerLinearIterator _controllerLinear;
 
-        public LinearIteratorGui(ControllerIterator controller)
+        public LinearIteratorGui(ControllerLinearIterator controller)
         {
-            _controller = controller;
+            _controllerLinear = controller;
             InitializeComponent();
-            textBox_Name.DataBindings.Add("Text", _controller, "Name", false, DataSourceUpdateMode.OnPropertyChanged);
-            textBox_Start.DataBindings.Add("Text", _controller, "Start", false, DataSourceUpdateMode.OnPropertyChanged);
-            textBox_Stop.DataBindings.Add("Text", _controller, "Stop", false, DataSourceUpdateMode.OnPropertyChanged);
-            textBox_Stepsize.DataBindings.Add("Text", _controller, "StepSize", false,
+            textBox_Name.DataBindings.Add("Text", _controllerLinear, "Name", false, DataSourceUpdateMode.OnPropertyChanged);
+            textBox_Start.DataBindings.Add("Text", _controllerLinear, "Start", false, DataSourceUpdateMode.OnPropertyChanged);
+            textBox_Stop.DataBindings.Add("Text", _controllerLinear, "Stop", false, DataSourceUpdateMode.OnPropertyChanged);
+            textBox_Stepsize.DataBindings.Add("Text", _controllerLinear, "StepSize", false,
                                               DataSourceUpdateMode.OnPropertyChanged);
             label_Close.MouseClick += Delete;
         }
@@ -31,9 +31,9 @@ namespace Hulahoop.GUI
             if (e.Button != MouseButtons.Left)
                 return;
 
-            HoopManager.LinearIterators.Remove(_controller);            
+            HoopManager.LinearIterators.Remove(_controllerLinear);            
             var label = (Label) sender;
-            var parent = (HulahoopDigital) label.Parent.Parent.Parent;
+            var parent = (HulaHoopWindow) label.Parent.Parent.Parent;
             parent.Remove(this);
         }
     }

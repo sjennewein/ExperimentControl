@@ -1,6 +1,6 @@
 ﻿namespace Hulahoop.Model
 {
-    public class ModelIterator
+    public class ModelLinearIterator
     {
         public string Name;
         public int Start;

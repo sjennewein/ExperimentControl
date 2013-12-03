@@ -39,7 +39,7 @@
             // label_Connection
             // 
             this.label_Connection.AutoSize = true;
-            this.label_Connection.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
+            this.label_Connection.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(196)))), ((int)(((byte)(20)))), ((int)(((byte)(94)))));
             this.label_Connection.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label_Connection.Location = new System.Drawing.Point(3, 26);
             this.label_Connection.Name = "label_Connection";
@@ -57,6 +57,7 @@
             this.checkBox_Network.TabIndex = 1;
             this.checkBox_Network.Text = "Network";
             this.checkBox_Network.UseVisualStyleBackColor = true;
+            this.checkBox_Network.CheckedChanged += new System.EventHandler(this.checkBox_Network_CheckedChanged);
             // 
             // label_Ip
             // 

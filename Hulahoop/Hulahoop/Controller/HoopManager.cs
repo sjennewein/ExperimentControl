@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using Hulahoop.Interface;
 using Hulahoop.Model;
 using Ionic.Zip;
 
@@ -7,12 +8,25 @@ namespace Hulahoop.Controller
 {
     public static class HoopManager
     {
-        public static readonly List<ControllerIterator> LinearIterators = new List<ControllerIterator>();        
-        public static readonly List<ControllerEveryXRun> FileIterators = new List<ControllerEveryXRun>();
+        public static readonly List<ControllerLinearIterator> LinearIterators = new List<ControllerLinearIterator>();        
+        public static readonly List<ControllerFileIterator> FileIterators = new List<ControllerFileIterator>();
+
+        public static List<IteratorSubject> Iterators
+        {
+            get
+            {
+                var iterators = new List<IteratorSubject>();
+
+                iterators.AddRange(LinearIterators);
+                iterators.AddRange(FileIterators);
+
+                return iterators;
+            }
+        }
 
         public static void Increment()
         {
-            foreach (ControllerIterator iterator in LinearIterators)
+            foreach (ControllerLinearIterator iterator in LinearIterators)
             {
                 iterator.Increment();
             }
@@ -20,7 +34,11 @@ namespace Hulahoop.Controller
 
         public static void Save(ZipFile zip)
         {
-            foreach (ControllerIterator iterator in LinearIterators)
+            foreach (ControllerLinearIterator iterator in LinearIterators)
+            {
+                iterator.Save(zip);
+            }
+            foreach (ControllerFileIterator iterator in FileIterators)
             {
                 iterator.Save(zip);
             }
@@ -31,8 +49,28 @@ namespace Hulahoop.Controller
             LinearIterators.Clear();
             foreach (ZipEntry e in zip)
             {
+                if(e.FileName.Length < 13)
+                    continue;
                 
-                if (e.FileName.Substring(0, 9) == "Iterator_")
+                if (e.FileName.Substring(0, 13) == "FileIterator_")
+                {
+                    string input = "";
+                    using (var ms = new MemoryStream())
+                    {
+                        e.Extract(ms);
+                        ms.Flush();
+                        ms.Position = 0;
+                        input = new StreamReader(ms).ReadToEnd();
+                        ms.Close();
+                    }
+                    var newModelIterator = (ModelFileIterator)fastJSON.JSON.Instance.ToObject(input);
+                    FileIterators.Add(new ControllerFileIterator(newModelIterator));
+                }
+
+                if (e.FileName.Length < 15)
+                    continue;
+
+                if (e.FileName.Substring(0, 15) == "LinearIterator_")
                 {
                     string input = "";
                     using (var ms = new MemoryStream())
@@ -43,9 +81,11 @@ namespace Hulahoop.Controller
                         input = new StreamReader(ms).ReadToEnd();
                         ms.Close();
                     } 
-                    var newModelIterator = (ModelIterator)fastJSON.JSON.Instance.ToObject(input);
-                    LinearIterators.Add(new ControllerIterator(newModelIterator));
+                    var newModelIterator = (ModelLinearIterator)fastJSON.JSON.Instance.ToObject(input);
+                    LinearIterators.Add(new ControllerLinearIterator(newModelIterator));
                 }
+
+                
                 
             }
         }

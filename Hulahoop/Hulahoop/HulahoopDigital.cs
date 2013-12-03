@@ -18,7 +18,7 @@ namespace Hulahoop
 
         private void button_Iterator_Click(object sender, EventArgs e)
         {
-            var newIterator = new ControllerIterator(new ModelIterator());
+            var newIterator = new ControllerLinearIterator(new ModelLinearIterator());
             newIterator.Name = "Iterator" + _iterator;
             int yPosition = panel_Iterator.Controls.Count;
             HoopManager.LinearIterators.Add(newIterator);
@@ -28,7 +28,7 @@ namespace Hulahoop
 
         private void button_EveryXthRun_Click(object sender, EventArgs e)
         {
-            var newEveryXRun = new ControllerEveryXRun(new ModelFileIterator());
+            var newEveryXRun = new ControllerFileIterator(new ModelFileIterator());
             newEveryXRun.Name = "XthRun" + _xthRun;
             int yPosition = panel_everyRun.Controls.Count;
             HoopManager.FileIterators.Add(newEveryXRun);
@@ -47,12 +47,12 @@ namespace Hulahoop
         {
             panel_Iterator.Controls.Clear();
             panel_everyRun.Controls.Clear();
-            foreach (ControllerIterator iterator in HoopManager.LinearIterators)
+            foreach (ControllerLinearIterator iterator in HoopManager.LinearIterators)
             {
                 int yPosition = panel_Iterator.Controls.Count;
                 panel_Iterator.Controls.Add(new LinearIteratorGui(iterator) {Location = new Point(0, 45*yPosition)});
             }
-            foreach (ControllerEveryXRun everyXRun in HoopManager.FileIterators)
+            foreach (ControllerFileIterator everyXRun in HoopManager.FileIterators)
             {
                 int yPosition = panel_everyRun.Controls.Count;
                 panel_everyRun.Controls.Add(new FileIteratorGui(everyXRun) {Location = new Point(0, 45*yPosition)});
@@ -81,9 +81,6 @@ namespace Hulahoop
             ResumeLayout();
         }
 
-        private void panel_Iterator_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
+        
     }
 }

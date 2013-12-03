@@ -2,7 +2,8 @@
 {
     public class ModelFileIterator
     {
-        public int EveryXthRun;
+        public string FileName = null;
+        public double[] Iterations;
         public string Name;
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Hulahoop.Model
 {
-    public class ModelRunEveryX
+    public class ModelFileIterator
     {
         public int EveryXthRun;
         public string Name;

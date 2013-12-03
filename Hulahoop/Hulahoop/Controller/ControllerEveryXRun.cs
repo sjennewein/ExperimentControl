@@ -4,9 +4,9 @@ namespace Hulahoop.Controller
 {
     public class ControllerEveryXRun
     {
-        private readonly ModelRunEveryX _model;
+        private readonly ModelFileIterator _model;
 
-        public ControllerEveryXRun(ModelRunEveryX model)
+        public ControllerEveryXRun(ModelFileIterator model)
         {
             _model = model;
         }

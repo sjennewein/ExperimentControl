@@ -55,35 +55,44 @@
     <Compile Include="Controller\ControllerIterator.cs" />
     <Compile Include="Controller\ControllerEveryXRun.cs" />
     <Compile Include="Controller\HoopManager.cs" />
+    <Compile Include="HulaHoopAnalog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="HulaHoopAnalog.Designer.cs">
+      <DependentUpon>HulaHoopAnalog.cs</DependentUpon>
+    </Compile>
     <Compile Include="HulahoopDigital.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="HulahoopDigital.Designer.cs">
       <DependentUpon>HulahoopDigital.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\IteratorGUI.cs">
+    <Compile Include="GUI\LinearIteratorGui.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="GUI\IteratorGUI.Designer.cs">
-      <DependentUpon>IteratorGUI.cs</DependentUpon>
+    <Compile Include="GUI\LinearIteratorGui.Designer.cs">
+      <DependentUpon>LinearIteratorGui.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\EveryXRunGUI.cs">
+    <Compile Include="GUI\FileIteratorGui.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="GUI\EveryXRunGUI.Designer.cs">
-      <DependentUpon>EveryXRunGUI.cs</DependentUpon>
+    <Compile Include="GUI\FileIteratorGui.Designer.cs">
+      <DependentUpon>FileIteratorGui.cs</DependentUpon>
     </Compile>
     <Compile Include="Interface\IteratorObserver.cs" />
     <Compile Include="Interface\IteratorSubject.cs" />
     <Compile Include="Model\ModelIterator.cs" />
-    <Compile Include="Model\ModelRunEveryX.cs" />
+    <Compile Include="Model\ModelFileIterator.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="GUI\IteratorGUI.resx">
-      <DependentUpon>IteratorGUI.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\LinearIteratorGui.resx">
+      <DependentUpon>LinearIteratorGui.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\EveryXRunGUI.resx">
-      <DependentUpon>EveryXRunGUI.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\FileIteratorGui.resx">
+      <DependentUpon>FileIteratorGui.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HulaHoopAnalog.resx">
+      <DependentUpon>HulaHoopAnalog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HulahoopDigital.resx">
       <DependentUpon>HulahoopDigital.cs</DependentUpon>

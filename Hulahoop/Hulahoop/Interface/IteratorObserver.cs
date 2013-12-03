@@ -7,7 +7,7 @@ namespace Hulahoop.Interface
 {
     public interface IteratorObserver
     {
-        void NewValue(double value);
-        void NewName(string name);
+        void NewValue(double value, string sender);
+        void NewName(string newName, string oldName);
     }
 }

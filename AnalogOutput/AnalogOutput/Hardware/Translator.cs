@@ -33,7 +33,7 @@ namespace AnalogOutput.Hardware
                 int rows = pattern.GetLength(0);
                 int columns = pattern.GetLength(1);
                 for (int iColumn = 0; iColumn < columns; iColumn++)
-                {
+                {                    
                     for (int iRow = 0; iRow < rows; iRow++)
                     {
                         if(Math.Abs(pattern[iRow,iColumn] - 0.0) > 0.0001)
@@ -124,19 +124,31 @@ namespace AnalogOutput.Hardware
                 sequence[iChannel, sampleCounter] = channel.InitialValue;
                 sampleCounter++;
              
-                for (int iStep = 0; iStep < channel.Steps.Length; iStep++)
+                foreach (DataStep step in channel.Steps)
                 {
-                    double lastValue = sequence[iChannel, sampleCounter - 1];
-                    DataStep step = channel.Steps[iStep];
-                    int samples = step.Duration/2;
-                    double stepSize = (step.Value - lastValue) / (samples - 1);
-                    
-                    for (int iSample = 0; iSample < samples; iSample++)
+                    if (step.Type == StepType.File)
                     {
-                        sequence[iChannel, sampleCounter] = lastValue + iSample*stepSize;
-                        sampleCounter++;
+                        //treat input loaded from file
+                        foreach (double sample in step.Ramp)
+                        {
+                            sequence[iChannel, sampleCounter] = sample;
+                            sampleCounter++;
+                        }
                     }
-                    
+                    else
+                    {
+                        //treat user input
+                        double lastValue = sequence[iChannel, sampleCounter - 1];
+
+                        int samples = step.Duration / 2;
+                        double stepSize = (step.Value - lastValue) / (samples - 1);
+
+                        for (int iSample = 0; iSample < samples; iSample++)
+                        {
+                            sequence[iChannel, sampleCounter] = lastValue + iSample * stepSize;
+                            sampleCounter++;
+                        }
+                    }
                 }
             }
 

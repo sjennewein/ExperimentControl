@@ -10,11 +10,11 @@ using Hulahoop.Controller;
 
 namespace Hulahoop.GUI
 {
-    public partial class IteratorGUI : UserControl
+    public partial class LinearIteratorGui : UserControl
     {
         private ControllerIterator _controller;
 
-        public IteratorGUI(ControllerIterator controller)
+        public LinearIteratorGui(ControllerIterator controller)
         {
             _controller = controller;
             InitializeComponent();
@@ -31,7 +31,7 @@ namespace Hulahoop.GUI
             if (e.Button != MouseButtons.Left)
                 return;
 
-            HoopManager.Iterators.Remove(_controller);
+            HoopManager.LinearIterators.Remove(_controller);            
             var label = (Label) sender;
             var parent = (HulahoopDigital) label.Parent.Parent.Parent;
             parent.Remove(this);

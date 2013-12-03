@@ -2,10 +2,12 @@
 using System.ComponentModel;
 using System.IO;
 using AnalogOutput.Data;
+using Hulahoop.Controller;
+using Hulahoop.Interface;
 
 namespace AnalogOutput.Logic
 {
-    public class LogicStep : INotifyPropertyChanged
+    public class LogicStep : INotifyPropertyChanged, IteratorObserver
     {
         private readonly DataStep _data;
         private readonly LogicChannel _parent;
@@ -46,6 +48,28 @@ namespace AnalogOutput.Logic
             set { _data.Description = value; }
         }
 
+        public string DurationIterator
+        {
+            get { return _data.DurationIterator; }
+            set
+            {
+                UnregisterFromSubject(_data.DurationIterator);
+                _data.DurationIterator = value;
+                RegisterToSubject(_data.DurationIterator);
+            }
+        }
+
+        public string ValueIterator
+        {
+            get { return _data.ValueIterator; }
+            set
+            {
+                UnregisterFromSubject(_data.ValueIterator);
+                _data.ValueIterator = value;
+                RegisterToSubject(_data.ValueIterator);
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public void LoadFile()
@@ -66,6 +90,48 @@ namespace AnalogOutput.Logic
             PropertyChangedEventHandler propertyChanged = PropertyChanged;
             if (null != propertyChanged)
                 propertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void NewValue(double value, string sender)
+        {
+            if (sender == DurationIterator)
+                Duration = (int)value;
+
+            if (sender == ValueIterator)
+                Value = value;
+        }
+
+        public void NewName(string newName, string oldName)
+        {            
+            if (oldName == DurationIterator)
+            {
+                _data.DurationIterator = newName;      
+                PropertyChangedEvent("DurationIterator");
+            }
+
+            if (oldName == ValueIterator)
+            {
+                _data.ValueIterator = newName;
+                PropertyChangedEvent("ValueIterator");
+            }
+        }
+
+        private void RegisterToSubject(string iteratorName)
+        {
+            foreach (ControllerIterator iterator in HoopManager.LinearIterators)
+            {
+                if (iterator.Name == iteratorName)
+                    iterator.Register(this);
+            }
+        }
+
+        private void UnregisterFromSubject(string iteratorName)
+        {
+            foreach (ControllerIterator iterator in HoopManager.LinearIterators)
+            {
+                if (iterator.Name == iteratorName)
+                    iterator.UnRegister(this);
+            }
         }
     }
 }

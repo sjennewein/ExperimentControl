@@ -61,7 +61,7 @@
             // label_Ip
             // 
             this.label_Ip.AutoSize = true;
-            this.label_Ip.Location = new System.Drawing.Point(4, 56);
+            this.label_Ip.Location = new System.Drawing.Point(4, 58);
             this.label_Ip.Name = "label_Ip";
             this.label_Ip.Size = new System.Drawing.Size(54, 13);
             this.label_Ip.TabIndex = 2;
@@ -70,7 +70,7 @@
             // textBox_IP
             // 
             this.textBox_IP.Enabled = false;
-            this.textBox_IP.Location = new System.Drawing.Point(64, 53);
+            this.textBox_IP.Location = new System.Drawing.Point(64, 55);
             this.textBox_IP.Name = "textBox_IP";
             this.textBox_IP.Size = new System.Drawing.Size(100, 20);
             this.textBox_IP.TabIndex = 3;
@@ -78,7 +78,7 @@
             // label_colon
             // 
             this.label_colon.AutoSize = true;
-            this.label_colon.Location = new System.Drawing.Point(162, 56);
+            this.label_colon.Location = new System.Drawing.Point(162, 58);
             this.label_colon.Name = "label_colon";
             this.label_colon.Size = new System.Drawing.Size(10, 13);
             this.label_colon.TabIndex = 4;
@@ -87,7 +87,7 @@
             // textBox_Port
             // 
             this.textBox_Port.Enabled = false;
-            this.textBox_Port.Location = new System.Drawing.Point(170, 53);
+            this.textBox_Port.Location = new System.Drawing.Point(170, 55);
             this.textBox_Port.Name = "textBox_Port";
             this.textBox_Port.Size = new System.Drawing.Size(43, 20);
             this.textBox_Port.TabIndex = 5;
@@ -103,7 +103,7 @@
             this.Controls.Add(this.label_Ip);
             this.Controls.Add(this.label_colon);
             this.Name = "Networking";
-            this.Size = new System.Drawing.Size(218, 77);
+            this.Size = new System.Drawing.Size(218, 84);
             this.ResumeLayout(false);
             this.PerformLayout();
 

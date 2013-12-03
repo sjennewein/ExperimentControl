@@ -41,11 +41,13 @@ namespace Hulahoop.Controller
             get { return _model.Name; }
             set
             {
+                var oldName = _model.Name;
                 _model.Name = value;
                 foreach (var observer in _observers)
                 {
-                    observer.NewName(_model.Name);
-                }                
+                    observer.NewName(_model.Name, oldName);
+                }
+                
             }
         }
 
@@ -58,7 +60,7 @@ namespace Hulahoop.Controller
             
             foreach (var observer in _observers)
             {
-                observer.NewValue(_value);
+                observer.NewValue(_value, Name);
             }
         }
 

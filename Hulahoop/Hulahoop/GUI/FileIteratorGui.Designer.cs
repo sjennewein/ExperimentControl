@@ -1,6 +1,6 @@
 ﻿namespace Hulahoop.GUI
 {
-    partial class EveryXRunGUI
+    partial class FileIteratorGui
     {
         /// <summary> 
         /// Required designer variable.
@@ -87,7 +87,7 @@
             this.Controls.Add(this.textBox_Name);
             this.Controls.Add(this.label_RunEvery);
             this.Controls.Add(this.label_Name);
-            this.Name = "EveryXRunGUI";
+            this.Name = "FileIteratorGui";
             this.Size = new System.Drawing.Size(189, 46);
             this.ResumeLayout(false);
             this.PerformLayout();

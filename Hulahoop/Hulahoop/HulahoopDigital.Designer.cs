@@ -41,6 +41,7 @@
             this.panel_Iterator.Name = "panel_Iterator";
             this.panel_Iterator.Size = new System.Drawing.Size(374, 209);
             this.panel_Iterator.TabIndex = 0;
+            this.panel_Iterator.Paint += new System.Windows.Forms.PaintEventHandler(this.panel_Iterator_Paint);
             // 
             // panel_everyRun
             // 

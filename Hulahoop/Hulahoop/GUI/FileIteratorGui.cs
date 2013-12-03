@@ -3,11 +3,11 @@ using Hulahoop.Controller;
 
 namespace Hulahoop.GUI
 {
-    public partial class EveryXRunGUI : UserControl
+    public partial class FileIteratorGui : UserControl
     {
         private readonly ControllerEveryXRun _controller;
 
-        public EveryXRunGUI(ControllerEveryXRun controller)
+        public FileIteratorGui(ControllerEveryXRun controller)
         {
             _controller = controller;
             InitializeComponent();
@@ -22,7 +22,7 @@ namespace Hulahoop.GUI
             if (e.Button != MouseButtons.Left)
                 return;
 
-            HoopManager.EveryXRun.Remove(_controller);
+            HoopManager.FileIterators.Remove(_controller);
             var label = (Label) sender;
             var parent = (HulahoopDigital) label.Parent.Parent.Parent;
             parent.Remove(this);

@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Windows.Forms;
 using AnalogOutput.GUI;
+using Hulahoop;
 
 namespace AnalogOutput
 {
     public partial class AnalogOutput : Form
     {
         private readonly Controller _controller = new Controller();
+        private readonly HulaHoopAnalog _loops = new HulaHoopAnalog();
 
         public AnalogOutput()
         {
@@ -57,6 +59,12 @@ namespace AnalogOutput
         private void button_Start_Click(object sender, EventArgs e)
         {
             _controller.Start();
+        }
+
+        private void button_Hoops_Click(object sender, EventArgs e)
+        {
+            _loops.Visible = true;
+            _loops.Focus();
         }
     }
 }

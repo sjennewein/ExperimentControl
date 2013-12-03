@@ -34,6 +34,7 @@
             this.button_Load = new System.Windows.Forms.Button();
             this.button_Save = new System.Windows.Forms.Button();
             this.panel_Network = new System.Windows.Forms.Panel();
+            this.button_Hoops = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // tabControl_pattern
@@ -91,11 +92,22 @@
             this.panel_Network.Size = new System.Drawing.Size(245, 86);
             this.panel_Network.TabIndex = 5;
             // 
+            // button_Hoops
+            // 
+            this.button_Hoops.Location = new System.Drawing.Point(735, 12);
+            this.button_Hoops.Name = "button_Hoops";
+            this.button_Hoops.Size = new System.Drawing.Size(75, 23);
+            this.button_Hoops.TabIndex = 6;
+            this.button_Hoops.Text = "Hooping";
+            this.button_Hoops.UseVisualStyleBackColor = true;
+            this.button_Hoops.Click += new System.EventHandler(this.button_Hoops_Click);
+            // 
             // AnalogOutput
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1284, 976);
+            this.Controls.Add(this.button_Hoops);
             this.Controls.Add(this.panel_Network);
             this.Controls.Add(this.button_Save);
             this.Controls.Add(this.button_Load);
@@ -116,6 +128,7 @@
         private System.Windows.Forms.Button button_Load;
         private System.Windows.Forms.Button button_Save;
         private System.Windows.Forms.Panel panel_Network;
+        private System.Windows.Forms.Button button_Hoops;
     }
 }
 

@@ -1,6 +1,6 @@
 ﻿namespace Hulahoop.GUI
 {
-    partial class IteratorGUI
+    partial class LinearIteratorGui
     {
         /// <summary> 
         /// Required designer variable.
@@ -150,7 +150,7 @@
             this.Controls.Add(this.label_Stepsize);
             this.Controls.Add(this.label_Start);
             this.Controls.Add(this.label_Name);
-            this.Name = "IteratorGUI";
+            this.Name = "LinearIteratorGui";
             this.Size = new System.Drawing.Size(374, 46);
             this.ResumeLayout(false);
             this.PerformLayout();

@@ -7,12 +7,12 @@ namespace Hulahoop.Controller
 {
     public static class HoopManager
     {
-        public static readonly List<ControllerIterator> Iterators = new List<ControllerIterator>();
-        public static readonly List<ControllerEveryXRun> EveryXRun = new List<ControllerEveryXRun>();
+        public static readonly List<ControllerIterator> LinearIterators = new List<ControllerIterator>();        
+        public static readonly List<ControllerEveryXRun> FileIterators = new List<ControllerEveryXRun>();
 
         public static void Increment()
         {
-            foreach (ControllerIterator iterator in Iterators)
+            foreach (ControllerIterator iterator in LinearIterators)
             {
                 iterator.Increment();
             }
@@ -20,7 +20,7 @@ namespace Hulahoop.Controller
 
         public static void Save(ZipFile zip)
         {
-            foreach (ControllerIterator iterator in Iterators)
+            foreach (ControllerIterator iterator in LinearIterators)
             {
                 iterator.Save(zip);
             }
@@ -28,7 +28,7 @@ namespace Hulahoop.Controller
 
         public static void Load(ZipFile zip)
         {
-            Iterators.Clear();
+            LinearIterators.Clear();
             foreach (ZipEntry e in zip)
             {
                 
@@ -44,7 +44,7 @@ namespace Hulahoop.Controller
                         ms.Close();
                     } 
                     var newModelIterator = (ModelIterator)fastJSON.JSON.Instance.ToObject(input);
-                    Iterators.Add(new ControllerIterator(newModelIterator));
+                    LinearIterators.Add(new ControllerIterator(newModelIterator));
                 }
                 
             }

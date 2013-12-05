@@ -32,6 +32,7 @@
             this.label_IntialValue = new System.Windows.Forms.Label();
             this.textBox_Name = new System.Windows.Forms.TextBox();
             this.textBox_Value = new System.Windows.Forms.TextBox();
+            this.button_Calibrate = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label_Name
@@ -46,7 +47,7 @@
             // label_IntialValue
             // 
             this.label_IntialValue.AutoSize = true;
-            this.label_IntialValue.Location = new System.Drawing.Point(3, 55);
+            this.label_IntialValue.Location = new System.Drawing.Point(3, 36);
             this.label_IntialValue.Name = "label_IntialValue";
             this.label_IntialValue.Size = new System.Drawing.Size(64, 13);
             this.label_IntialValue.TabIndex = 1;
@@ -62,17 +63,28 @@
             // 
             // textBox_Value
             // 
-            this.textBox_Value.Location = new System.Drawing.Point(73, 52);
+            this.textBox_Value.Location = new System.Drawing.Point(73, 33);
             this.textBox_Value.Name = "textBox_Value";
             this.textBox_Value.Size = new System.Drawing.Size(52, 20);
             this.textBox_Value.TabIndex = 3;
             this.textBox_Value.Text = "0";
+            // 
+            // button_Calibrate
+            // 
+            this.button_Calibrate.Location = new System.Drawing.Point(60, 77);
+            this.button_Calibrate.Name = "button_Calibrate";
+            this.button_Calibrate.Size = new System.Drawing.Size(63, 23);
+            this.button_Calibrate.TabIndex = 4;
+            this.button_Calibrate.Text = "Calibrate";
+            this.button_Calibrate.UseVisualStyleBackColor = true;
+            this.button_Calibrate.Click += new System.EventHandler(this.button_Calibrate_Click);
             // 
             // ChannelHeader
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.Controls.Add(this.button_Calibrate);
             this.Controls.Add(this.textBox_Value);
             this.Controls.Add(this.textBox_Name);
             this.Controls.Add(this.label_IntialValue);
@@ -90,5 +102,6 @@
         private System.Windows.Forms.Label label_IntialValue;
         private System.Windows.Forms.TextBox textBox_Name;
         private System.Windows.Forms.TextBox textBox_Value;
+        private System.Windows.Forms.Button button_Calibrate;
     }
 }

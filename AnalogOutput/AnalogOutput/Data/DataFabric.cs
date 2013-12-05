@@ -1,4 +1,8 @@
-﻿namespace AnalogOutput.Data
+﻿using System;
+using System.Collections.Generic;
+using AnalogOutput.Interpolation;
+
+namespace AnalogOutput.Data
 {
     public class DataFabric
     {
@@ -8,9 +12,13 @@
             const int steps = 5;
             const int patterns = 5;
             var newCard = new DataCard
-                              {
-                                  Patterns = new DataPattern[patterns]
-                              };
+                {
+                    Patterns = new DataPattern[patterns],
+                };
+            for (int iChannel = 0; iChannel < channels; iChannel++)
+            {
+                newCard.Calibration.Add(new Tuple<string, List<Point>>("",null));
+            }
 
             for (int iPattern = 0; iPattern < patterns; iPattern++)
             {

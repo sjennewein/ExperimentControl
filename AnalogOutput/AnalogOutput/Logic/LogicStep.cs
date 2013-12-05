@@ -16,6 +16,8 @@ namespace AnalogOutput.Logic
         {
             _data = data;
             _parent = parent;
+            _parent.CalibrationChanged += delegate { OnCalibrationChanged(); };
+
             if (_data.DurationIterator != null)
                 foreach (var iterator in HoopManager.Iterators)
                 {
@@ -30,6 +32,8 @@ namespace AnalogOutput.Logic
                         iterator.Register(this);
                 }
         }
+
+        public string Unit { get { return _parent.Unit; } }
 
         public StepType Type
         {
@@ -64,12 +68,7 @@ namespace AnalogOutput.Logic
             }
         }
 
-        public string FileName
-        {
-            get { return _data.FileName; }
-            set { _data.FileName = value; }
-        }
-
+        
         public string Description
         {
             get { return _data.Description; }
@@ -132,14 +131,11 @@ namespace AnalogOutput.Logic
 
         #endregion
 
-        public void LoadFile()
+        public void LoadFile(string fileName)
         {
-            string[] lines = File.ReadAllLines(FileName);
+            string[] lines = File.ReadAllLines(fileName);
             double[] myRamp = Array.ConvertAll(lines, double.Parse);
-            _data.Ramp = myRamp;
-
-            if (myRamp.Length%2 != 0)
-                throw new Exception("The ramp has an odd number of samples!");
+            _data.Ramp = myRamp;            
             
             foreach (var sample in myRamp)
             {
@@ -175,5 +171,11 @@ namespace AnalogOutput.Logic
                     iterator.UnRegister(this);
             }
         }
+
+        private void OnCalibrationChanged()
+        {
+            PropertyChangedEvent("Unit");
+        }
+        
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using AnalogOutput.Data;
@@ -12,8 +13,7 @@ namespace AnalogOutput.Hardware
             int index = 0;
             int samples = 0;
             var unrolledFlow = new List<string>();
-            LoopUnroll(data.Flow, unrolledFlow, ref index);
-            
+            LoopUnroll(data.Flow, unrolledFlow, ref index);            
             var patterns = new Dictionary<string, double[,]>();
             foreach (var pattern in data.Patterns)
             {

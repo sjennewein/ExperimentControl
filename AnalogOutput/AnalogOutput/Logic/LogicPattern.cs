@@ -1,10 +1,13 @@
-﻿using AnalogOutput.Data;
+﻿using System;
+using System.Collections.Generic;
+using AnalogOutput.Data;
+using AnalogOutput.Interpolation;
 
 namespace AnalogOutput.Logic
 {
     public class LogicPattern
     {
-        public readonly LogicChannel[] Channels;
+        public readonly List<LogicChannel> Channels = new List<LogicChannel>();
         private readonly DataPattern _data;
         private readonly LogicCard _parent;
 
@@ -12,11 +15,12 @@ namespace AnalogOutput.Logic
         {
             _parent = parent;
             _data = data;
-            Channels = new LogicChannel[_data.Channels.Length];
+           
+            _parent.CalibrationChanged += delegate { OnCalibrationChanged(); };
             for (int iChannel = 0; iChannel < _data.Channels.Length; iChannel++)
             {
                 DataChannel channel = _data.Channels[iChannel];
-                Channels[iChannel] = new LogicChannel(channel, this);
+                Channels.Add(new LogicChannel(channel, this));
             }
         }
 
@@ -25,5 +29,43 @@ namespace AnalogOutput.Logic
             get { return _data.Name; }
             set { _data.Name = value; }
         }
+
+        public List<Tuple<string, List<Point>>> Calibration
+        {
+            get { return _parent.Calibration; }
+            set { _parent.Calibration = value; }
+        }
+
+        public List<Point> GetCalibration(LogicChannel enquirer)
+        {
+            int index = Channels.IndexOf(enquirer);
+            return _parent.Calibration[index].Item2;
+        }
+
+        public void SetCalibration(Tuple<string, List<Point>> calibration, LogicChannel source)
+        {
+            int index = Channels.IndexOf(source);
+            _parent.Calibration[index] = calibration;
+        }
+
+        public string GetUnit(LogicChannel enquirer)
+        {
+            int index = Channels.IndexOf(enquirer);
+            return _parent.Calibration[index].Item1;
+        }
+
+        private void OnCalibrationChanged()
+        {
+            TriggerEvent(CalibrationChanged);
+        }
+
+        private void TriggerEvent(EventHandler newEvent, EventArgs e = null)
+        {
+            EventHandler triggerEvent = newEvent;
+            if (triggerEvent != null)
+                triggerEvent(this, new EventArgs());
+        }
+
+        public event EventHandler CalibrationChanged;
     }
 }

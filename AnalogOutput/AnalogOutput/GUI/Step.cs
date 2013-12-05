@@ -18,11 +18,32 @@ namespace AnalogOutput.GUI
             _controller = controller;
             InitializeComponent();
             textBox_Name.DataBindings.Add("Text", _controller, "Description");
+            label_Value.DataBindings.Add("Text", _controller, "Unit");
 
+            CheckHowToHandleBindings();
+            
+            
+            textBox_Duration.ContextMenu = new ContextMenu();
+            textBox_Voltage.ContextMenu = new ContextMenu();
+            textBox_Voltage.ContextMenu.Popup += OnContextMenu;
+            textBox_Duration.ContextMenu.Popup += OnContextMenu;
+
+            if (_controller.Type == StepType.File)
+            {
+                button_File.Visible = true;
+                radioButton_File.Checked = true;
+            }
+        }
+
+        /// <summary>
+        /// Checks to which fields textboxes have to be bound - IMPORTANT for loading settings
+        /// </summary>
+        private void CheckHowToHandleBindings()
+        {
             if (String.IsNullOrEmpty(_controller.DurationIterator))
             {
-                textBox_Duration.DataBindings.Add("Text", _controller,"Duration");  
-  
+                textBox_Duration.DataBindings.Add("Text", _controller, "Duration");
+
             }
             else
             {
@@ -41,18 +62,8 @@ namespace AnalogOutput.GUI
                 textBox_Voltage.DataBindings.Add("Text", _controller, "ValueIterator");
                 textBox_Voltage.ReadOnly = true;
             }
-            
-            textBox_Duration.ContextMenu = new ContextMenu();
-            textBox_Voltage.ContextMenu = new ContextMenu();
-            textBox_Voltage.ContextMenu.Popup += OnContextMenu;
-            textBox_Duration.ContextMenu.Popup += OnContextMenu;
-
-            if (_controller.Type == StepType.File)
-            {
-                button_File.Visible = true;
-                radioButton_File.Checked = true;
-            }
         }
+
 
         private void button_File_Click(object sender, EventArgs e)
         {
@@ -61,10 +72,9 @@ namespace AnalogOutput.GUI
 
             if (dr == DialogResult.OK)
             {
-                _controller.FileName = fileDialog.FileName;
                 try
                 {
-                    _controller.LoadFile();
+                    _controller.LoadFile(fileDialog.FileName);
                 }
                 catch (Exception exception)
                 {

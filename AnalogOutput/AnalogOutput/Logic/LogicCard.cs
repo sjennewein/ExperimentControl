@@ -9,12 +9,12 @@ namespace AnalogOutput.Logic
     public class LogicCard
     {
         private readonly DataCard _data;
-        public List<LogicPattern> Patterns =new List<LogicPattern>();
+        public List<LogicPattern> Patterns = new List<LogicPattern>();
 
         public LogicCard(DataCard data)
         {
             _data = data;
-            
+
             for (int iPattern = 0; iPattern < _data.Patterns.Length; iPattern++)
             {
                 DataPattern pattern = _data.Patterns[iPattern];
@@ -22,20 +22,32 @@ namespace AnalogOutput.Logic
             }
         }
 
-        public List<Tuple<string, List<Point>>> Calibration
-        {
-            get { return _data.Calibration; }
-            set
-            {
-                _data.Calibration = value;
-                TriggerEvent(CalibrationChanged);
-            }
-        }
-
         public string Flow
         {
             get { return _data.Flow; }
             set { _data.Flow = value; }
+        }
+
+
+        public string GetUnit(int index)
+        {
+            return _data.Calibration[index].Unit;
+        }
+
+        public void SetUnit(string unit, int index)
+        {
+            _data.Calibration[index].Unit = unit;
+            TriggerEvent(CalibrationChanged);
+        }
+
+        public List<Point> GetCalibration(int index)
+        {
+            return _data.Calibration[index].DataPoints;
+        }
+
+        public void SetCalibration(List<Point> dataPoints, int index)
+        {
+            _data.Calibration[index].DataPoints = dataPoints;           
         }
 
         public string ToJson()

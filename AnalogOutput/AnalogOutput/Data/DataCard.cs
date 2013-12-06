@@ -9,7 +9,7 @@ namespace AnalogOutput.Data
 {
     public class DataCard
     {
-        public List<Tuple<String, List<Point>>> Calibration = new List<Tuple<string, List<Point>>>();
+        public List<DataCalibration> Calibration = new List<DataCalibration>();
         public DataPattern[] Patterns;
         public string Flow;
     }

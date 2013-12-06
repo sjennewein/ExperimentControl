@@ -18,7 +18,7 @@ namespace AnalogOutput.GUI
             _controller = controller;
             InitializeComponent();
             textBox_Name.DataBindings.Add("Text", _controller, "Description");
-            label_Value.DataBindings.Add("Text", _controller, "Unit");
+            label_Value.DataBindings.Add("Text", _controller, "Unit", false, DataSourceUpdateMode.OnPropertyChanged);
 
             CheckHowToHandleBindings();
             

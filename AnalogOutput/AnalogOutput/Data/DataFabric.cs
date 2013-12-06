@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using AnalogOutput.Interpolation;
 
 namespace AnalogOutput.Data
@@ -15,15 +14,17 @@ namespace AnalogOutput.Data
                 {
                     Patterns = new DataPattern[patterns],
                 };
+
             for (int iChannel = 0; iChannel < channels; iChannel++)
             {
-                newCard.Calibration.Add(new Tuple<string, List<Point>>("",null));
+                var points = new List<Point> {new Point(){X=-10,Y=-10}, new Point(){X=10,Y=10}};
+                var calibration = new DataCalibration() {DataPoints = points, Unit = "Voltage [V]:"};
+                newCard.Calibration.Add(calibration);
             }
 
             for (int iPattern = 0; iPattern < patterns; iPattern++)
             {
-                var newPattern = new DataPattern {Channels = new DataChannel[channels]};
-                newPattern.Name = "Pattern" + iPattern;
+                var newPattern = new DataPattern {Channels = new DataChannel[channels], Name = "Pattern" + iPattern};
 
                 for (int iChannel = 0; iChannel < channels; iChannel++)
                 {

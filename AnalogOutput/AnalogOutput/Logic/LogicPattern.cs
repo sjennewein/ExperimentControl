@@ -15,7 +15,7 @@ namespace AnalogOutput.Logic
         {
             _parent = parent;
             _data = data;
-           
+
             _parent.CalibrationChanged += delegate { OnCalibrationChanged(); };
             for (int iChannel = 0; iChannel < _data.Channels.Length; iChannel++)
             {
@@ -30,28 +30,29 @@ namespace AnalogOutput.Logic
             set { _data.Name = value; }
         }
 
-        public List<Tuple<string, List<Point>>> Calibration
-        {
-            get { return _parent.Calibration; }
-            set { _parent.Calibration = value; }
-        }
 
         public List<Point> GetCalibration(LogicChannel enquirer)
         {
             int index = Channels.IndexOf(enquirer);
-            return _parent.Calibration[index].Item2;
+            return _parent.GetCalibration(index);
         }
 
-        public void SetCalibration(Tuple<string, List<Point>> calibration, LogicChannel source)
+        public void SetCalibration(List<Point> calibration, LogicChannel source)
         {
             int index = Channels.IndexOf(source);
-            _parent.Calibration[index] = calibration;
+            _parent.SetCalibration(calibration, index);
         }
 
         public string GetUnit(LogicChannel enquirer)
         {
             int index = Channels.IndexOf(enquirer);
-            return _parent.Calibration[index].Item1;
+            return _parent.GetUnit(index);
+        }
+
+        public void SetUnit(string unit, LogicChannel enquirer)
+        {
+            int index = Channels.IndexOf(enquirer);
+            _parent.SetUnit(unit, index);
         }
 
         private void OnCalibrationChanged()

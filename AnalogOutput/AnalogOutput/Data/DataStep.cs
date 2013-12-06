@@ -17,8 +17,7 @@ namespace AnalogOutput.Data
         public StepType Type = StepType.Manual;
         public double Value;
         public int Duration;
-        public string Description = "";
-        //public string FileName = "";
+        public string Description = "";        
         public string DurationIterator = null;
         public string ValueIterator = null;
         public double[] Ramp;

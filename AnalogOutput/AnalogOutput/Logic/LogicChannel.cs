@@ -18,7 +18,7 @@ namespace AnalogOutput.Logic
             _data = data;
             _parent = parent;
             _parent.CalibrationChanged += delegate { OnCalibrationChanged(); };
-            
+
             for (int iStep = 0; iStep < _data.Steps.Length; iStep++)
             {
                 DataStep step = _data.Steps[iStep];
@@ -31,11 +31,9 @@ namespace AnalogOutput.Logic
             get
             {
                 string unit = _parent.GetUnit(this);
-                if (string.IsNullOrEmpty(unit))
-                    return "Voltage [V]:";
 
                 return unit;
-            }            
+            }
         }
 
         public string Name
@@ -65,13 +63,12 @@ namespace AnalogOutput.Logic
                 {
                     double x = Convert.ToDouble(csv[0]);
                     double y = Convert.ToDouble(csv[1]);
-                    dataSeries.Add(new Point(x, y));
+                    dataSeries.Add(new Point {X = x, Y = y});
                 }
             }
 
-            var data = new Tuple<string, List<Point>>(unit, dataSeries);
-            _parent.SetCalibration(data, this);
-
+            _parent.SetCalibration(dataSeries, this);
+            _parent.SetUnit(unit, this);
         }
 
         private void OnCalibrationChanged()

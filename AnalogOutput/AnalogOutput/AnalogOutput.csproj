@@ -71,6 +71,7 @@
       <DependentUpon>AnalogOutput.cs</DependentUpon>
     </Compile>
     <Compile Include="Controller.cs" />
+    <Compile Include="Data\DataCalibration.cs" />
     <Compile Include="Data\DataNetwork.cs" />
     <Compile Include="GUI\ChannelHeader.cs">
       <SubType>UserControl</SubType>

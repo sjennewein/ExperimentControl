@@ -53,12 +53,8 @@ namespace AnalogOutput.Logic
         public int Duration
         {
             get { return _data.Duration; }
-            set
-            {
-                _data.Duration = value;
-            }
+            set { _data.Duration = value; }
         }
-
 
         public string Description
         {
@@ -128,10 +124,10 @@ namespace AnalogOutput.Logic
             double[] myRamp = Array.ConvertAll(lines, double.Parse);
             _data.Ramp = myRamp;
 
-            Duration = myRamp.Length * 2;
+            Duration = myRamp.Length*2;
             PropertyChangedEvent("Duration");
         }
-        
+
         private void PropertyChangedEvent(string propertyName)
         {
             PropertyChangedEventHandler propertyChanged = PropertyChanged;

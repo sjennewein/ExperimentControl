@@ -38,7 +38,6 @@ namespace AnalogOutput
             ResumeLayout();
         }
 
-
         private void button_Save_Click(object sender, EventArgs e)
         {
             var saveFileDialog = new SaveFileDialog();

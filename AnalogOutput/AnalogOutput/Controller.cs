@@ -1,12 +1,13 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.IO;
 using System.Windows.Forms;
 using AnalogOutput.Data;
-using AnalogOutput.Hardware;
 using AnalogOutput.Logic;
 using fastJSON;
 using Hulahoop.Controller;
 using Ionic.Zip;
+using Buffer = AnalogOutput.Hardware.Buffer;
 
 namespace AnalogOutput
 {
@@ -99,14 +100,15 @@ namespace AnalogOutput
             if (Network.Activated)
             {
                 Network.Connect();
+                TriggerEvent(NetworkConnected);
                 _daqmx.Pause();
                 Network.ListenToTrigger();
-
                 return;
             }
             string json = Hardware.ToJson();
             _daqmx.Start(false, json);
-            
+            TriggerEvent(DaqmxStarted);
+            TriggerEvent(BufferSynced);
         }
 
         public void Stop()
@@ -114,19 +116,23 @@ namespace AnalogOutput
             if (Network.Activated)
             {
                 Network.Disconnect();
+                TriggerEvent(NetworkDisconnected);
             }
             _daqmx.Stop();
+            TriggerEvent(DaqmxStopped);
         }
 
         private void RemoteStart()
         {
             string json = Hardware.ToJson();
             _daqmx.Start(true, json, CyclesPerRun);
+            TriggerEvent(DaqmxStarted);
         }
 
         public void CopyToBuffer()
         {
             _daqmx.UpdateData(Hardware.ToJson());
+            TriggerEvent(BufferSynced);
         }
 
         private void OnNwStartRun()
@@ -171,5 +177,19 @@ namespace AnalogOutput
         }
 
         private delegate void GuiUpdate(string propertyName);
+
+        private void TriggerEvent(EventHandler newEvent, EventArgs e = null)
+        {
+            EventHandler triggerEvent = newEvent;
+            if (triggerEvent != null)
+                triggerEvent(this, new EventArgs());
+        }
+
+        public event EventHandler DaqmxStarted;
+        public event EventHandler DaqmxStopped;
+        public event EventHandler NetworkConnected;
+        public event EventHandler NetworkDisconnected;
+        public event EventHandler BufferSynced;
+        public event EventHandler BufferUnsynced;
     }
 }

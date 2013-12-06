@@ -103,8 +103,12 @@ namespace ColdNetworkStack.Server
 
             _triggerSynchronization.WaitOne(); //all clients wait until all returned                
 
-            //if (!_trigger)
-            //    return;
+            if (!_trigger)
+            {
+                WriteNetworkStream(client, Commands.Finished.ToString());
+                return;
+            }
+                
 
             WriteNetworkStream(client, Commands.Trigger.ToString());
             Console.Write(ReadNetworkStream(client));

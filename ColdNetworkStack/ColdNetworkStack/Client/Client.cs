@@ -80,6 +80,8 @@ namespace ColdNetworkStack.Client
                 Console.WriteLine(trigger + ": " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
                 if (trigger == Commands.Trigger.ToString())
                     TriggerEvent(LaunchNextRun);
+                if (trigger == Commands.Finished.ToString())
+                    break;
                 _signal.WaitOne();
                 //Thread.Sleep(5);
                 WriteNetworkStream(_client, Answers.Ack.ToString());

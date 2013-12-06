@@ -41,6 +41,9 @@
     <Reference Include="Ionic.Zip.Reduced">
       <HintPath>external_Library\IonicZip\Ionic.Zip.Reduced.dll</HintPath>
     </Reference>
+    <Reference Include="LumenWorks.Framework.IO">
+      <HintPath>external_Library\Lumenworks\LumenWorks.Framework.IO.dll</HintPath>
+    </Reference>
     <Reference Include="NationalInstruments.Common, Version=13.0.40.190, Culture=neutral, PublicKeyToken=dc6ad606294fc298, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\Program Files (x86)\National Instruments\MeasurementStudioVS2010\DotNET\Assemblies\Current\NationalInstruments.Common.dll</HintPath>
@@ -90,6 +93,7 @@
     </Compile>
     <Compile Include="Hardware\Buffer.cs" />
     <Compile Include="Hardware\Translator.cs" />
+    <Compile Include="Interpolation\Point.cs" />
     <Compile Include="Logic\LogicCard.cs" />
     <Compile Include="Logic\LogicChannel.cs" />
     <Compile Include="Logic\LogicFabric.cs" />
@@ -101,6 +105,7 @@
     <Compile Include="Data\DataPattern.cs" />
     <Compile Include="Data\DataStep.cs" />
     <Compile Include="Logic\LogicStep.cs" />
+    <Compile Include="Interpolation\Polyline.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="AnalogOutput.resx">

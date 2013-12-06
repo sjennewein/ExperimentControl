@@ -21,5 +21,23 @@ namespace AnalogOutput.GUI
             textBox_Name.DataBindings.Add("Text", _controller, "Name");
             textBox_Value.DataBindings.Add("Text", _controller, "Value");                       
         }
+
+        private void button_Calibrate_Click(object sender, EventArgs e)
+        {
+            var fileDialog = new OpenFileDialog();
+            DialogResult dr = fileDialog.ShowDialog();
+
+            if (dr == DialogResult.OK)
+            {                
+                try
+                {
+                    _controller.LoadFile(fileDialog.FileName);
+                }
+                catch (Exception exception)
+                {
+                    MessageBox.Show(exception.Message, "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
     }
 }

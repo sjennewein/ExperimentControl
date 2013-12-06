@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.label_Voltage = new System.Windows.Forms.Label();
+            this.label_Value = new System.Windows.Forms.Label();
             this.label_Duration = new System.Windows.Forms.Label();
             this.radioButton_File = new System.Windows.Forms.RadioButton();
             this.radioButton_GUI = new System.Windows.Forms.RadioButton();
@@ -39,14 +39,14 @@
             this.textBox_Name = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
-            // label_Voltage
+            // label_Value
             // 
-            this.label_Voltage.AutoSize = true;
-            this.label_Voltage.Location = new System.Drawing.Point(1, 59);
-            this.label_Voltage.Name = "label_Voltage";
-            this.label_Voltage.Size = new System.Drawing.Size(62, 13);
-            this.label_Voltage.TabIndex = 0;
-            this.label_Voltage.Text = "Voltage [V]:";
+            this.label_Value.AutoSize = true;
+            this.label_Value.Location = new System.Drawing.Point(1, 59);
+            this.label_Value.Name = "label_Value";
+            this.label_Value.Size = new System.Drawing.Size(62, 13);
+            this.label_Value.TabIndex = 0;
+            this.label_Value.Text = "Voltage [V]:";
             // 
             // label_Duration
             // 
@@ -141,7 +141,7 @@
             this.Controls.Add(this.radioButton_GUI);
             this.Controls.Add(this.radioButton_File);
             this.Controls.Add(this.label_Duration);
-            this.Controls.Add(this.label_Voltage);
+            this.Controls.Add(this.label_Value);
             this.Name = "Step";
             this.Size = new System.Drawing.Size(126, 103);
             this.ResumeLayout(false);
@@ -151,7 +151,7 @@
 
         #endregion
 
-        private System.Windows.Forms.Label label_Voltage;
+        private System.Windows.Forms.Label label_Value;
         private System.Windows.Forms.Label label_Duration;
         private System.Windows.Forms.RadioButton radioButton_File;
         private System.Windows.Forms.RadioButton radioButton_GUI;

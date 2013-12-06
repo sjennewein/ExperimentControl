@@ -18,7 +18,7 @@ namespace AnalogOutput.Data
         public double Value;
         public int Duration;
         public string Description = "";
-        public string FileName = "";
+        //public string FileName = "";
         public string DurationIterator = null;
         public string ValueIterator = null;
         public double[] Ramp;

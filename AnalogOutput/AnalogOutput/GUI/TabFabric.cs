@@ -14,8 +14,8 @@ namespace AnalogOutput.GUI
 
         private static void GenerateTabPage(LogicPattern pattern)
         {
-            int columns = pattern.Channels[0].Steps.Length;
-            int rows = pattern.Channels.Length;
+            int columns = pattern.Channels[0].Steps.Count;
+            int rows = pattern.Channels.Count;
 
             const int rowHeight = 103;
             const int columnWidth = 127;
@@ -34,7 +34,7 @@ namespace AnalogOutput.GUI
                 elementCounter++;
                 xOffset += columnWidth;
 
-                for (int iStep = 0; iStep < channel.Steps.Length; iStep++)
+                for (int iStep = 0; iStep < channel.Steps.Count; iStep++)
                 {
                     var logicStep = channel.Steps[iStep];
                     var newStep = new Step(logicStep) {Location = new Point(xOffset, yOffset)};

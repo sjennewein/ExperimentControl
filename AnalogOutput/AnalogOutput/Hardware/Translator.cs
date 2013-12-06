@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using AnalogOutput.Data;
+using AnalogOutput.Interpolation;
 
 namespace AnalogOutput.Hardware
 {
@@ -17,7 +18,7 @@ namespace AnalogOutput.Hardware
             var patterns = new Dictionary<string, double[,]>();
             foreach (var pattern in data.Patterns)
             {
-                patterns.Add(pattern.Name.ToLower(), GeneratePattern(pattern));
+                patterns.Add(pattern.Name.ToLower(), GeneratePattern(pattern, data.Calibration));
             }
 
             foreach (var line in unrolledFlow)
@@ -116,7 +117,7 @@ namespace AnalogOutput.Hardware
         }
 
 
-        private static double[,] GeneratePattern(DataPattern pattern)
+        private static double[,] GeneratePattern(DataPattern pattern, List<DataCalibration> calibrations)
         {
             int length = GetLength(pattern); // there is an initial value for each channel
             double[,] sequence = new double[pattern.Channels.Length,length];
@@ -124,6 +125,8 @@ namespace AnalogOutput.Hardware
             for (int iChannel = 0; iChannel < pattern.Channels.Length; iChannel++)
             {
                 var channel = pattern.Channels[iChannel];
+                var interpolator = new Polyline(calibrations[iChannel].DataPoints);
+
                 int sampleCounter = 0;
                 sequence[iChannel, sampleCounter] = channel.InitialValue;
                 sampleCounter++;
@@ -135,7 +138,8 @@ namespace AnalogOutput.Hardware
                         //treat input loaded from file
                         foreach (double sample in step.Ramp)
                         {
-                            sequence[iChannel, sampleCounter] = sample;
+                            var voltage = interpolator.Interpolate(sample);
+                            sequence[iChannel, sampleCounter] = voltage;
                             sampleCounter++;
                         }
                     }
@@ -148,7 +152,8 @@ namespace AnalogOutput.Hardware
                         
                         if(samples == 1)
                         {
-                            sequence[iChannel, sampleCounter] = step.Value;
+                            var voltage = interpolator.Interpolate(step.Value);
+                            sequence[iChannel, sampleCounter] = voltage;
                             sampleCounter++;
                             continue;
                         }
@@ -157,7 +162,8 @@ namespace AnalogOutput.Hardware
 
                         for (int iSample = 0; iSample < samples; iSample++)
                         {
-                            sequence[iChannel, sampleCounter] = lastValue + iSample * stepSize;
+                            var voltage = interpolator.Interpolate(lastValue + iSample*stepSize);
+                            sequence[iChannel, sampleCounter] = voltage;
                             sampleCounter++;
                         }
                     }

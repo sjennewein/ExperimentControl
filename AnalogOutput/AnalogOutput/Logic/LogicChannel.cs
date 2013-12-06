@@ -37,6 +37,11 @@ namespace AnalogOutput.Logic
             }
         }
 
+        public void InputChanged()
+        {
+            _parent.InputChanged();            
+        }
+
         public string Name
         {
             get { return _parent.GetChannelName(this); }

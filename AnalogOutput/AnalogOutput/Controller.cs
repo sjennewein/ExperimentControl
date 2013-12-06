@@ -40,12 +40,14 @@ namespace AnalogOutput
 
         public void Initialize(string data = null)
         {
+            
             DataCard card = null;
 
             if (data != null)
                 card = (DataCard) JSON.Instance.ToObject(data);
 
             Hardware = LogicFabric.GenerateCard(card);
+            Hardware.NewInput += delegate { OnInputChanged(); };
         }
 
         public void Save(string fileName)
@@ -183,6 +185,11 @@ namespace AnalogOutput
             EventHandler triggerEvent = newEvent;
             if (triggerEvent != null)
                 triggerEvent(this, new EventArgs());
+        }
+
+        private void OnInputChanged()
+        {
+            TriggerEvent(BufferUnsynced);
         }
 
         public event EventHandler DaqmxStarted;

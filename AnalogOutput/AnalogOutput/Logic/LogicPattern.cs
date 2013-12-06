@@ -38,6 +38,10 @@ namespace AnalogOutput.Logic
             return _parent.GetChannelName(index);
         }
 
+        public void InputChanged()
+        {
+            _parent.InputChanged();
+        }
 
         public void SetChannelName(string name, LogicChannel enquirer)
         {

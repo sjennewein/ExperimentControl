@@ -19,6 +19,7 @@ namespace AnalogOutput
             System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
 
             _controller = new Controller(this);
+            //_controller.BufferUnsynced += 
             InitializeComponent();
             Initialize();
         }
@@ -95,13 +96,47 @@ namespace AnalogOutput
                 return;
             }               
             _controller.CopyToBuffer();
-            label_Sync.BackColor = Color.FromArgb(127, 210, 21);
-            label_Sync.Text = "SYNCED";
+            
         }
 
         private void button_Stop_Click(object sender, EventArgs e)
         {
             _controller.Stop();
         }
+
+        private void OnBufferSynced()
+        {
+            label_Sync.BackColor = Color.FromArgb(127, 210, 21);
+            label_Sync.Text = "SYNCED";
+        }
+
+        private void OnBufferUnsynced()
+        {
+            label_Sync.BackColor = Color.FromArgb(196, 20, 94);
+            label_Sync.Text = "UNSYNCED";
+        }
+
+        private void OnDaqmxStarted()
+        {
+            label_Hardware.BackColor = Color.FromArgb(127, 210, 21);
+            label_Hardware.Text = "STARTED";
+        }
+
+        private void OnDaqmxStopped()
+        {
+            label_Hardware.BackColor = Color.FromArgb(196, 20, 94);
+            label_Hardware.Text = "STARTED";
+        }
+
+        private void OnNetworkConnected()
+        {
+            
+        }
+
+        private void OnNetworkDisconnected()
+        {
+            
+        }
+
     }
 }

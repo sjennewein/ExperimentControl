@@ -47,13 +47,21 @@ namespace AnalogOutput.Logic
         public double Value
         {
             get { return _data.Value; }
-            set { _data.Value = value; }
+            set
+            {
+                _data.Value = value;
+                _parent.InputChanged();
+            }
         }
 
         public int Duration
         {
             get { return _data.Duration; }
-            set { _data.Duration = value; }
+            set
+            {
+                _data.Duration = value;
+                _parent.InputChanged();
+            }
         }
 
         public string Description

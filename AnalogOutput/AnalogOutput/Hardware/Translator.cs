@@ -130,7 +130,28 @@ namespace AnalogOutput.Hardware
                 int sampleCounter = 0;
                 sequence[iChannel, sampleCounter] = channel.InitialValue;
                 sampleCounter++;
-             
+                bool allStepsAreZero = true;
+
+                //check if all steps are empty 
+                foreach (var step in channel.Steps)
+                {
+                    if (step.Duration != 0 || step.Value != 0)
+                    {
+                        allStepsAreZero = false;
+                        break;
+                    }                        
+                }
+
+                //then the initial value defines the whole pattern
+                if (allStepsAreZero)
+                {
+                    for (int iStep = 0; iStep < length; iStep++ )
+                    {
+                        sequence[iChannel, iStep] = channel.InitialValue;
+                    }
+                    continue;
+                }
+
                 foreach (DataStep step in channel.Steps)
                 {
                     if (step.Type == StepType.File)
@@ -168,7 +189,8 @@ namespace AnalogOutput.Hardware
                         }
                     }
                     sequence[iChannel, sampleCounter] = sequence[iChannel, 0];
-                }                
+                }
+               
             }
 
             return sequence;

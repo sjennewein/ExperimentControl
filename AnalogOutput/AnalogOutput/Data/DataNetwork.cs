@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace AnalogOutput.Data
+﻿namespace AnalogOutput.Data
 {
     public class DataNetwork
     {

@@ -20,6 +20,7 @@ namespace AnalogOutput.Data
                 var points = new List<Point> {new Point(){X=-10,Y=-10}, new Point(){X=10,Y=10}};
                 var calibration = new DataCalibration() {DataPoints = points, Unit = "Voltage [V]:"};
                 newCard.Calibration.Add(calibration);
+                newCard.ChannelNames.Add("Channel " + iChannel);
             }
 
             for (int iPattern = 0; iPattern < patterns; iPattern++)

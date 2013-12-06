@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace AnalogOutput.Data
+﻿namespace AnalogOutput.Data
 {
     public enum StepType
     {
@@ -14,12 +9,12 @@ namespace AnalogOutput.Data
 
     public class DataStep
     {
+        public string Description = "";
+        public int Duration;
+        public string DurationIterator = null;
+        public double[] Ramp;
         public StepType Type = StepType.Manual;
         public double Value;
-        public int Duration;
-        public string Description = "";        
-        public string DurationIterator = null;
         public string ValueIterator = null;
-        public double[] Ramp;
     }
 }

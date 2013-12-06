@@ -28,6 +28,16 @@ namespace AnalogOutput.Logic
             set { _data.Flow = value; }
         }
 
+        public string GetChannelName(int index)
+        {
+            return _data.ChannelNames[index];
+        }
+
+        public void SetChannelName(string name, int index)
+        {
+            _data.ChannelNames[index] = name;
+            TriggerEvent(ChannelNameChanged);
+        }
 
         public string GetUnit(int index)
         {
@@ -63,5 +73,6 @@ namespace AnalogOutput.Logic
         }
 
         public event EventHandler CalibrationChanged;
+        public event EventHandler ChannelNameChanged;
     }
 }

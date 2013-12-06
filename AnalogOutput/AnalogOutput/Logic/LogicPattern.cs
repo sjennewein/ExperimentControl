@@ -17,6 +17,8 @@ namespace AnalogOutput.Logic
             _data = data;
 
             _parent.CalibrationChanged += delegate { OnCalibrationChanged(); };
+            _parent.ChannelNameChanged += delegate { OnChannelNameChanged(); };
+
             for (int iChannel = 0; iChannel < _data.Channels.Length; iChannel++)
             {
                 DataChannel channel = _data.Channels[iChannel];
@@ -30,6 +32,18 @@ namespace AnalogOutput.Logic
             set { _data.Name = value; }
         }
 
+        public string GetChannelName(LogicChannel enquirer)
+        {
+            int index = Channels.IndexOf(enquirer);
+            return _parent.GetChannelName(index);
+        }
+
+
+        public void SetChannelName(string name, LogicChannel enquirer)
+        {
+            int index = Channels.IndexOf(enquirer);
+            _parent.SetChannelName(name, index);
+        }
 
         public List<Point> GetCalibration(LogicChannel enquirer)
         {
@@ -60,6 +74,11 @@ namespace AnalogOutput.Logic
             TriggerEvent(CalibrationChanged);
         }
 
+        private void OnChannelNameChanged()
+        {
+            TriggerEvent(ChannelNameChanged);
+        }
+
         private void TriggerEvent(EventHandler newEvent, EventArgs e = null)
         {
             EventHandler triggerEvent = newEvent;
@@ -68,5 +87,6 @@ namespace AnalogOutput.Logic
         }
 
         public event EventHandler CalibrationChanged;
+        public event EventHandler ChannelNameChanged;
     }
 }

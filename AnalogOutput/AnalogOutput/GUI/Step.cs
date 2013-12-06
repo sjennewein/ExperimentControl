@@ -139,7 +139,7 @@ namespace AnalogOutput.GUI
             }
             catch (FormatException exception)
             {
-                MessageBox.Show("Not a valid integer", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Not a valid double", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 e.Cancel = true;            
             }            
         }

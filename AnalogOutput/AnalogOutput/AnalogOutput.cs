@@ -13,6 +13,11 @@ namespace AnalogOutput
 
         public AnalogOutput()
         {
+            System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
+            customCulture.NumberFormat.NumberDecimalSeparator = ".";
+
+            System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
+
             _controller = new Controller(this);
             InitializeComponent();
             Initialize();

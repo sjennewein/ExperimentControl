@@ -21,6 +21,11 @@ namespace DigitalOutput
 
         public DigitalMainwindow()
         {
+            var customCulture = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
+            customCulture.NumberFormat.NumberDecimalSeparator = ".";
+
+            System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
+
             InitializeComponent();
 
             WindowState = FormWindowState.Maximized;

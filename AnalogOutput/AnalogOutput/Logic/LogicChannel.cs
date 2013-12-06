@@ -42,7 +42,7 @@ namespace AnalogOutput.Logic
             set { _data.Name = value; }
         }
 
-        public float Value
+        public double Value
         {
             get { return _data.InitialValue; }
             set { _data.InitialValue = value; }

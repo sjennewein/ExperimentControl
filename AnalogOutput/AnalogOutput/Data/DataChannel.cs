@@ -10,6 +10,6 @@ namespace AnalogOutput.Data
     {               
         public DataStep[] Steps;
         public string Name = "";
-        public float InitialValue;
+        public double InitialValue;
     }
 }

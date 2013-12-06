@@ -55,12 +55,6 @@ namespace AnalogOutput.Logic
             get { return _data.Duration; }
             set
             {
-                if (value < 0)
-                    throw new Exception("Negative duration is not allowed!");
-
-                if (value%2 != 0)
-                    throw new Exception("Value is not a multiple of 2!");
-
                 _data.Duration = value;
             }
         }

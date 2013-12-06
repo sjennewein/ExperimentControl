@@ -74,6 +74,7 @@ namespace AnalogOutput.Hardware
                     _signal.Reset();
                 }
             }
+            _running = false;
             TriggerEvent(Stopped);
         }
 

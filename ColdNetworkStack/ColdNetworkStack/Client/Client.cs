@@ -72,10 +72,7 @@ namespace ColdNetworkStack.Client
         {
             Console.WriteLine("starting loop");
             while (_loop)
-            {
-                _signal.WaitOne();
-                if (!_loop)
-                    break;
+            {                               
                 WriteNetworkStream(_client, Commands.WaitingForTrigger.ToString());
                 Console.WriteLine("Waiting for trigger: " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
                 ReadNetworkStream(_client);
@@ -86,11 +83,13 @@ namespace ColdNetworkStack.Client
                 _signal.WaitOne();
                 //Thread.Sleep(5);
                 WriteNetworkStream(_client, Answers.Ack.ToString());
+                _signal.WaitOne();
             }
         }
 
         public void Resume()
         {
+            Console.WriteLine("Resume");
             _signal.Set();
         }
 

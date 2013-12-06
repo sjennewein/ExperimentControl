@@ -19,21 +19,24 @@ namespace AnalogOutput.Logic
             _parent.CalibrationChanged += delegate { OnCalibrationChanged(); };
 
             if (_data.DurationIterator != null)
-                foreach (var iterator in HoopManager.Iterators)
+                foreach (IteratorSubject iterator in HoopManager.Iterators)
                 {
-                    if(iterator.Name() == _data.DurationIterator)
+                    if (iterator.Name() == _data.DurationIterator)
                         iterator.Register(this);
                 }
 
             if (_data.ValueIterator != null)
-                foreach (var iterator in HoopManager.Iterators)
+                foreach (IteratorSubject iterator in HoopManager.Iterators)
                 {
                     if (iterator.Name() == _data.ValueIterator)
                         iterator.Register(this);
                 }
         }
 
-        public string Unit { get { return _parent.Unit; } }
+        public string Unit
+        {
+            get { return _parent.Unit; }
+        }
 
         public StepType Type
         {
@@ -44,13 +47,7 @@ namespace AnalogOutput.Logic
         public double Value
         {
             get { return _data.Value; }
-            set
-            {
-                if (Math.Abs(value) > 10)
-                    throw new Exception("Only values between -10 and 10 are allowed!");
-
-                _data.Value = value;
-            }
+            set { _data.Value = value; }
         }
 
         public int Duration
@@ -68,7 +65,7 @@ namespace AnalogOutput.Logic
             }
         }
 
-        
+
         public string Description
         {
             get { return _data.Description; }
@@ -135,18 +132,12 @@ namespace AnalogOutput.Logic
         {
             string[] lines = File.ReadAllLines(fileName);
             double[] myRamp = Array.ConvertAll(lines, double.Parse);
-            _data.Ramp = myRamp;            
-            
-            foreach (var sample in myRamp)
-            {
-                if(Math.Abs(sample) > 10)
-                    throw new Exception("Only values from -10 to 10 are allowed!");
-            }
+            _data.Ramp = myRamp;
 
-            Duration = myRamp.Length;
+            Duration = myRamp.Length * 2;
             PropertyChangedEvent("Duration");
         }
-
+        
         private void PropertyChangedEvent(string propertyName)
         {
             PropertyChangedEventHandler propertyChanged = PropertyChanged;
@@ -176,6 +167,5 @@ namespace AnalogOutput.Logic
         {
             PropertyChangedEvent("Unit");
         }
-        
     }
 }

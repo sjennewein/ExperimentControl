@@ -106,6 +106,7 @@ namespace AnalogOutput
             }
             string json = Hardware.ToJson();
             _daqmx.Start(false, json);
+            
         }
 
         public void Stop()

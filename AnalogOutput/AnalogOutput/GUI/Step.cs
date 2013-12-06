@@ -114,16 +114,18 @@ namespace AnalogOutput.GUI
             }
             catch (FormatException exception)
             {
-                MessageBox.Show("Not a valid integer", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 e.Cancel = true;
+                MessageBox.Show("Not a valid integer", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                
                 return;
             }
 
             if (duration%2 != 0 || duration < 0)
             {
-                MessageBox.Show("Only positive numbers and multiples of 2 are allowed.", "Invalid Input",
-                                MessageBoxButtons.OK, MessageBoxIcon.Error);
                 e.Cancel = true;
+                MessageBox.Show("Only positive numbers and multiples of 2 are allowed.", "Invalid Input",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);                
+                
             }
         }
 
@@ -138,16 +140,8 @@ namespace AnalogOutput.GUI
             catch (FormatException exception)
             {
                 MessageBox.Show("Not a valid integer", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                e.Cancel = true;
-                return;
-            }
-
-            if (Math.Abs(value) > 10)
-            {
-                MessageBox.Show("Only values from -10 to 10 are valid.", "Invalid Input", MessageBoxButtons.OK,
-                                MessageBoxIcon.Error);
-                e.Cancel = true;
-            }
+                e.Cancel = true;            
+            }            
         }
 
         private void OnContextMenu(object sender, EventArgs e)

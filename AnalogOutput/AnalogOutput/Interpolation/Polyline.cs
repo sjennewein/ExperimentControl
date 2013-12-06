@@ -28,7 +28,7 @@ namespace AnalogOutput.Interpolation
                 }
 
                 //if the point to interpolate is identical to one in dataset
-                if ((dataPoint.X - x) < 0.001)
+                if (Math.Abs(dataPoint.X - x) < 0.001)
                 {
                     return dataPoint.Y;
                 }

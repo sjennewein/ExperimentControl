@@ -113,7 +113,7 @@ namespace AnalogOutput.Hardware
             }
             
 
-            return pLength;
+            return pLength + 1;
         }
 
 
@@ -158,15 +158,16 @@ namespace AnalogOutput.Hardware
                             continue;
                         }
                         
-                        double stepSize = (step.Value - lastValue) / (samples - 1);
+                        double stepSize = (step.Value - lastValue) / samples;
 
-                        for (int iSample = 0; iSample < samples; iSample++)
+                        for (int iSample = 1; iSample <= samples; iSample++)
                         {
                             var voltage = interpolator.Interpolate(lastValue + iSample*stepSize);
                             sequence[iChannel, sampleCounter] = voltage;
                             sampleCounter++;
                         }
                     }
+                    sequence[iChannel, sampleCounter] = sequence[iChannel, 0];
                 }                
             }
 

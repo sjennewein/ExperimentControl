@@ -1,27 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using AnalogOutput.Data;
-using fastJSON;
 using NationalInstruments.DAQmx;
+using fastJSON;
 
 namespace AnalogOutput.Hardware
 {
     public class Buffer
     {
-        private bool _updated;
-        private string _serializedData;
+        private readonly ManualResetEvent _signal = new ManualResetEvent(true);
+        private int _cycleCounter;
+        private int _cyclesPerRun;
+        private DataCard _data;
+        private Thread _myWorker;
+        private bool _networkMode;
+        private double[,] _outputSequence;
         private bool _run;
         private bool _running;
-        private Thread _myWorker;
-        private DataCard _data;
-        private double[,] _outputSequence;
-        private bool _networkMode = false;
-        private int _cyclesPerRun;
-        private int _cycleCounter;
-        private readonly ManualResetEvent _signal = new ManualResetEvent(true);
+        private string _serializedData;
+        private bool _updated;
 
         public void UpdateData(string data)
         {
@@ -35,7 +32,6 @@ namespace AnalogOutput.Hardware
             _running = true;
             while (_run)
             {
-
                 if (_updated)
                 {
                     _data = (DataCard) JSON.Instance.ToObject(_serializedData);
@@ -43,16 +39,18 @@ namespace AnalogOutput.Hardware
                     _updated = false;
                 }
 
-                using (Task myTask = new Task())
+                using (var myTask = new Task())
                 {
                     myTask.AOChannels.CreateVoltageChannel("Dev2/ao0:7", "aoChannel", -10.0, 10.0, AOVoltageUnits.Volts);
-                    myTask.Timing.ConfigureSampleClock("", 500000, SampleClockActiveEdge.Rising,SampleQuantityMode.FiniteSamples, _outputSequence.GetLength(1));
-                    myTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger("/Dev2/PFI8", DigitalEdgeStartTriggerEdge.Rising);
-                    AnalogMultiChannelWriter writer = new AnalogMultiChannelWriter(myTask.Stream);
+                    myTask.Timing.ConfigureSampleClock("", 500000, SampleClockActiveEdge.Rising,
+                                                       SampleQuantityMode.FiniteSamples, _outputSequence.GetLength(1));
+                    myTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger("/Dev2/PFI8",
+                                                                             DigitalEdgeStartTriggerEdge.Rising);
+                    var writer = new AnalogMultiChannelWriter(myTask.Stream);
                     writer.WriteMultiSample(false, _outputSequence);
 
                     _signal.WaitOne();
-                                      
+
                     myTask.Start();
 
                     if (_networkMode)
@@ -72,7 +70,7 @@ namespace AnalogOutput.Hardware
                 _signal.WaitOne();
 
                 if (_networkMode)
-                {                   
+                {
                     _signal.Reset();
                 }
             }
@@ -102,7 +100,6 @@ namespace AnalogOutput.Hardware
         public void Pause()
         {
             _signal.Reset();
-            
         }
 
         public void Resume()
@@ -122,6 +119,6 @@ namespace AnalogOutput.Hardware
         public event EventHandler Stopped;
         public event EventHandler CycleFinished;
         public event EventHandler RunStarted;
-        public event EventHandler RunFinished;        
+        public event EventHandler RunFinished;
     }
 }

@@ -40,7 +40,7 @@
             this.panel_Iterator.Location = new System.Drawing.Point(12, 41);
             this.panel_Iterator.Name = "panel_Iterator";
             this.panel_Iterator.Size = new System.Drawing.Size(374, 209);
-            this.panel_Iterator.TabIndex = 0;
+            this.panel_Iterator.TabIndex = 0;            
             // 
             // panel_everyRun
             // 

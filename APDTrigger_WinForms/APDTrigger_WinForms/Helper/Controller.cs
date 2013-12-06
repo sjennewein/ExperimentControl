@@ -470,6 +470,7 @@ namespace APDTrigger_WinForms.Helper
             const int bucketNumber = 600;
             const int interval = 10; // 10 counts per bucket => max 6000 counts
 
+
             var buckets = new int[bucketNumber + 1]; // extra bucket is for the rubbish
 
 

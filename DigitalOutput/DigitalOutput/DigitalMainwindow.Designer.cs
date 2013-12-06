@@ -413,8 +413,7 @@
             this.Controls.Add(this.button_Start);
             this.Controls.Add(this.TabPanel);
             this.Name = "DigitalMainwindow";
-            this.Text = "DigitalOutput";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.DigitalMainwindow_FormClosing);
+            this.Text = "DigitalOutput";           
             this.TabPanel.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.groupBox_ProgramFlow.ResumeLayout(false);

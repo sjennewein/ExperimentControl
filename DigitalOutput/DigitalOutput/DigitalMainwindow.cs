@@ -16,7 +16,7 @@ namespace DigitalOutput
     public partial class DigitalMainwindow : Form
     {
         private readonly Buffer _buffer = new Buffer();
-        private readonly HulahoopDigital _loops = new HulahoopDigital();
+        private readonly HulaHoopWindow _loops = new HulaHoopWindow();
         private ControllerCard _card;
 
         public DigitalMainwindow()
@@ -66,7 +66,7 @@ namespace DigitalOutput
             else
             {
                 SuspendLayout();
-                _loops.ReLoad();
+                _loops.ReDraw();
                 Helper.DisposeTabs(TabPanel);
                 Helper.GenerateTabView(TabPanel, _card);
                 ResumeLayout();
@@ -130,13 +130,15 @@ namespace DigitalOutput
 
         private void button_Start_Click(object sender, EventArgs e)
         {
-            if (String.Equals(_card.Flow, String.Empty) || _card.Flow == null)
-            {
-                MessageBox.Show("You have to provide a \"Program flow\"!");
-                return;
-            }
+            //if (String.Equals(_card.Flow, String.Empty) || _card.Flow == null)
+            //{
+            //    MessageBox.Show("You have to provide a \"Program flow\"!");
+            //    return;
+            //}
 
-            _card.Start();
+           // _card.Start();
+            if (_card.Networking)
+                DisableInput();
             label_Buffer.BackColor = Color.FromArgb(127, 210, 21);
         }
 
@@ -217,16 +219,18 @@ namespace DigitalOutput
             }
         }
 
+        private void DisableInput()
+        {
+            //tabPage1.Enabled = false;
+            //TabPanel.IsAccessible = false;
+            TabPanel.Enabled = false;
+        }
+
         #region Nested type: GuiUpdate
 
         private delegate void GuiUpdate();
 
         #endregion
-
-        private void DigitalMainwindow_FormClosing(object sender, FormClosingEventArgs e)
-        {
-
-        }
 
     }
 }

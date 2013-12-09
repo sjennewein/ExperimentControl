@@ -9,5 +9,6 @@ namespace Hulahoop.Interface
     {
         void Register(IteratorObserver newObserver);
         void UnRegister(IteratorObserver goneObserver);
+        string Name();
     }
 }

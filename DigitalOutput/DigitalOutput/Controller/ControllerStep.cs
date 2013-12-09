@@ -21,11 +21,11 @@ namespace DigitalOutput.Controller
         {
             _parent = parent;
             _model = model;
-            if (_model.Iterator != "")
+            if (String.IsNullOrEmpty(_model.Iterator))
             {
-                foreach (ControllerIterator iterator in HoopManager.Iterators)
+                foreach (IteratorSubject iterator in HoopManager.Iterators)
                 {
-                    if (iterator.Name == _model.Iterator)
+                    if (iterator.Name() == _model.Iterator)
                         iterator.Register(this);
                 }
             }
@@ -120,16 +120,12 @@ namespace DigitalOutput.Controller
             var origSender = (ContextMenu) sender;
 
             var contextMenu = new ContextMenu();
-            foreach (ControllerIterator iterator in HoopManager.Iterators)
+            foreach (IteratorSubject iterator in HoopManager.Iterators)
             {
-                var item = new MenuItem(iterator.Name, SwitchToHooping);
+                var item = new MenuItem(iterator.Name(), SwitchToHooping);
                 contextMenu.MenuItems.Add(item);
             }
-            foreach (ControllerEveryXRun EveryXthRun in HoopManager.EveryXRun)
-            {
-                var item = new MenuItem(EveryXthRun.Name, SwitchToHooping);
-                contextMenu.MenuItems.Add(item);
-            }
+            
             contextMenu.MenuItems.Add(new MenuItem("Enable", SwitchToManual));
             contextMenu.Show(origSender.SourceControl, new Point(0));
         }
@@ -151,18 +147,18 @@ namespace DigitalOutput.Controller
 
         private void RegisterToSubject()
         {
-            foreach (ControllerIterator iterator in HoopManager.Iterators)
+            foreach (IteratorSubject iterator in HoopManager.Iterators)
             {
-                if (iterator.Name == Iterator)
+                if (iterator.Name() == Iterator)
                     iterator.Register(this);
             }
         }
 
         private void UnregisterFromSubject()
-        {        
-            foreach (ControllerIterator iterator in HoopManager.Iterators)
+        {
+            foreach (IteratorSubject iterator in HoopManager.Iterators)
             {
-                if (iterator.Name == Iterator)
+                if (iterator.Name() == Iterator)
                     iterator.UnRegister(this);
             }
         }
@@ -184,6 +180,16 @@ namespace DigitalOutput.Controller
         public void SomethingHasChanged()
         {
             _parent.SomethingHasChanged();
+        }
+
+        public void NewValue(double value, string sender)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void NewName(string newName, string oldName)
+        {
+            throw new NotImplementedException();
         }
     }
 }

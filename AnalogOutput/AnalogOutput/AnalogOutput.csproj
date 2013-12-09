@@ -5,13 +5,14 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{62832474-6718-4F10-BD01-C54DE537F69A}</ProjectGuid>
+    <ProjectGuid>{2E5ED986-99FD-45CB-8BF3-FD28D04D1AF6}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AnalogOutput</RootNamespace>
     <AssemblyName>AnalogOutput</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
@@ -34,6 +35,23 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="fastJSON">
+      <HintPath>external_Library\fastJSON\fastJSON.dll</HintPath>
+    </Reference>
+    <Reference Include="Ionic.Zip.Reduced">
+      <HintPath>external_Library\IonicZip\Ionic.Zip.Reduced.dll</HintPath>
+    </Reference>
+    <Reference Include="LumenWorks.Framework.IO">
+      <HintPath>external_Library\Lumenworks\LumenWorks.Framework.IO.dll</HintPath>
+    </Reference>
+    <Reference Include="NationalInstruments.Common, Version=13.0.40.190, Culture=neutral, PublicKeyToken=dc6ad606294fc298, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\National Instruments\MeasurementStudioVS2010\DotNET\Assemblies\Current\NationalInstruments.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="NationalInstruments.DAQmx, Version=9.8.40.42, Culture=neutral, PublicKeyToken=dc6ad606294fc298, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\National Instruments\MeasurementStudioVS2010\DotNET\Assemblies\Current\NationalInstruments.DAQmx.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -46,27 +64,62 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controller\ControllerCard.cs" />
-    <Compile Include="Controller\ControllerChannel.cs" />
-    <Compile Include="Controller\ControllerFabric.cs" />
-    <Compile Include="Controller\ControllerPattern.cs" />
-    <Compile Include="Controller\ControllerStep.cs" />
-    <Compile Include="Form1.cs">
+    <Compile Include="AnalogOutput.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="AnalogOutput.Designer.cs">
+      <DependentUpon>AnalogOutput.cs</DependentUpon>
     </Compile>
-    <Compile Include="Model\ModelCard.cs" />
-    <Compile Include="Model\ModelChannel.cs" />
-    <Compile Include="Model\ModelData.cs" />
-    <Compile Include="Model\ModelFabric.cs" />
-    <Compile Include="Model\ModelPattern.cs" />
-    <Compile Include="Model\ModelStep.cs" />
+    <Compile Include="Controller.cs" />
+    <Compile Include="Data\DataCalibration.cs" />
+    <Compile Include="Data\DataNetwork.cs" />
+    <Compile Include="GUI\ChannelHeader.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\ChannelHeader.Designer.cs">
+      <DependentUpon>ChannelHeader.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Networking.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Networking.Designer.cs">
+      <DependentUpon>Networking.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\TabFabric.cs" />
+    <Compile Include="GUI\Step.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Step.Designer.cs">
+      <DependentUpon>Step.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Hardware\Buffer.cs" />
+    <Compile Include="Hardware\Translator.cs" />
+    <Compile Include="Interpolation\Point.cs" />
+    <Compile Include="Logic\LogicCard.cs" />
+    <Compile Include="Logic\LogicChannel.cs" />
+    <Compile Include="Logic\LogicFabric.cs" />
+    <Compile Include="Logic\LogicNetwork.cs" />
+    <Compile Include="Logic\LogicPattern.cs" />
+    <Compile Include="Data\DataCard.cs" />
+    <Compile Include="Data\DataChannel.cs" />
+    <Compile Include="Data\DataFabric.cs" />
+    <Compile Include="Data\DataPattern.cs" />
+    <Compile Include="Data\DataStep.cs" />
+    <Compile Include="Logic\LogicStep.cs" />
+    <Compile Include="Interpolation\Polyline.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="AnalogOutput.resx">
+      <DependentUpon>AnalogOutput.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\ChannelHeader.resx">
+      <DependentUpon>ChannelHeader.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Networking.resx">
+      <DependentUpon>Networking.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Step.resx">
+      <DependentUpon>Step.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -76,7 +129,9 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -87,7 +142,16 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\..\ColdNetworkStack\ColdNetworkStack\ColdNetworkStack.csproj">
+      <Project>{455240AB-B9CB-4909-B0E7-AFB52198E91E}</Project>
+      <Name>ColdNetworkStack</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Hulahoop\Hulahoop\Hulahoop.csproj">
+      <Project>{84F2B64F-19A4-4D98-BBE5-DE570A5A4D2A}</Project>
+      <Name>Hulahoop</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

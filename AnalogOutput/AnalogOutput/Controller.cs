@@ -159,8 +159,8 @@ namespace AnalogOutput
             RunCounter++;
             CycleCounter = 0;
             PropertyChangedEvent("RunCounter");
-            HoopManager.Increment();
-            _daqmx.Resume();
+            HoopManager.Increment();            
+            CopyToBuffer();
             Network.StartNextRun();
         }
 

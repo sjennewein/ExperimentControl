@@ -110,27 +110,62 @@ namespace AnalogOutput
 
         private void OnBufferSynced()
         {
-            label_Sync.BackColor = Color.FromArgb(127, 210, 21);
-            label_Sync.Text = "SYNCED";
+            if (InvokeRequired)
+            {
+                GuiUpdate callback = OnBufferSynced;
+                Invoke(callback);
+            }
+            else
+            {
+                label_Sync.BackColor = Color.FromArgb(127, 210, 21);
+                label_Sync.Text = "SYNCED";
+            }
+            
         }
 
         private void OnBufferUnsynced()
         {
-            label_Sync.BackColor = Color.FromArgb(196, 20, 94);
-            label_Sync.Text = "UNSYNCED";
+            if (InvokeRequired)
+            {
+                GuiUpdate callback = OnBufferUnsynced;
+                Invoke(callback);
+            }
+            else
+            {
+                label_Sync.BackColor = Color.FromArgb(196, 20, 94);
+                label_Sync.Text = "UNSYNCED";
+            }
         }
 
         private void OnDaqmxStarted()
         {
-            label_Hardware.BackColor = Color.FromArgb(127, 210, 21);
-            label_Hardware.Text = "RUNNING";
+            if (InvokeRequired)
+            {
+                GuiUpdate callback = OnDaqmxStarted;
+                Invoke(callback);
+            }
+            else
+            {
+                label_Hardware.BackColor = Color.FromArgb(127, 210, 21);
+                label_Hardware.Text = "RUNNING";
+            }
         }
 
         private void OnDaqmxStopped()
         {
-            label_Hardware.BackColor = Color.FromArgb(196, 20, 94);
-            label_Hardware.Text = "STOPPED";
-        }      
+            if (InvokeRequired)
+            {
+                GuiUpdate callback = OnDaqmxStopped;
+                Invoke(callback);
+            }
+            else
+            {
+                label_Hardware.BackColor = Color.FromArgb(196, 20, 94);
+                label_Hardware.Text = "STOPPED";
+            }
+        }
+
+        private delegate void GuiUpdate();
 
     }
 }

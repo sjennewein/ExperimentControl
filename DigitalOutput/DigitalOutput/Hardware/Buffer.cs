@@ -36,7 +36,9 @@ namespace DigitalOutput.Hardware
             _running = true;
             var digitalOutputTask = new Task("PCI6534");
             while (_run)
-            {                                
+            {
+              
+
                 if (_updated)
                 {                    
                     digitalOutputTask.Dispose();
@@ -67,35 +69,33 @@ namespace DigitalOutput.Hardware
                     
                 }
 
-
+                
+                
                 if (_newRun)
                     TriggerEvent(DataProcessed);
                                                
                 _nextRunGate.WaitOne();
 
-                
-
-                Console.WriteLine("starting next run: " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
+              
 
                 //start and wait until everything is done
                 digitalOutputTask.Start();
+                
                 if (_newRun)
                 {
                     _newRun = false;
                     TriggerEvent(RunLaunched);
                 }
-                sw.Stop();
-                Console.WriteLine(sw.ElapsedMilliseconds);
-                sw.Reset();
+                
                 digitalOutputTask.WaitUntilDone(3000000);
 
                 //free hardware
                 digitalOutputTask.Stop();
-                
+          
 
-                Console.WriteLine("run finished: " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
+                
                 _cycleCounter++;                
-                Console.WriteLine(_cycleCounter);
+                
                 TriggerEvent(CycleDone);
                 
                 if (_cyclesPerRun > 0 && _cycleCounter >= _cyclesPerRun)
@@ -109,6 +109,7 @@ namespace DigitalOutput.Hardware
                     _nextRunGate.WaitOne();
                     _nextRunGate.Reset();
                 }
+
             }
             digitalOutputTask.Dispose();
             TriggerEvent(Stopped);

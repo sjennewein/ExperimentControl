@@ -12,7 +12,7 @@ namespace ColdNetworkStack.Server
         private readonly AutoResetEvent _triggerSynchronization = new AutoResetEvent(false);
         private NetworkStream _NetworkStream;
         private bool _run;
-        private bool _trigger;
+        private bool _trigger = true;
 
         public ClientProtocol(Server parent)
         {
@@ -41,7 +41,7 @@ namespace ColdNetworkStack.Server
             while (_run)
             {
                 string input = ReadNetworkStream(client);
-
+                Console.WriteLine(input);
                 Commands command;
                 try
                 {
@@ -111,6 +111,7 @@ namespace ColdNetworkStack.Server
                 
 
             WriteNetworkStream(client, Commands.Trigger.ToString());
+            Console.WriteLine("SEND TRIGGER!");
             Console.Write(ReadNetworkStream(client));
 
             _parent.ClientStarted();

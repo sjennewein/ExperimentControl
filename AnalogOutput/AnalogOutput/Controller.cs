@@ -129,6 +129,7 @@ namespace AnalogOutput
             string json = Hardware.ToJson();
             _daqmx.Start(true, json, CyclesPerRun);
             TriggerEvent(DaqmxStarted);
+            PropertyChangedEvent("CyclesPerRun");
         }
 
         public void CopyToBuffer()

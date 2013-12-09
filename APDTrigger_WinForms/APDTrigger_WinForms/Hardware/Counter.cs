@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 using APDTrigger_WinForms.Helper;
 using NationalInstruments.DAQmx;
@@ -32,7 +33,7 @@ namespace APDTrigger.Hardware
         private readonly double _frequency;
         private readonly object _lockExperiment = new object();
         private readonly bool _monitor;
-        private readonly Task _myAcquisitionTask;
+        private readonly Task _myEdgeCountingTask;
         private readonly int _myClockEdges;
         private readonly Task _myFrequencyGenerator;
         private readonly Task _mySampleClock;
@@ -50,7 +51,8 @@ namespace APDTrigger.Hardware
         private int[] _mySpectrum;
         private Timer _myTimer;
         private int _newDataPoint;
-        private volatile bool _running;        
+        private volatile bool _running;
+        private DateTime _lastRun;
 
         /// <summary>
         ///     Provides the functionality of a standard ASPHERIX experiment in terms of the counter card
@@ -67,7 +69,7 @@ namespace APDTrigger.Hardware
             _cyclesPerRun = cyclesPerRun;
             _myThresholdTask = new Task("ThresholdTask");
             _myTriggerTask = new Task("TriggerTask");
-            _myAcquisitionTask = new Task("AcquisitionTask");
+            _myEdgeCountingTask = new Task("AcquisitionTask");
             _mySampleClock = new Task("SampleClockTask");
             _myFrequencyGenerator = new Task("FrequencyGenerator");
             _frequency = frequency;
@@ -141,14 +143,14 @@ namespace APDTrigger.Hardware
             const CICountEdgesCountDirection countDirection = CICountEdgesCountDirection.Up;
             const SampleClockActiveEdge clockActiveEdge = SampleClockActiveEdge.Rising;
 
-            _myAcquisitionTask.CIChannels.CreateCountEdgesChannel("/Dev3/ctr3", "Acquisition", edge, 0, countDirection);
+            _myEdgeCountingTask.CIChannels.CreateCountEdgesChannel("/Dev3/ctr3", "Acquisition", edge, 0, countDirection);
 
-            _myAcquisitionTask.CIChannels.All.DuplicateCountPrevention = true;
+            _myEdgeCountingTask.CIChannels.All.DuplicateCountPrevention = true;
 
-            _myAcquisitionTask.CIChannels.All.DataTransferMechanism = CIDataTransferMechanism.Dma;
+            _myEdgeCountingTask.CIChannels.All.DataTransferMechanism = CIDataTransferMechanism.Dma;
 
 
-            _myAcquisitionTask.Timing.ConfigureSampleClock("/Dev3/PFI12", 1000000, clockActiveEdge,
+            _myEdgeCountingTask.Timing.ConfigureSampleClock("/Dev3/PFI12", 1000000, clockActiveEdge,
                                                            SampleQuantityMode.FiniteSamples, _myClockEdges);
             InitializeSampleClock();
         }
@@ -210,7 +212,7 @@ namespace APDTrigger.Hardware
 
             //the trigger keeps on starting this function every 10ms but only evaluates it if it's not running
             if (Monitor.TryEnter(_lockExperiment))
-            {
+            {                
                 try
                 {
                     //used for pausing between runs signaled from the controller                    
@@ -224,23 +226,32 @@ namespace APDTrigger.Hardware
 
                     //check if the value read from the counter is bigger than the set threshold
                     if (_newDataPoint >= _threshold)
-                        _detectedBins++;
-                    else
-                        _detectedBins = 0;
-
-                    //check if enough bins have been over the threshold => atom in the trap
-                    if (_detectedBins >= _detectionBins)
                     {
-                      
-                      
+                        _detectedBins++;
+                        
+                    }
+                    else
+                    {
                         _detectedBins = 0;
+                        return;
+                    }
+                        
 
-                        //send a trigger to the digital output card
-                        _myTriggerTask.Start();
-                      
-                        _myTriggerTask.Stop();
 
-                      
+                    TimeSpan timeSinceLastRun = DateTime.Now - _lastRun;
+                    
+                    //check if enough bins have been over the threshold => atom in the trap
+                    if (_detectedBins >= _detectionBins && timeSinceLastRun.TotalMilliseconds >= 400)
+                    {
+                        
+
+                        _detectedBins = 0;
+                        
+                        //send a trigger to the digital output card                                                
+                        _myTriggerTask.Start();                        
+                        _myTriggerTask.Stop();                        
+                        
+
                         MeasureSpectrum();
                       
                         var result = EvaluateRecapture();
@@ -252,11 +263,14 @@ namespace APDTrigger.Hardware
 
                       
                         CycleFinishedEvent(result);
+                        _lastRun = DateTime.Now;
                     }
                 }
                 finally
                 {
+                    
                     Monitor.Exit(_lockExperiment);
+                    
                 }
             }
         }
@@ -282,8 +296,8 @@ namespace APDTrigger.Hardware
                 _myThresholdTask.Stop();
                 _myThresholdTask.Dispose();
 
-                _myAcquisitionTask.Stop();
-                _myAcquisitionTask.Dispose();
+                _myEdgeCountingTask.Stop();
+                _myEdgeCountingTask.Dispose();
 
                 _mySampleClock.Stop();
                 _mySampleClock.Dispose();
@@ -351,21 +365,19 @@ namespace APDTrigger.Hardware
             try
             {
                 _mySampleClock.Start();
-                _myAcquisitionTask.Start();
-                var acquisitionReader = new CounterReader(_myAcquisitionTask.Stream);
+                _myEdgeCountingTask.Start();
+                var acquisitionReader = new CounterReader(_myEdgeCountingTask.Stream);
                 acquisitionReader.MemoryOptimizedReadMultiSampleInt32(_myClockEdges, ref data, out readOutSamples);
             }
-            catch
+            catch (DaqException e)
             {
                 return;
             }
             finally
             {
-                _myAcquisitionTask.Stop();
-                _mySampleClock.Stop();
-            }
-
-
+                _myEdgeCountingTask.Stop();
+                _mySampleClock.Stop();         
+            }            
             _myAcquiredData = data;
 
 

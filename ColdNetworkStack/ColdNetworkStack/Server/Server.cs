@@ -110,7 +110,7 @@ namespace ColdNetworkStack.Server
         public void ClientStarted()
         {
             Interlocked.Add(ref _startedClients, 1);
-            if(Interlocked.Read(ref _startedClients) == (_registeredClients.Count - 1))
+            if(Interlocked.Read(ref _startedClients) == _registeredClients.Count)
             {
                 Interlocked.Exchange(ref _startedClients, 0);
                 TriggerEvent(AllClientsAreLaunched);
@@ -128,6 +128,8 @@ namespace ColdNetworkStack.Server
         {
             foreach (ClientProtocol client in _clientTalks)
                 client.SendTrigger();
+            //call ClientStarted once for the apd itself
+            ClientStarted();
         }
 
         private void TriggerEvent(EventHandler newEvent, EventArgs e = null)

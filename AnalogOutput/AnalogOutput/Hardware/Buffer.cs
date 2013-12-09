@@ -69,10 +69,10 @@ namespace AnalogOutput.Hardware
 
                 _signal.WaitOne();
 
-                if (_networkMode)
-                {
-                    _signal.Reset();
-                }
+                //if (_networkMode)
+                //{
+                //    _signal.Reset();
+                //}
             }
             _running = false;
             TriggerEvent(Stopped);
@@ -107,6 +107,7 @@ namespace AnalogOutput.Hardware
         {
             _cycleCounter = 0;
             _signal.Set();
+            Console.WriteLine("Hardware resumed");
         }
 
         private void TriggerEvent(EventHandler newEvent, EventArgs e = null)

@@ -19,7 +19,11 @@ namespace AnalogOutput
             System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
 
             _controller = new Controller(this);
-            //_controller.BufferUnsynced += 
+            _controller.BufferUnsynced += delegate { OnBufferUnsynced(); };
+            _controller.BufferSynced += delegate { OnBufferSynced(); };
+            _controller.DaqmxStarted += delegate { OnDaqmxStarted(); };
+            _controller.DaqmxStopped += delegate { OnDaqmxStopped(); };
+
             InitializeComponent();
             Initialize();
         }
@@ -119,24 +123,14 @@ namespace AnalogOutput
         private void OnDaqmxStarted()
         {
             label_Hardware.BackColor = Color.FromArgb(127, 210, 21);
-            label_Hardware.Text = "STARTED";
+            label_Hardware.Text = "RUNNING";
         }
 
         private void OnDaqmxStopped()
         {
             label_Hardware.BackColor = Color.FromArgb(196, 20, 94);
-            label_Hardware.Text = "STARTED";
-        }
-
-        private void OnNetworkConnected()
-        {
-            
-        }
-
-        private void OnNetworkDisconnected()
-        {
-            
-        }
+            label_Hardware.Text = "STOPPED";
+        }      
 
     }
 }

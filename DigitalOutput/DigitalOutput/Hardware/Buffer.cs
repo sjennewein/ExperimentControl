@@ -22,7 +22,7 @@ namespace DigitalOutput.Hardware
         private volatile int _cyclesPerRun;
         private volatile int _cycleCounter;
         public int CyclesPerRun { set { _cyclesPerRun = value; } }
-              
+        private Stopwatch sw = new Stopwatch();
 
         public void UpdateData(string newData)
         {
@@ -34,35 +34,43 @@ namespace DigitalOutput.Hardware
         {
             TriggerEvent(Started);
             _running = true;
+            var digitalOutputTask = new Task("PCI6534");
             while (_run)
             {                                
                 if (_updated)
-                {
+                {                    
+                    digitalOutputTask.Dispose();
+                    digitalOutputTask = new Task("PCI6534");
+
                     _data = (ModelCard) JSON.Instance.ToObject(_serializedData);
                     _outputSequence = Translator.GenerateOutput(_data);
                     _updated = false;
+
+                    //initialize output card
+                    sw.Start();
+
+                    digitalOutputTask.DOChannels.CreateChannel("/Dev1/port0_32", "",
+                                                               ChannelLineGrouping.OneChannelForAllLines);
+
+                    double sampleRate = _data.SampleRate.GetFrequency(Timing.Frequency.Hz);
+
+                    digitalOutputTask.Timing.ConfigureSampleClock("", sampleRate,
+                                                                  SampleClockActiveEdge.Rising,
+                                                                  SampleQuantityMode.FiniteSamples, _outputSequence.Length);
+                    digitalOutputTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger("/Dev1/PFI6",
+                                                                                        DigitalEdgeStartTriggerEdge.Rising);
+
+                    //write output to card
+                    var writer = new DigitalSingleChannelWriter(digitalOutputTask.Stream);
+                    writer.WriteMultiSamplePort(false, _outputSequence);
+
+                    
                 }
 
-                //initialize output card
-                var digitalOutputTask = new Task("PCI6534");
-                digitalOutputTask.DOChannels.CreateChannel("/Dev1/port0_32", "",
-                                                           ChannelLineGrouping.OneChannelForAllLines);
 
-                double sampleRate = _data.SampleRate.GetFrequency(Timing.Frequency.Hz);
-
-                digitalOutputTask.Timing.ConfigureSampleClock("", sampleRate,
-                                                              SampleClockActiveEdge.Rising,
-                                                              SampleQuantityMode.FiniteSamples, _outputSequence.Length);
-                digitalOutputTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger("/Dev1/PFI6",
-                                                                                    DigitalEdgeStartTriggerEdge.Rising);
-
-                //write output to card
-                var writer = new DigitalSingleChannelWriter(digitalOutputTask.Stream);
-                writer.WriteMultiSamplePort(false, _outputSequence);
-
-                if(_newRun)
+                if (_newRun)
                     TriggerEvent(DataProcessed);
-                
+                                               
                 _nextRunGate.WaitOne();
 
                 
@@ -76,11 +84,14 @@ namespace DigitalOutput.Hardware
                     _newRun = false;
                     TriggerEvent(RunLaunched);
                 }
-                digitalOutputTask.WaitUntilDone(300000);
+                sw.Stop();
+                Console.WriteLine(sw.ElapsedMilliseconds);
+                sw.Reset();
+                digitalOutputTask.WaitUntilDone(3000000);
 
                 //free hardware
                 digitalOutputTask.Stop();
-                digitalOutputTask.Dispose();
+                
 
                 Console.WriteLine("run finished: " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
                 _cycleCounter++;                
@@ -99,6 +110,7 @@ namespace DigitalOutput.Hardware
                     _nextRunGate.Reset();
                 }
             }
+            digitalOutputTask.Dispose();
             TriggerEvent(Stopped);
             _running = false;
         }

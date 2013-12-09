@@ -30,6 +30,7 @@ namespace AnalogOutput.Hardware
         {
             TriggerEvent(Started);
             _running = true;
+            _cycleCounter = 0;
             while (_run)
             {
                 if (_updated)
@@ -57,11 +58,12 @@ namespace AnalogOutput.Hardware
                         TriggerEvent(RunStarted);
 
                     myTask.WaitUntilDone(3600000);
+                    myTask.Stop();
                 }
                 _cycleCounter++;
                 TriggerEvent(CycleFinished);
 
-                if (_networkMode && _cycleCounter++ >= _cyclesPerRun)
+                if (_networkMode && _cycleCounter >= _cyclesPerRun)
                 {
                     Pause();
                     TriggerEvent(RunFinished);

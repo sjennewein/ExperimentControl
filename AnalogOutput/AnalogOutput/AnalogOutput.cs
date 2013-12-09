@@ -13,7 +13,17 @@ namespace AnalogOutput
 
         public AnalogOutput()
         {
+            System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
+            customCulture.NumberFormat.NumberDecimalSeparator = ".";
+
+            System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
+
             _controller = new Controller(this);
+            _controller.BufferUnsynced += delegate { OnBufferUnsynced(); };
+            _controller.BufferSynced += delegate { OnBufferSynced(); };
+            _controller.DaqmxStarted += delegate { OnDaqmxStarted(); };
+            _controller.DaqmxStopped += delegate { OnDaqmxStopped(); };
+
             InitializeComponent();
             Initialize();
         }
@@ -32,7 +42,6 @@ namespace AnalogOutput
             label_CyclePerRun.DataBindings.Add("Text", _controller, "CyclesPerRun");
             ResumeLayout();
         }
-
 
         private void button_Save_Click(object sender, EventArgs e)
         {
@@ -91,13 +100,72 @@ namespace AnalogOutput
                 return;
             }               
             _controller.CopyToBuffer();
-            label_Sync.BackColor = Color.FromArgb(127, 210, 21);
-            label_Sync.Text = "SYNCED";
+            
         }
 
         private void button_Stop_Click(object sender, EventArgs e)
         {
             _controller.Stop();
         }
+
+        private void OnBufferSynced()
+        {
+            if (InvokeRequired)
+            {
+                GuiUpdate callback = OnBufferSynced;
+                Invoke(callback);
+            }
+            else
+            {
+                label_Sync.BackColor = Color.FromArgb(127, 210, 21);
+                label_Sync.Text = "SYNCED";
+            }
+            
+        }
+
+        private void OnBufferUnsynced()
+        {
+            if (InvokeRequired)
+            {
+                GuiUpdate callback = OnBufferUnsynced;
+                Invoke(callback);
+            }
+            else
+            {
+                label_Sync.BackColor = Color.FromArgb(196, 20, 94);
+                label_Sync.Text = "UNSYNCED";
+            }
+        }
+
+        private void OnDaqmxStarted()
+        {
+            if (InvokeRequired)
+            {
+                GuiUpdate callback = OnDaqmxStarted;
+                Invoke(callback);
+            }
+            else
+            {
+                label_Hardware.BackColor = Color.FromArgb(127, 210, 21);
+                label_Hardware.Text = "RUNNING";
+            }
+        }
+
+        private void OnDaqmxStopped()
+        {
+            if (InvokeRequired)
+            {
+                GuiUpdate callback = OnDaqmxStopped;
+                Invoke(callback);
+            }
+            else
+            {
+                label_Hardware.BackColor = Color.FromArgb(196, 20, 94);
+                label_Hardware.Text = "STOPPED";
+            }
+        }
+
+        private delegate void GuiUpdate();
+
     }
 }

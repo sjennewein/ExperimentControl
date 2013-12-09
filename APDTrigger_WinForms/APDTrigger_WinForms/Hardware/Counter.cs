@@ -32,8 +32,8 @@ namespace APDTrigger.Hardware
         private readonly double _frequency;
         private readonly object _lockExperiment = new object();
         private readonly bool _monitor;
-        private readonly Task _myAcquisitionTask;
         private readonly int _myClockEdges;
+        private readonly Task _myEdgeCountingTask;
         private readonly Task _myFrequencyGenerator;
         private readonly Task _mySampleClock;
         private readonly Task _myThresholdTask;
@@ -45,12 +45,13 @@ namespace APDTrigger.Hardware
 
         private int _detectedBins;
         private bool _finalized;
+        private DateTime _lastRun;
         private int[] _myAcquiredData;
         private int[] _myBinnedSpectrum;
         private int[] _mySpectrum;
         private Timer _myTimer;
         private int _newDataPoint;
-        private volatile bool _running;        
+        private volatile bool _running;
 
         /// <summary>
         ///     Provides the functionality of a standard ASPHERIX experiment in terms of the counter card
@@ -67,7 +68,7 @@ namespace APDTrigger.Hardware
             _cyclesPerRun = cyclesPerRun;
             _myThresholdTask = new Task("ThresholdTask");
             _myTriggerTask = new Task("TriggerTask");
-            _myAcquisitionTask = new Task("AcquisitionTask");
+            _myEdgeCountingTask = new Task("AcquisitionTask");
             _mySampleClock = new Task("SampleClockTask");
             _myFrequencyGenerator = new Task("FrequencyGenerator");
             _frequency = frequency;
@@ -141,15 +142,15 @@ namespace APDTrigger.Hardware
             const CICountEdgesCountDirection countDirection = CICountEdgesCountDirection.Up;
             const SampleClockActiveEdge clockActiveEdge = SampleClockActiveEdge.Rising;
 
-            _myAcquisitionTask.CIChannels.CreateCountEdgesChannel("/Dev3/ctr3", "Acquisition", edge, 0, countDirection);
+            _myEdgeCountingTask.CIChannels.CreateCountEdgesChannel("/Dev3/ctr3", "Acquisition", edge, 0, countDirection);
 
-            _myAcquisitionTask.CIChannels.All.DuplicateCountPrevention = true;
+            _myEdgeCountingTask.CIChannels.All.DuplicateCountPrevention = true;
 
-            _myAcquisitionTask.CIChannels.All.DataTransferMechanism = CIDataTransferMechanism.Dma;
+            _myEdgeCountingTask.CIChannels.All.DataTransferMechanism = CIDataTransferMechanism.Dma;
 
 
-            _myAcquisitionTask.Timing.ConfigureSampleClock("/Dev3/PFI12", 1000000, clockActiveEdge,
-                                                           SampleQuantityMode.FiniteSamples, _myClockEdges);
+            _myEdgeCountingTask.Timing.ConfigureSampleClock("/Dev3/PFI12", 1000000, clockActiveEdge,
+                                                            SampleQuantityMode.FiniteSamples, _myClockEdges);
             InitializeSampleClock();
         }
 
@@ -215,8 +216,7 @@ namespace APDTrigger.Hardware
                 {
                     //used for pausing between runs signaled from the controller                    
                     _pauseCycling.WaitOne();
-                  
-                                                           
+
                     ReadHighFrequencyCounter();
 
                     if (_monitor) //if we only monitor then ignore all fancy measurement functions
@@ -224,34 +224,37 @@ namespace APDTrigger.Hardware
 
                     //check if the value read from the counter is bigger than the set threshold
                     if (_newDataPoint >= _threshold)
+                    {
                         _detectedBins++;
+                    }
                     else
+                    {
                         _detectedBins = 0;
+                        return;
+                    }
+
+                    TimeSpan timeSinceLastRun = DateTime.Now - _lastRun;
 
                     //check if enough bins have been over the threshold => atom in the trap
-                    if (_detectedBins >= _detectionBins)
+                    if (_detectedBins >= _detectionBins && timeSinceLastRun.TotalMilliseconds >= 400)
                     {
-                      
-                      
                         _detectedBins = 0;
 
-                        //send a trigger to the digital output card
+                        //send a trigger to the digital output card                                                
                         _myTriggerTask.Start();
-                      
                         _myTriggerTask.Stop();
 
-                      
                         MeasureSpectrum();
-                      
-                        var result = EvaluateRecapture();
+
+                        RecaptureResult result = EvaluateRecapture();
 
                         _cycleCounter++;
 
                         if (_cyclesPerRun > 0 && _cycleCounter >= _cyclesPerRun)
                             Pause();
 
-                      
                         CycleFinishedEvent(result);
+                        _lastRun = DateTime.Now;
                     }
                 }
                 finally
@@ -282,8 +285,8 @@ namespace APDTrigger.Hardware
                 _myThresholdTask.Stop();
                 _myThresholdTask.Dispose();
 
-                _myAcquisitionTask.Stop();
-                _myAcquisitionTask.Dispose();
+                _myEdgeCountingTask.Stop();
+                _myEdgeCountingTask.Dispose();
 
                 _mySampleClock.Stop();
                 _mySampleClock.Dispose();
@@ -301,7 +304,7 @@ namespace APDTrigger.Hardware
         /// </summary>
         private void ReadHighFrequencyCounter()
         {
-            int[] readOutData;            
+            int[] readOutData;
             try
             {
                 _myThresholdTask.Start();
@@ -313,7 +316,7 @@ namespace APDTrigger.Hardware
             finally
             {
                 _myThresholdTask.Stop();
-            } 
+            }
 
             if (readOutData.Length >= 1)
             {
@@ -329,7 +332,7 @@ namespace APDTrigger.Hardware
         /// </summary>
         public void Pause()
         {
-            _pauseCycling.Reset();            
+            _pauseCycling.Reset();
         }
 
         /// <summary>
@@ -337,7 +340,7 @@ namespace APDTrigger.Hardware
         /// </summary>
         public void Resume()
         {
-            _cycleCounter = 0;            
+            _cycleCounter = 0;
             _pauseCycling.Set();
         }
 
@@ -345,27 +348,25 @@ namespace APDTrigger.Hardware
         /// Acquires the data from the spectrum/recapture measurement
         /// </summary>
         private void MeasureSpectrum()
-        {            
+        {
             var data = new int[_myClockEdges];
             int readOutSamples = 0;
             try
             {
                 _mySampleClock.Start();
-                _myAcquisitionTask.Start();
-                var acquisitionReader = new CounterReader(_myAcquisitionTask.Stream);
+                _myEdgeCountingTask.Start();
+                var acquisitionReader = new CounterReader(_myEdgeCountingTask.Stream);
                 acquisitionReader.MemoryOptimizedReadMultiSampleInt32(_myClockEdges, ref data, out readOutSamples);
             }
-            catch
+            catch (DaqException e)
             {
                 return;
             }
             finally
             {
-                _myAcquisitionTask.Stop();
+                _myEdgeCountingTask.Stop();
                 _mySampleClock.Stop();
             }
-
-
             _myAcquiredData = data;
 
 
@@ -391,15 +392,14 @@ namespace APDTrigger.Hardware
         private RecaptureResult EvaluateRecapture()
         {
             var result = new RecaptureResult {Data = RecaptureResult.State.Lost};
-            
-            if (_myBinnedSpectrum == null)  //nasty workaround
+
+            if (_myBinnedSpectrum == null) //nasty workaround
                 return result;
 
             if (_myBinnedSpectrum[1] + _myBinnedSpectrum[2] > 2*_threshold)
                 result.Data = RecaptureResult.State.Captured;
 
             return result;
-            
         }
 
         /// <summary>

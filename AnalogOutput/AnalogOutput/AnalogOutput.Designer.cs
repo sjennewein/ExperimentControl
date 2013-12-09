@@ -44,7 +44,7 @@
             this.label_slash = new System.Windows.Forms.Label();
             this.label_CycleCounter = new System.Windows.Forms.Label();
             this.label_Cycle = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
+            this.label_Hardware = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.groupBox_Info.SuspendLayout();
@@ -145,7 +145,7 @@
             this.groupBox_Info.Controls.Add(this.label_slash);
             this.groupBox_Info.Controls.Add(this.label_CycleCounter);
             this.groupBox_Info.Controls.Add(this.label_Cycle);
-            this.groupBox_Info.Controls.Add(this.label1);
+            this.groupBox_Info.Controls.Add(this.label_Hardware);
             this.groupBox_Info.Location = new System.Drawing.Point(809, 12);
             this.groupBox_Info.Name = "groupBox_Info";
             this.groupBox_Info.Size = new System.Drawing.Size(200, 86);
@@ -207,16 +207,16 @@
             this.label_Cycle.TabIndex = 11;
             this.label_Cycle.Text = "Cycles done:";
             // 
-            // label1
+            // label_Hardware
             // 
-            this.label1.AutoSize = true;
-            this.label1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(196)))), ((int)(((byte)(20)))), ((int)(((byte)(94)))));
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(6, 16);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(81, 24);
-            this.label1.TabIndex = 10;
-            this.label1.Text = "Stopped";
+            this.label_Hardware.AutoSize = true;
+            this.label_Hardware.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(196)))), ((int)(((byte)(20)))), ((int)(((byte)(94)))));
+            this.label_Hardware.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_Hardware.Location = new System.Drawing.Point(6, 16);
+            this.label_Hardware.Name = "label_Hardware";
+            this.label_Hardware.Size = new System.Drawing.Size(81, 24);
+            this.label_Hardware.TabIndex = 10;
+            this.label_Hardware.Text = "Stopped";
             // 
             // label2
             // 
@@ -280,7 +280,7 @@
         private System.Windows.Forms.Label label_slash;
         private System.Windows.Forms.Label label_CycleCounter;
         private System.Windows.Forms.Label label_Cycle;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label_Hardware;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
     }

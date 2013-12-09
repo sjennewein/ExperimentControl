@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 using AnalogOutput.Logic;
 
@@ -14,6 +15,8 @@ namespace AnalogOutput.GUI
             InitializeComponent();
             textBox_IP.DataBindings.Add("Text", _network, "Ip");
             textBox_Port.DataBindings.Add("Text", _network, "Port");
+            _network.Connected += delegate { OnConnected(); };
+            _network.Disconnected += delegate { OnDisconnected(); };
         }
 
         private void checkBox_Network_CheckedChanged(object sender, EventArgs e)
@@ -31,6 +34,18 @@ namespace AnalogOutput.GUI
                 textBox_Port.Enabled = false;
                 _network.Activated = false;
             }
+        }
+
+        private void OnConnected()
+        {
+            label_Connection.Text = "Connected";
+            label_Connection.BackColor = Color.FromArgb(127, 210, 21);
+        }
+
+        private  void OnDisconnected()
+        {
+            label_Connection.Text = "Disconnected";
+            label_Connection.BackColor = Color.FromArgb(196, 20, 94);
         }
     }
 }

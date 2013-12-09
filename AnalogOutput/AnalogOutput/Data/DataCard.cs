@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace AnalogOutput.Data
 {
     public class DataCard
     {
-        public DataPattern[] Patterns;
+        public List<DataCalibration> Calibration = new List<DataCalibration>();
         public string Flow;
+        public List<string> ChannelNames = new List<string>();
+        public DataPattern[] Patterns;
     }
 }

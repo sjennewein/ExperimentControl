@@ -1,12 +1,13 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.IO;
 using System.Windows.Forms;
 using AnalogOutput.Data;
-using AnalogOutput.Hardware;
 using AnalogOutput.Logic;
 using fastJSON;
 using Hulahoop.Controller;
 using Ionic.Zip;
+using Buffer = AnalogOutput.Hardware.Buffer;
 
 namespace AnalogOutput
 {
@@ -39,12 +40,14 @@ namespace AnalogOutput
 
         public void Initialize(string data = null)
         {
+            
             DataCard card = null;
 
             if (data != null)
                 card = (DataCard) JSON.Instance.ToObject(data);
 
             Hardware = LogicFabric.GenerateCard(card);
+            Hardware.NewInput += delegate { OnInputChanged(); };
         }
 
         public void Save(string fileName)
@@ -99,13 +102,15 @@ namespace AnalogOutput
             if (Network.Activated)
             {
                 Network.Connect();
+                TriggerEvent(NetworkConnected);
                 _daqmx.Pause();
                 Network.ListenToTrigger();
-
                 return;
             }
             string json = Hardware.ToJson();
             _daqmx.Start(false, json);
+            TriggerEvent(DaqmxStarted);
+            TriggerEvent(BufferSynced);
         }
 
         public void Stop()
@@ -113,19 +118,24 @@ namespace AnalogOutput
             if (Network.Activated)
             {
                 Network.Disconnect();
+                TriggerEvent(NetworkDisconnected);
             }
             _daqmx.Stop();
+            TriggerEvent(DaqmxStopped);
         }
 
         private void RemoteStart()
         {
             string json = Hardware.ToJson();
             _daqmx.Start(true, json, CyclesPerRun);
+            TriggerEvent(DaqmxStarted);
+            PropertyChangedEvent("CyclesPerRun");
         }
 
         public void CopyToBuffer()
         {
             _daqmx.UpdateData(Hardware.ToJson());
+            TriggerEvent(BufferSynced);
         }
 
         private void OnNwStartRun()
@@ -149,8 +159,8 @@ namespace AnalogOutput
             RunCounter++;
             CycleCounter = 0;
             PropertyChangedEvent("RunCounter");
-            HoopManager.Increment();
-            _daqmx.Resume();
+            HoopManager.Increment();            
+            CopyToBuffer();
             Network.StartNextRun();
         }
 
@@ -170,5 +180,24 @@ namespace AnalogOutput
         }
 
         private delegate void GuiUpdate(string propertyName);
+
+        private void TriggerEvent(EventHandler newEvent, EventArgs e = null)
+        {
+            EventHandler triggerEvent = newEvent;
+            if (triggerEvent != null)
+                triggerEvent(this, new EventArgs());
+        }
+
+        private void OnInputChanged()
+        {
+            TriggerEvent(BufferUnsynced);
+        }
+
+        public event EventHandler DaqmxStarted;
+        public event EventHandler DaqmxStopped;
+        public event EventHandler NetworkConnected;
+        public event EventHandler NetworkDisconnected;
+        public event EventHandler BufferSynced;
+        public event EventHandler BufferUnsynced;
     }
 }

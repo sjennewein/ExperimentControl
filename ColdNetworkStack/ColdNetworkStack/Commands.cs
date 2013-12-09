@@ -9,6 +9,7 @@
         EnterTriggerMode,
         Trigger,
         WaitingForTrigger,        
+        Finished,
         Data,
         Disconnect        
     }    

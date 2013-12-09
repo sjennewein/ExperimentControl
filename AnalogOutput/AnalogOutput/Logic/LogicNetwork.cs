@@ -9,15 +9,14 @@ namespace AnalogOutput.Logic
 {
     public class LogicNetwork : INotifyPropertyChanged 
     {
-        private readonly Client _client = new Client("AnalogOutput");
+        private Client _client = new Client("AnalogOutput");
 
         public bool Activated = false;
         private DataNetwork _data = new DataNetwork();
 
         public LogicNetwork()
         {
-            _client.DataReceived += delegate { OnDataReceived(); };
-            _client.LaunchNextRun += delegate { OnStartNextRun(); };
+            
         }
 
         public string Ip
@@ -52,7 +51,13 @@ namespace AnalogOutput.Logic
         public void Connect()
         {
             if (Activated)
+            {
+                _client = new Client("AnalogOutput");
+                _client.DataReceived += delegate { OnDataReceived(); };
+                _client.LaunchNextRun += delegate { OnStartNextRun(); };
                 _client.Connect(IPAddress.Parse(Ip), Port);
+                TriggerEvent(Connected);
+            }
         }
 
         public void ListenToTrigger()
@@ -63,7 +68,10 @@ namespace AnalogOutput.Logic
         public void Disconnect()
         {
             if (Activated)
+            {
                 _client.Disconnect();
+                TriggerEvent(Disconnected);
+            }
         }
 
         public void StartNextRun()
@@ -74,6 +82,7 @@ namespace AnalogOutput.Logic
         public void HardwareStarted()
         {
             _client.Resume();
+            Console.WriteLine("Network resumed");
         }
 
         private void OnDataReceived()
@@ -102,6 +111,8 @@ namespace AnalogOutput.Logic
 
         public event EventHandler DataUpdated;
         public event EventHandler StartRun;
+        public event EventHandler Connected;
+        public event EventHandler Disconnected;
 
         public event PropertyChangedEventHandler PropertyChanged;
     }

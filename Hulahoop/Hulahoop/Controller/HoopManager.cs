@@ -30,6 +30,11 @@ namespace Hulahoop.Controller
             {
                 iterator.Increment();
             }
+
+            foreach(ControllerFileIterator iterator in FileIterators)
+            {
+                iterator.Increment();
+            }
         }
 
         public static void Save(ZipFile zip)

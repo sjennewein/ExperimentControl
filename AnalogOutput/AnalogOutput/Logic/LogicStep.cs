@@ -16,19 +16,26 @@ namespace AnalogOutput.Logic
         {
             _data = data;
             _parent = parent;
+            _parent.CalibrationChanged += delegate { OnCalibrationChanged(); };
+
             if (_data.DurationIterator != null)
-                foreach (var iterator in HoopManager.Iterators)
+                foreach (IteratorSubject iterator in HoopManager.Iterators)
                 {
-                    if(iterator.Name() == _data.DurationIterator)
+                    if (iterator.Name() == _data.DurationIterator)
                         iterator.Register(this);
                 }
 
             if (_data.ValueIterator != null)
-                foreach (var iterator in HoopManager.Iterators)
+                foreach (IteratorSubject iterator in HoopManager.Iterators)
                 {
                     if (iterator.Name() == _data.ValueIterator)
                         iterator.Register(this);
                 }
+        }
+
+        public string Unit
+        {
+            get { return _parent.Unit; }
         }
 
         public StepType Type
@@ -42,10 +49,8 @@ namespace AnalogOutput.Logic
             get { return _data.Value; }
             set
             {
-                if (Math.Abs(value) > 10)
-                    throw new Exception("Only values between -10 and 10 are allowed!");
-
                 _data.Value = value;
+                _parent.InputChanged();
             }
         }
 
@@ -54,20 +59,9 @@ namespace AnalogOutput.Logic
             get { return _data.Duration; }
             set
             {
-                if (value < 0)
-                    throw new Exception("Negative duration is not allowed!");
-
-                if (value%2 != 0)
-                    throw new Exception("Value is not a multiple of 2!");
-
                 _data.Duration = value;
+                _parent.InputChanged();
             }
-        }
-
-        public string FileName
-        {
-            get { return _data.FileName; }
-            set { _data.FileName = value; }
         }
 
         public string Description
@@ -132,22 +126,13 @@ namespace AnalogOutput.Logic
 
         #endregion
 
-        public void LoadFile()
+        public void LoadFile(string fileName)
         {
-            string[] lines = File.ReadAllLines(FileName);
+            string[] lines = File.ReadAllLines(fileName);
             double[] myRamp = Array.ConvertAll(lines, double.Parse);
             _data.Ramp = myRamp;
 
-            if (myRamp.Length%2 != 0)
-                throw new Exception("The ramp has an odd number of samples!");
-            
-            foreach (var sample in myRamp)
-            {
-                if(Math.Abs(sample) > 10)
-                    throw new Exception("Only values from -10 to 10 are allowed!");
-            }
-
-            Duration = myRamp.Length;
+            Duration = myRamp.Length*2;
             PropertyChangedEvent("Duration");
         }
 
@@ -174,6 +159,11 @@ namespace AnalogOutput.Logic
                 if (iterator.Name() == iteratorName)
                     iterator.UnRegister(this);
             }
+        }
+
+        private void OnCalibrationChanged()
+        {
+            PropertyChangedEvent("Unit");
         }
     }
 }

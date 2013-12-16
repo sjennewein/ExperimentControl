@@ -363,7 +363,9 @@ namespace APDTrigger_WinForms.Helper
 
                 if (_runsDone >= TotalRuns) //if all runs are done stop the run
                 {
-                    _tcpServer.StopTrigger();
+                    if(Mode == RunType.Network)                    
+                        _tcpServer.StopTrigger();
+
                     Stop();
                     return;
                 }

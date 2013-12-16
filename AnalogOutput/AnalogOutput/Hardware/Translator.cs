@@ -128,7 +128,9 @@ namespace AnalogOutput.Hardware
                 var interpolator = new Polyline(calibrations[iChannel].DataPoints);
 
                 int sampleCounter = 0;
-                sequence[iChannel, sampleCounter] = channel.InitialValue;
+                
+                //set the initial value for this channel
+                sequence[iChannel, sampleCounter] = interpolator.Interpolate(channel.InitialValue);
                 sampleCounter++;
                 bool allStepsAreZero = true;
 
@@ -147,7 +149,7 @@ namespace AnalogOutput.Hardware
                 {
                     for (int iStep = 0; iStep < length; iStep++ )
                     {
-                        sequence[iChannel, iStep] = channel.InitialValue;
+                        sequence[iChannel, iStep] = interpolator.Interpolate(channel.InitialValue);
                     }
                     continue;
                 }

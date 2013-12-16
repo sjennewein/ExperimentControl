@@ -13,10 +13,15 @@ namespace AnalogOutput.Interpolation
             _dataPoints = dataPoints;
         }
 
+        /// <summary>
+        ///  X is the new value Hertz or whatever and Y is in Volt 
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
         public double Interpolate(double x)
         {
             if (_dataPoints[0].X > x || _dataPoints.Last().X < x)
-                throw new Exception("There are no data-points to interpolate this value!");
+                return 0;
 
             Point upperPoint = null;
             foreach (Point dataPoint in _dataPoints)

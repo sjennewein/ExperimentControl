@@ -135,13 +135,13 @@ namespace DigitalOutput
 
         private void button_Start_Click(object sender, EventArgs e)
         {
-            //if (String.Equals(_card.Flow, String.Empty) || _card.Flow == null)
-            //{
-            //    MessageBox.Show("You have to provide a \"Program flow\"!");
-            //    return;
-            //}
+            if (String.Equals(_card.Flow, String.Empty) || _card.Flow == null)
+            {
+                MessageBox.Show("You have to provide a \"Program flow\"!");
+                return;
+            }
 
-           // _card.Start();
+            _card.Start();
             if (_card.Networking)
                 DisableInput();
             label_Buffer.BackColor = Color.FromArgb(127, 210, 21);

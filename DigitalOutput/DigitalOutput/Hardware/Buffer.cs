@@ -86,8 +86,9 @@ namespace DigitalOutput.Hardware
                     _newRun = false;
                     TriggerEvent(RunLaunched);
                 }
-                
-                digitalOutputTask.WaitUntilDone(3000000);
+
+                digitalOutputTask.WaitUntilDone(30000000);
+
 
                 //free hardware
                 digitalOutputTask.Stop();

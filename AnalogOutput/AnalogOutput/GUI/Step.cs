@@ -21,8 +21,7 @@ namespace AnalogOutput.GUI
             label_Value.DataBindings.Add("Text", _controller, "Unit", false, DataSourceUpdateMode.OnPropertyChanged);
 
             CheckHowToHandleBindings();
-            
-            
+                        
             textBox_Duration.ContextMenu = new ContextMenu();
             textBox_Voltage.ContextMenu = new ContextMenu();
             textBox_Voltage.ContextMenu.Popup += OnContextMenu;
@@ -43,7 +42,6 @@ namespace AnalogOutput.GUI
             if (String.IsNullOrEmpty(_controller.DurationIterator))
             {
                 textBox_Duration.DataBindings.Add("Text", _controller, "Duration");
-
             }
             else
             {
@@ -131,11 +129,10 @@ namespace AnalogOutput.GUI
 
         private void textBox_Voltage_Validating(object sender, CancelEventArgs e)
         {
-            var textBox = (TextBox) sender;
-            double value = 11;
+            var textBox = (TextBox) sender;            
             try
             {
-                value = Convert.ToDouble(textBox.Text);
+                Convert.ToDouble(textBox.Text);
             }
             catch (FormatException exception)
             {
@@ -168,10 +165,7 @@ namespace AnalogOutput.GUI
 
             textBox.ReadOnly = true;
             textBox.DataBindings.RemoveAt(0);
-
-           
-            
-
+                       
             switch (textBox.Name)
             {
                 case "textBox_Voltage":
@@ -192,10 +186,7 @@ namespace AnalogOutput.GUI
             var item = (MenuItem) sender;
             var menu = (ContextMenu) item.Parent;
             var textBox = (TextBox) menu.SourceControl;
-
-            
-            
-
+                       
             textBox.ReadOnly = false;
             textBox.DataBindings.RemoveAt(0);
 

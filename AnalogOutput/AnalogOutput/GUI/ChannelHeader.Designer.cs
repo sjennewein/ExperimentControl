@@ -48,7 +48,7 @@
             // label_IntialValue
             // 
             this.label_IntialValue.AutoSize = true;
-            this.label_IntialValue.Location = new System.Drawing.Point(3, 36);
+            this.label_IntialValue.Location = new System.Drawing.Point(1, 58);
             this.label_IntialValue.Name = "label_IntialValue";
             this.label_IntialValue.Size = new System.Drawing.Size(64, 13);
             this.label_IntialValue.TabIndex = 1;
@@ -64,7 +64,7 @@
             // 
             // textBox_Value
             // 
-            this.textBox_Value.Location = new System.Drawing.Point(73, 33);
+            this.textBox_Value.Location = new System.Drawing.Point(71, 55);
             this.textBox_Value.Name = "textBox_Value";
             this.textBox_Value.Size = new System.Drawing.Size(52, 20);
             this.textBox_Value.TabIndex = 3;

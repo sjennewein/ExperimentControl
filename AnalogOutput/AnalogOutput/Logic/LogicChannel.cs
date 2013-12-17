@@ -117,6 +117,7 @@ namespace AnalogOutput.Logic
 
         private void OnCalibrationChanged()
         {
+            PropertyChangedEvent("Unit");
             TriggerEvent(CalibrationChanged);
         }
 
@@ -138,6 +139,8 @@ namespace AnalogOutput.Logic
             if (triggerEvent != null)
                 triggerEvent(this, new EventArgs());
         }
+
+
 
         public event EventHandler CalibrationChanged;
     }

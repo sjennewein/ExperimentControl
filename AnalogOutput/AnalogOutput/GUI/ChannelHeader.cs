@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using AnalogOutput.Logic;
 using Hulahoop.Controller;
@@ -15,22 +10,24 @@ namespace AnalogOutput.GUI
     public partial class ChannelHeader : UserControl
     {
         private readonly LogicChannel _controller;
+
         public ChannelHeader(LogicChannel controller)
         {
             _controller = controller;
-            InitializeComponent(); 
+            InitializeComponent();
 
             textBox_Name.DataBindings.Add("Text", _controller, "Name");
-            
+            label_IntialValue.DataBindings.Add("Text", _controller, "Unit", false,
+                DataSourceUpdateMode.OnPropertyChanged);
+
             if (String.IsNullOrEmpty(_controller.Iterator))
                 textBox_Value.DataBindings.Add("Text", _controller, "Value");
             else
                 textBox_Value.DataBindings.Add("Text", _controller, "Iterator");
-                                      
+
 
             textBox_Value.ContextMenu = new ContextMenu();
             textBox_Value.ContextMenu.Popup += OnContextMenu;
-
         }
 
         private void button_Calibrate_Click(object sender, EventArgs e)
@@ -39,7 +36,7 @@ namespace AnalogOutput.GUI
             DialogResult dr = fileDialog.ShowDialog();
 
             if (dr == DialogResult.OK)
-            {                
+            {
                 try
                 {
                     _controller.LoadFile(fileDialog.FileName);
@@ -53,7 +50,7 @@ namespace AnalogOutput.GUI
 
         private void OnContextMenu(object sender, EventArgs e)
         {
-            var origSender = (ContextMenu)sender;
+            var origSender = (ContextMenu) sender;
 
             var contextMenu = new ContextMenu();
 
@@ -69,9 +66,9 @@ namespace AnalogOutput.GUI
 
         private void SwitchToHooping(object sender, EventArgs e)
         {
-            var item = (MenuItem)sender;
-            var menu = (ContextMenu)item.Parent;
-            var textBox = (TextBox)menu.SourceControl;
+            var item = (MenuItem) sender;
+            var menu = (ContextMenu) item.Parent;
+            var textBox = (TextBox) menu.SourceControl;
 
             textBox.ReadOnly = true;
             textBox.DataBindings.RemoveAt(0);
@@ -91,7 +88,6 @@ namespace AnalogOutput.GUI
 
             _controller.Iterator = null;
             textBox.DataBindings.Add("Text", _controller, "Value");
-
         }
 
         private void button_Reset_Click(object sender, EventArgs e)

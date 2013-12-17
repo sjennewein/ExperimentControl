@@ -52,6 +52,8 @@ namespace Hulahoop.Controller
         public static void Load(ZipFile zip)
         {
             LinearIterators.Clear();
+            FileIterators.Clear();
+
             foreach (ZipEntry e in zip)
             {
                 if(e.FileName.Length < 13)

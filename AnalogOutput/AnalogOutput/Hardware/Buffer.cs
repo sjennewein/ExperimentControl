@@ -19,6 +19,7 @@ namespace AnalogOutput.Hardware
         private bool _running;
         private string _serializedData;
         private bool _updated;
+        private bool _newRun = true;
 
         public void UpdateData(string data)
         {
@@ -33,11 +34,14 @@ namespace AnalogOutput.Hardware
             _cycleCounter = 0;
             while (_run)
             {
+                _signal.WaitOne();
+
                 if (_updated)
                 {
                     _data = (DataCard) JSON.Instance.ToObject(_serializedData);
                     _outputSequence = Translator.GenerateDAQmxSequence(_data);
                     _updated = false;
+                                        
                 }
 
                 using (var myTask = new Task())
@@ -48,17 +52,18 @@ namespace AnalogOutput.Hardware
                     myTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger("/Dev2/PFI8",
                                                                              DigitalEdgeStartTriggerEdge.Rising);
                     var writer = new AnalogMultiChannelWriter(myTask.Stream);
-                    writer.WriteMultiSample(false, _outputSequence);
-
-                    _signal.WaitOne();
+                    writer.WriteMultiSample(false, _outputSequence);                    
 
                     myTask.Start();
 
-                    if (_networkMode)
+                    if (_newRun)
                         TriggerEvent(RunStarted);
 
+                    _newRun = false;
+
+
                     myTask.WaitUntilDone(3600000);
-                    myTask.Stop();
+                    myTask.Stop();                    
                 }
                 _cycleCounter++;
                 TriggerEvent(CycleFinished);
@@ -67,9 +72,10 @@ namespace AnalogOutput.Hardware
                 {
                     Pause();
                     TriggerEvent(RunFinished);
+                    _newRun = true;
                 }
 
-                _signal.WaitOne();
+                
 
                 //if (_networkMode)
                 //{

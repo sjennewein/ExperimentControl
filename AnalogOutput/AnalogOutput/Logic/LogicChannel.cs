@@ -4,11 +4,13 @@ using System.ComponentModel;
 using System.IO;
 using AnalogOutput.Data;
 using AnalogOutput.Interpolation;
+using Hulahoop.Controller;
+using Hulahoop.Interface;
 using LumenWorks.Framework.IO.Csv;
 
 namespace AnalogOutput.Logic
 {
-    public class LogicChannel : INotifyPropertyChanged
+    public class LogicChannel : INotifyPropertyChanged, IteratorObserver
     {
         private readonly DataChannel _data;
         private readonly LogicPattern _parent;
@@ -37,11 +39,6 @@ namespace AnalogOutput.Logic
             }
         }
 
-        public void InputChanged()
-        {
-            _parent.InputChanged();            
-        }
-
         public string Name
         {
             get { return _parent.GetChannelName(this); }
@@ -51,7 +48,39 @@ namespace AnalogOutput.Logic
         public double Value
         {
             get { return _data.InitialValue; }
-            set { _data.InitialValue = value; }
+            set
+            {
+                _data.InitialValue = value;
+                InputChanged();
+            }
+        }
+
+        public string Iterator
+        {
+            get { return _data.Iterator; }
+            set
+            {
+                _data.Iterator = value; 
+                InputChanged();
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public void NewValue(double value, string sender)
+        {
+            _data.InitialValue = value;
+        }
+
+        public void NewName(string newName, string oldName)
+        {
+            Iterator = newName;
+            PropertyChangedEvent("Iterator");
+        }
+
+        public void InputChanged()
+        {
+            _parent.InputChanged();
         }
 
         public void LoadFile(string fileName)
@@ -75,6 +104,15 @@ namespace AnalogOutput.Logic
 
             _parent.SetCalibration(dataSeries, this);
             _parent.SetUnit(unit, this);
+        }
+
+        public void ResetCalibration()
+        {
+            var dataSeries = new List<Point>();
+            dataSeries.Add(new Point {X = -10, Y = -10});
+            dataSeries.Add(new Point {X = 10, Y = 10});
+            _parent.SetCalibration(dataSeries, this);
+            _parent.SetUnit("Voltage [V]:", this);
         }
 
         private void OnCalibrationChanged()
@@ -102,7 +140,5 @@ namespace AnalogOutput.Logic
         }
 
         public event EventHandler CalibrationChanged;
-
-        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

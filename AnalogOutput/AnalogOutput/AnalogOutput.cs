@@ -57,8 +57,7 @@ namespace AnalogOutput
 
         private void button_Load_Click(object sender, EventArgs e)
         {
-            var loadFileDialog = new OpenFileDialog();
-            string input;
+            var loadFileDialog = new OpenFileDialog();            
             loadFileDialog.Filter = "Analog runs (*.arun)|*.arun|All files|*.*";
             loadFileDialog.RestoreDirectory = true;
 

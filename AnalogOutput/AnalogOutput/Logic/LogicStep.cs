@@ -103,10 +103,10 @@ namespace AnalogOutput.Logic
         public void NewValue(double value, string sender)
         {
             if (sender == DurationIterator)
-                Duration = (int) value;
+                _data.Duration = (int) value;
 
             if (sender == ValueIterator)
-                Value = value;
+                _data.Value = value;
         }
 
         public void NewName(string newName, string oldName)

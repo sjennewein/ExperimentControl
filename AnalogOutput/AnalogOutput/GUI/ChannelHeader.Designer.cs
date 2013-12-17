@@ -33,6 +33,7 @@
             this.textBox_Name = new System.Windows.Forms.TextBox();
             this.textBox_Value = new System.Windows.Forms.TextBox();
             this.button_Calibrate = new System.Windows.Forms.Button();
+            this.button_Reset = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label_Name
@@ -79,11 +80,22 @@
             this.button_Calibrate.UseVisualStyleBackColor = true;
             this.button_Calibrate.Click += new System.EventHandler(this.button_Calibrate_Click);
             // 
+            // button_Reset
+            // 
+            this.button_Reset.Location = new System.Drawing.Point(3, 77);
+            this.button_Reset.Name = "button_Reset";
+            this.button_Reset.Size = new System.Drawing.Size(51, 23);
+            this.button_Reset.TabIndex = 5;
+            this.button_Reset.Text = "Reset";
+            this.button_Reset.UseVisualStyleBackColor = true;
+            this.button_Reset.Click += new System.EventHandler(this.button_Reset_Click);
+            // 
             // ChannelHeader
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.Controls.Add(this.button_Reset);
             this.Controls.Add(this.button_Calibrate);
             this.Controls.Add(this.textBox_Value);
             this.Controls.Add(this.textBox_Name);
@@ -103,5 +115,6 @@
         private System.Windows.Forms.TextBox textBox_Name;
         private System.Windows.Forms.TextBox textBox_Value;
         private System.Windows.Forms.Button button_Calibrate;
+        private System.Windows.Forms.Button button_Reset;
     }
 }

@@ -160,7 +160,7 @@ namespace AnalogOutput.GUI
             contextMenu.Show(origSender.SourceControl, new Point(0));
         }
 
-        public void SwitchToHooping(object sender, EventArgs e)
+        private void SwitchToHooping(object sender, EventArgs e)
         {
             var item = (MenuItem) sender;
             var menu = (ContextMenu) item.Parent;
@@ -176,7 +176,7 @@ namespace AnalogOutput.GUI
             {
                 case "textBox_Voltage":
                     _controller.ValueIterator = item.Text;
-                    textBox_Voltage.Validating -= textBox_Voltage_Validating;
+                    textBox_Voltage.Validating -= textBox_Voltage_Validating;                     
                     textBox.DataBindings.Add("Text", _controller, "ValueIterator");
                     break;
                 case "textBox_Duration":
@@ -187,7 +187,7 @@ namespace AnalogOutput.GUI
             }
         }
 
-        public void SwitchToManual(object sender, EventArgs e)
+        private void SwitchToManual(object sender, EventArgs e)
         {
             var item = (MenuItem) sender;
             var menu = (ContextMenu) item.Parent;
@@ -204,12 +204,12 @@ namespace AnalogOutput.GUI
                 case "textBox_Voltage":
                     _controller.ValueIterator = null;
                     textBox_Voltage.Validating += textBox_Voltage_Validating;
-                    textBox.DataBindings.Add("Text", _controller, "ValueIterator");
+                    textBox.DataBindings.Add("Text", _controller, "Value");
                     break;
                 case "textBox_Duration":
                     _controller.DurationIterator = null;
                     textBox_Duration.Validating += textBox_Duration_Validating;
-                    textBox.DataBindings.Add("Text", _controller, "DurationIterator");
+                    textBox.DataBindings.Add("Text", _controller, "Duration");
                     break;
             }
         }

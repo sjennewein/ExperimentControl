@@ -23,7 +23,10 @@ namespace AnalogOutput.GUI
             if (String.IsNullOrEmpty(_controller.Iterator))
                 textBox_Value.DataBindings.Add("Text", _controller, "Value");
             else
+            {
                 textBox_Value.DataBindings.Add("Text", _controller, "Iterator");
+                textBox_Value.ReadOnly = true;
+            }
 
 
             textBox_Value.ContextMenu = new ContextMenu();

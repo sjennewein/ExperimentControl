@@ -18,14 +18,14 @@ namespace AnalogOutput.Logic
             _parent = parent;
             _parent.CalibrationChanged += delegate { OnCalibrationChanged(); };
 
-            if (_data.DurationIterator != null)
+            if (!String.IsNullOrEmpty(_data.DurationIterator))
                 foreach (IteratorSubject iterator in HoopManager.Iterators)
                 {
                     if (iterator.Name() == _data.DurationIterator)
                         iterator.Register(this);
                 }
 
-            if (_data.ValueIterator != null)
+            if (!String.IsNullOrEmpty(_data.ValueIterator))
                 foreach (IteratorSubject iterator in HoopManager.Iterators)
                 {
                     if (iterator.Name() == _data.ValueIterator)

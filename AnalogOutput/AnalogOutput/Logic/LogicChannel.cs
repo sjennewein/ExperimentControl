@@ -22,11 +22,20 @@ namespace AnalogOutput.Logic
             _parent = parent;
             _parent.CalibrationChanged += delegate { OnCalibrationChanged(); };
             _parent.ChannelNameChanged += delegate { OnChannelNameChanged(); };
+
+            if (!String.IsNullOrEmpty(_data.Iterator))
+                foreach (IteratorSubject iterator in HoopManager.Iterators)
+                {
+                    if (iterator.Name() == _data.Iterator)
+                        iterator.Register(this);
+                }
+
             for (int iStep = 0; iStep < _data.Steps.Length; iStep++)
             {
                 DataStep step = _data.Steps[iStep];
                 Steps.Add(new LogicStep(step, this));
             }
+            
         }
 
         public string Unit

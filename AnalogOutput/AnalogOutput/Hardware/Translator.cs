@@ -190,9 +190,15 @@ namespace AnalogOutput.Hardware
                             sampleCounter++;
                         }
                     }
-                    sequence[iChannel, sampleCounter] = sequence[iChannel, 0];
+                    
                 }
-               
+                while(sampleCounter < length - 1)
+                {
+                    sequence[iChannel, sampleCounter] = sequence[iChannel, sampleCounter - 1];
+                    sampleCounter++;
+                }
+
+                sequence[iChannel, length-1] = sequence[iChannel, 0];
             }
 
             return sequence;

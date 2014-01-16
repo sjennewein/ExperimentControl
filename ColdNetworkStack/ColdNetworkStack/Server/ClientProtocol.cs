@@ -55,6 +55,9 @@ namespace ColdNetworkStack.Server
 
                 switch (command)
                 {
+                    case Commands.Trigger: //matlab workaround because it can't send long strings
+                        TriggerMode(client);
+                        break;
                     case Commands.WaitingForTrigger:
                         TriggerMode(client);
                         break;
@@ -69,9 +72,6 @@ namespace ColdNetworkStack.Server
                         break;
                     case Commands.UnRegister:
                         UnRegisterClient(client);
-                        break;
-                    case Commands.EnterTriggerMode:
-                        TriggerMode(client);
                         break;
                     case Commands.Disconnect:
                         Stop();
@@ -112,7 +112,7 @@ namespace ColdNetworkStack.Server
 
             WriteNetworkStream(client, Commands.Trigger.ToString());
             Console.WriteLine("SEND TRIGGER!");
-            Console.Write(ReadNetworkStream(client));
+            Console.Write(ReadNetworkStream(client));            
 
             _parent.ClientStarted();
         }
@@ -139,7 +139,7 @@ namespace ColdNetworkStack.Server
 
         private string ReadNetworkStream(TcpClient client)
         {
-            var header = new byte[4];
+            var header = new byte[2];
             var completeMessage = new StringBuilder();
             int totalBytesRead = 0;
 
@@ -151,7 +151,7 @@ namespace ColdNetworkStack.Server
                 _NetworkStream.ReadTimeout = 300000; // two minutes timeout     
 
                 _NetworkStream.Read(header, 0, header.Length);
-                Int32 bytesToRead = BitConverter.ToInt32(header, 0);
+                Int32 bytesToRead = BitConverter.ToInt16(header, 0);
                 var readBuffer = new byte[bytesToRead];
              
                 do

@@ -221,9 +221,9 @@
             // 
             // groupBox_Network
             // 
-            this.groupBox_Network.Location = new System.Drawing.Point(688, 12);
+            this.groupBox_Network.Location = new System.Drawing.Point(661, 12);
             this.groupBox_Network.Name = "groupBox_Network";
-            this.groupBox_Network.Size = new System.Drawing.Size(200, 128);
+            this.groupBox_Network.Size = new System.Drawing.Size(227, 128);
             this.groupBox_Network.TabIndex = 9;
             this.groupBox_Network.TabStop = false;
             this.groupBox_Network.Text = "Network";
@@ -241,7 +241,7 @@
             // groupBox_Loops
             // 
             this.groupBox_Loops.Controls.Add(this.button_HulaHoop);
-            this.groupBox_Loops.Location = new System.Drawing.Point(582, 12);
+            this.groupBox_Loops.Location = new System.Drawing.Point(555, 12);
             this.groupBox_Loops.Name = "groupBox_Loops";
             this.groupBox_Loops.Size = new System.Drawing.Size(100, 128);
             this.groupBox_Loops.TabIndex = 11;

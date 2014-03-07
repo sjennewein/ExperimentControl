@@ -12,7 +12,7 @@ namespace DigitalOutput.Controller
 {
     public class ControllerNetwork : INotifyPropertyChanged
     {
-        private Client _client = new Client("AnalogOutput");
+        private Client _client = new Client("DigitalOutput");
 
         public bool Activated = false;
         private ModelNetwork _data = new ModelNetwork();
@@ -50,7 +50,7 @@ namespace DigitalOutput.Controller
         {
             if (Activated)
             {
-                _client = new Client("AnalogOutput");
+                _client = new Client("DigitalOutput");
                 _client.DataReceived += delegate { OnDataReceived(); };
                 _client.LaunchNextRun += delegate { OnStartNextRun(); };
                 _client.Connect(IPAddress.Parse(Ip), Port);

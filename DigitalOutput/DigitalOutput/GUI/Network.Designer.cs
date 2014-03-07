@@ -70,6 +70,7 @@
             // 
             // textBox_Ip
             // 
+            this.textBox_Ip.Enabled = false;
             this.textBox_Ip.Location = new System.Drawing.Point(57, 50);
             this.textBox_Ip.Name = "textBox_Ip";
             this.textBox_Ip.Size = new System.Drawing.Size(100, 20);
@@ -86,6 +87,7 @@
             // 
             // textBox_Port
             // 
+            this.textBox_Port.Enabled = false;
             this.textBox_Port.Location = new System.Drawing.Point(163, 50);
             this.textBox_Port.Name = "textBox_Port";
             this.textBox_Port.Size = new System.Drawing.Size(52, 20);

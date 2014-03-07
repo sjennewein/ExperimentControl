@@ -21,7 +21,7 @@ namespace DigitalOutput.Controller
         {
             _parent = parent;
             _model = model;
-            if (String.IsNullOrEmpty(_model.Iterator))
+            if (!String.IsNullOrEmpty(_model.Iterator))
             {
                 foreach (IteratorSubject iterator in HoopManager.Iterators)
                 {
@@ -47,21 +47,13 @@ namespace DigitalOutput.Controller
         public int Duration
         {
             get { return _model.Duration.Value; }
-            set
-            {
-                SomethingHasChanged();
-                _model.Duration.Value = value;
-            }
+            set { _model.Duration.Value = value; }
         }
 
         public string Iterator
         {
             get { return _model.Iterator; }
-            set
-            {
-                SomethingHasChanged();
-                _model.Iterator = value;
-            }
+            set { _model.Iterator = value; }
         }
 
         #region INotifyPropertyChanged Members
@@ -138,7 +130,7 @@ namespace DigitalOutput.Controller
             textBox.ReadOnly = true;
             textBox.DataBindings.RemoveAt(0);
 
-            textBox.DataBindings.Add("Text", this, "Iterator", false, DataSourceUpdateMode.OnPropertyChanged);
+            textBox.DataBindings.Add("Text", this, "Iterator");
         }
 
         private void RegisterToSubject()

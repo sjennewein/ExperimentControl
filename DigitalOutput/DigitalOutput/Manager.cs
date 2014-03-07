@@ -83,13 +83,23 @@ namespace DigitalOutput
                 using (var ms = new MemoryStream())
                 {
                     ZipEntry entry = zip["NetworkData.txt"];
-                    entry.Extract(ms);
-                    ms.Flush();
-                    ms.Position = 0;
-                    networkData = new StreamReader(ms).ReadToEnd();
-                    ms.Close();
+                    try
+                    {
+                        entry.Extract(ms);
+                        ms.Flush();
+                        ms.Position = 0;
+                        networkData = new StreamReader(ms).ReadToEnd();
+                        ms.Close();
+                    }
+                    catch
+                    {
+                        ms.Close();
+                    }
+                        
+                    
                 }
-                Network.FromJSON(networkData);
+                if(!string.IsNullOrEmpty(networkData))
+                    Network.FromJSON(networkData);
                 HoopManager.Load(zip); // has to be restored before the card fabric is called
             }
             Initialize(digitalData);

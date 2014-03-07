@@ -72,8 +72,7 @@ namespace DigitalOutput.GUI
                     };
                 if (pattern.Steps[iStepDuration].Iterator != "")
                 {
-                    stepDurationTextBox.DataBindings.Add("Text", pattern.Steps[iStepDuration], "Iterator", true,
-                                                         DataSourceUpdateMode.OnPropertyChanged);
+                    stepDurationTextBox.DataBindings.Add("Text", pattern.Steps[iStepDuration], "Iterator");
                     stepDurationTextBox.ReadOnly = true;
                 }
                 else

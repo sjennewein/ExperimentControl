@@ -1,88 +1,53 @@
 ﻿using System;
 using System.Drawing;
-using System.IO;
+using System.Globalization;
+using System.Threading;
 using System.Windows.Forms;
-using DigitalOutput.Controller;
 using DigitalOutput.GUI;
 using DigitalOutput.Model;
 using Hulahoop;
-using Hulahoop.Controller;
-using Ionic.Zip;
-using fastJSON;
-using Buffer = DigitalOutput.Hardware.Buffer;
 
 namespace DigitalOutput
 {
     public partial class DigitalMainwindow : Form
     {
-        private readonly Buffer _buffer = new Buffer();
         private readonly HulaHoopWindow _loops = new HulaHoopWindow();
-        private ControllerCard _card;
+        private readonly Manager _manager;
 
         public DigitalMainwindow()
         {
-            var customCulture = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
+            var customCulture = (CultureInfo) Thread.CurrentThread.CurrentCulture.Clone();
             customCulture.NumberFormat.NumberDecimalSeparator = ".";
 
-            System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
+            Thread.CurrentThread.CurrentCulture = customCulture;
+
+            _manager = new Manager(this);
+            _manager.BufferUnsynced += delegate { OnBufferUnsynced(); };
+            _manager.BufferSynced += delegate { OnBufferSynced(); };
+            _manager.DaqmxStarted += delegate { OnDaqmxStarted(); };
+            _manager.DaqmxStopped += delegate { OnDaqmxStopped(); };
 
             InitializeComponent();
 
             WindowState = FormWindowState.Maximized;
-            Console.WriteLine(Width);
-            _buffer.Started += delegate { HardwareStarted(); };
-            _buffer.Stopped += delegate { HardwareStopped(); };
             Initialize();
         }
 
         private void Initialize(ModelCard model = null)
         {
-            _card = ControllerFabric.GenerateCard(_buffer, this, model);
-            _card.RunDataChanged += RunDataChanged;
+            if (_manager.Hardware == null)
+                _manager.Initialize();
 
-            if (model == null)
-            {
-                _card.Ip = "127.0.0.1";
-                _card.Port = 9898;
-            }
-            else
-            {
-                textBox_Flow.DataBindings.RemoveAt(0);
-                textBox_Ip.DataBindings.RemoveAt(0);
-                textBox_Port.DataBindings.RemoveAt(0);
-                label_CycleDone.DataBindings.RemoveAt(0);
-                label_RunsDone.DataBindings.RemoveAt(0);
-                label_CyclesPerRun.DataBindings.RemoveAt(0);
-            }
-
-            textBox_Ip.DataBindings.Add("Text", _card, "Ip", false, DataSourceUpdateMode.OnPropertyChanged);
-            textBox_Port.DataBindings.Add("Text", _card, "Port", false, DataSourceUpdateMode.OnPropertyChanged);
-            textBox_Flow.DataBindings.Add("Text", _card, "Flow", false, DataSourceUpdateMode.OnPropertyChanged);
-            label_CycleDone.DataBindings.Add("Text", _card, "CyclesDone", false, DataSourceUpdateMode.OnPropertyChanged);
-            label_RunsDone.DataBindings.Add("Text", _card, "RunsDone", false, DataSourceUpdateMode.OnPropertyChanged);
-            label_CyclesPerRun.DataBindings.Add("Text", _card, "CyclesPerRun", false, DataSourceUpdateMode.OnPropertyChanged);
-
-            if (model == null)
-            {
-                SuspendLayout();
-                Helper.GenerateTabView(TabPanel, _card);
-                ResumeLayout();
-            }
-            else
-            {
-                SuspendLayout();
-                _loops.ReDraw();
-                Helper.DisposeTabs(TabPanel);
-                Helper.GenerateTabView(TabPanel, _card);
-                ResumeLayout();
-            }
+            SuspendLayout();
+            groupBox_Network.Controls.Add(new Network(_manager.Network));
+            TabPanel_pattern.Controls.Clear();
+            TabFabric.GenerateTabView(TabPanel_pattern, _manager.Hardware);
+            label_CycleCounter.DataBindings.Add("Text", _manager, "CycleCounter");
+            label_RunCounter.DataBindings.Add("Text", _manager, "RunCounter");
+            label_CyclesPerRun.DataBindings.Add("Text", _manager, "CyclesPerRun");
+            ResumeLayout(true);
         }
 
-        private void RunDataChanged(object sender, EventArgs e)
-        {
-            label_Buffer.BackColor = Color.FromArgb(196, 20, 94);
-            label_Buffer.Text = "Nope";
-        }
 
         private void button_Save_Click(object sender, EventArgs e)
         {
@@ -93,7 +58,7 @@ namespace DigitalOutput
             if (saveFileDialog.ShowDialog() != DialogResult.OK)
                 return;
 
-            _card.Save(saveFileDialog.FileName);
+            _manager.Save(saveFileDialog.FileName);
         }
 
         private void button_Load_Click(object sender, EventArgs e)
@@ -106,58 +71,41 @@ namespace DigitalOutput
             if (loadFileDialog.ShowDialog() != DialogResult.OK)
                 return;
 
-            using (ZipFile zip = ZipFile.Read(loadFileDialog.FileName))
-            {
-                using (var ms = new MemoryStream())
-                {
-                    ZipEntry entry = zip["DigitalData.txt"];
-                    entry.Extract(ms);
-                    ms.Flush();
-                    ms.Position = 0;
-                    input = new StreamReader(ms).ReadToEnd();
-                    ms.Close();
-                }
-                HoopManager.Load(zip); // has to be restored before the card fabric is called
-            }
+            _manager.Load(loadFileDialog.FileName);
 
-            var loadedCard = (ModelCard) JSON.Instance.ToObject(input);
-
-            Initialize(loadedCard);
+            label_CycleCounter.DataBindings.Clear();
+            label_RunCounter.DataBindings.Clear();
+            label_CyclesPerRun.DataBindings.Clear();
+            _loops.ReDraw();
+            Initialize();
         }
 
         private void button_Synchronize_Click(object sender, EventArgs e)
         {
-            label_Buffer.BackColor = Color.FromArgb(127, 210, 21);
-            label_Buffer.Text = "Synced";
-            _card.CopyToBuffer();
-            _card.StoreSyncedValues();
+            if (string.IsNullOrEmpty(_manager.Hardware.Flow))
+            {
+                MessageBox.Show("No flow defined!", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            _manager.CopyToBuffer();
         }
 
         private void button_Start_Click(object sender, EventArgs e)
         {
-            if (String.Equals(_card.Flow, String.Empty) || _card.Flow == null)
+            if (string.IsNullOrEmpty(_manager.Hardware.Flow))
             {
-                MessageBox.Show("You have to provide a \"Program flow\"!");
+                MessageBox.Show("No flow defined!", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-
-            _card.Start();
-            if (_card.Networking)
-                DisableInput();
-            label_Buffer.BackColor = Color.FromArgb(127, 210, 21);
+            _manager.CopyToBuffer();
+            _manager.Start();
         }
 
         private void button_Stop_Click(object sender, EventArgs e)
         {
-            _card.Stop();
+            _manager.Stop();
         }
 
-        private void button_Undo_Click(object sender, EventArgs e)
-        {
-            _card.RestoreSyncedValues();
-            label_Buffer.BackColor = Color.FromArgb(127, 210, 21);
-            label_Buffer.Text = "Synced";
-        }
 
         private void button_HulaHoop_Click(object sender, EventArgs e)
         {
@@ -165,42 +113,39 @@ namespace DigitalOutput
             _loops.Focus();
         }
 
-        private void button_Connect_Click(object sender, EventArgs e)
-        {
-            _card.Connect();
-        }
-
-        private void checkBox_Network_CheckedChanged(object sender, EventArgs e)
-        {
-            var source = (CheckBox) sender;
-            if (source.Checked)
-            {
-                textBox_Ip.Enabled = true;
-                textBox_Port.Enabled = true;
-                button_Connect.Enabled = true;
-                button_Disconnect.Enabled = true;
-                _card.Networking = true;
-            }
-            else
-            {               
-                textBox_Ip.Enabled = false;
-                textBox_Port.Enabled = false;
-                button_Connect.Enabled = false;
-                button_Disconnect.Enabled = false;
-                _card.Networking = false;
-            }
-        }
-
-        private void button_Disconnect_Click(object sender, EventArgs e)
-        {
-            _card.Disconnect();
-        }
-
-        private void HardwareStopped()
+        private void OnBufferSynced()
         {
             if (InvokeRequired)
             {
-                GuiUpdate callback = HardwareStopped;
+                GuiUpdate callback = OnBufferSynced;
+                Invoke(callback);
+            }
+            else
+            {
+                label_Buffer.BackColor = Color.FromArgb(127, 210, 21);
+                label_Buffer.Text = "SYNCED";
+            }
+        }
+
+        private void OnBufferUnsynced()
+        {
+            if (InvokeRequired)
+            {
+                GuiUpdate callback = OnBufferUnsynced;
+                Invoke(callback);
+            }
+            else
+            {
+                label_Buffer.BackColor = Color.FromArgb(196, 20, 94);
+                label_Buffer.Text = "Nope";
+            }
+        }
+
+        private void OnDaqmxStopped()
+        {
+            if (InvokeRequired)
+            {
+                GuiUpdate callback = OnDaqmxStopped;
                 Invoke(callback);
             }
             else
@@ -210,11 +155,11 @@ namespace DigitalOutput
             }
         }
 
-        private void HardwareStarted()
+        private void OnDaqmxStarted()
         {
             if (InvokeRequired)
             {
-                GuiUpdate callback = HardwareStarted;
+                GuiUpdate callback = OnDaqmxStarted;
                 Invoke(callback);
             }
             else
@@ -224,18 +169,7 @@ namespace DigitalOutput
             }
         }
 
-        private void DisableInput()
-        {
-            //tabPage1.Enabled = false;
-            //TabPanel.IsAccessible = false;
-            TabPanel.Enabled = false;
-        }
-
-        #region Nested type: GuiUpdate
 
         private delegate void GuiUpdate();
-
-        #endregion
-
     }
 }

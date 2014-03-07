@@ -70,24 +70,20 @@ namespace DigitalOutput.Controller
 
         #endregion
 
-        #region IteratorObserver Members
-
-        public void NewValue(double value)
+        public void NewValue(double value, string sender)
         {
             Duration = (int) value;
         }
 
-        public void NewName(string name)
+        public void NewName(string newName, string oldName)
         {
-            Iterator = name;
+            Iterator = newName;
             PropertyHasChanged("Iterator");
         }
 
-        #endregion
-
         public void StoreSyncedValues()
         {
-            _syncedDuration = Duration;           
+            _syncedDuration = Duration;
             foreach (ControllerChannel channel in Channels)
             {
                 channel.StoreSyncedValue();
@@ -95,7 +91,7 @@ namespace DigitalOutput.Controller
         }
 
         public void RestoreSyncedValues()
-        {       
+        {
             if (_syncedDuration != Duration)
             {
                 Duration = _syncedDuration;
@@ -125,7 +121,7 @@ namespace DigitalOutput.Controller
                 var item = new MenuItem(iterator.Name(), SwitchToHooping);
                 contextMenu.MenuItems.Add(item);
             }
-            
+
             contextMenu.MenuItems.Add(new MenuItem("Enable", SwitchToManual));
             contextMenu.Show(origSender.SourceControl, new Point(0));
         }
@@ -135,7 +131,7 @@ namespace DigitalOutput.Controller
             var item = (MenuItem) sender;
             var menu = (ContextMenu) item.Parent;
             var textBox = (TextBox) menu.SourceControl;
-            
+
             UnregisterFromSubject();
             Iterator = item.Text;
             RegisterToSubject();
@@ -180,16 +176,6 @@ namespace DigitalOutput.Controller
         public void SomethingHasChanged()
         {
             _parent.SomethingHasChanged();
-        }
-
-        public void NewValue(double value, string sender)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void NewName(string newName, string oldName)
-        {
-            throw new NotImplementedException();
         }
     }
 }

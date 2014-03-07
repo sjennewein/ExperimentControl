@@ -66,8 +66,7 @@ namespace DigitalOutput.Hardware
         private static UInt32[] GenerateSequence(List<string> unrolledFlow, ModelCard card)
         {
             var hardwareOutput = new List<uint>();
-            var patternSequence = new Dictionary<string, List<uint>>();
-            var sampleRate = (int) card.SampleRate.GetFrequency(Timing.Frequency.Hz);
+            var patternSequence = new Dictionary<string, List<uint>>();            
 
             foreach (ModelPattern pattern in card.Patterns) //generate each sequence once and put it in a dictionary
             {

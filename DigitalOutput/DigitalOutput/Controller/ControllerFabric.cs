@@ -5,17 +5,17 @@ namespace DigitalOutput.Controller
 {
     public class ControllerFabric
     {
-        public static ControllerCard GenerateCard(Buffer buffer, DigitalMainwindow gui, ModelCard model = null)
+        public static ControllerCard GenerateCard(ModelCard data = null)
         {
-            if (model == null)
-                model = ModelFabric.GenerateCard();
+            if (data == null)
+                data = ModelFabric.GenerateCard();
 
-            var newControllerCard = new ControllerCard(model, buffer, gui);            
+            var newControllerCard = new ControllerCard(data);            
 
-            Description[] newDescriptions = new Description[model.ChannelDescription.Length];
-            for (int iDescription = 0; iDescription < model.ChannelDescription.Length; iDescription++ )
+            Description[] newDescriptions = new Description[data.ChannelDescription.Length];
+            for (int iDescription = 0; iDescription < data.ChannelDescription.Length; iDescription++ )
             {
-                newDescriptions[iDescription] = new Description(model.ChannelDescription, iDescription);
+                newDescriptions[iDescription] = new Description(data.ChannelDescription, iDescription);
             }
 
             foreach (ControllerPattern pattern in newControllerCard.Patterns)

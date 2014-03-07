@@ -7,12 +7,11 @@
             const int channels = 32;
             const int steps = 15;
             const int patterns = 5;
-            var sampleRate = new Timing();
-            sampleRate.SetFrequency(10,Timing.Frequency.MHz);
+            
 
             //initialize card
             var newCard = new ModelCard
-                {Patterns = new ModelPattern[patterns], ChannelDescription = new string[channels], SampleRate = sampleRate};
+                {Patterns = new ModelPattern[patterns], ChannelDescription = new string[channels]};
 
             //initialize channel descriptions
             for (int iChannels = 0; iChannels < channels; iChannels++)

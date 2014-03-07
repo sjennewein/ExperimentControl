@@ -18,7 +18,7 @@ namespace DigitalOutput.Hardware
         private bool _running;
         private string _serializedData;
         private bool _updated;
-        private bool _newRun;
+        private bool _newRun = false;
         private int _cyclesPerRun;
         private int _cycleCounter;
         //public int CyclesPerRun { set { _cyclesPerRun = value; } }
@@ -34,49 +34,88 @@ namespace DigitalOutput.Hardware
         {
             TriggerEvent(Started);
             _running = true;
-            _cycleCounter = 0;            
+            _cycleCounter = 0;
+            //var digitalOutputTask = new Task("PCI6534");
             while (_run)
             {
                 _signal.WaitOne();
 
                 if (_updated)
-                {
+                {                    
+                    digitalOutputTask.Dispose();
+                    digitalOutputTask = new Task("PCI6534");
+
                     _data = (ModelCard) JSON.Instance.ToObject(_serializedData);
                     _outputSequence = Translator.GenerateOutput(_data);
                     _updated = false;
-                }
 
-                using (var myTask = new Task("PCI6534"))
-                {
-                    myTask.DOChannels.CreateChannel("/Dev1/port0_32", "", ChannelLineGrouping.OneChannelForAllLines);
-                    myTask.Timing.ConfigureSampleClock("",10000000,SampleClockActiveEdge.Rising,SampleQuantityMode.FiniteSamples,_outputSequence.Length);
-                    myTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger("/Dev1/PFI6",DigitalEdgeStartTriggerEdge.Rising);
+                    //initialize output card
+                    sw.Start();
 
-                    var writer = new DigitalSingleChannelWriter(myTask.Stream);
+                    digitalOutputTask.DOChannels.CreateChannel("/Dev1/port0_32", "",
+                                                               ChannelLineGrouping.OneChannelForAllLines);
+
+                    double sampleRate = 10000000;
+
+                    digitalOutputTask.Timing.ConfigureSampleClock("", sampleRate,
+                                                                  SampleClockActiveEdge.Rising,
+                                                                  SampleQuantityMode.FiniteSamples, _outputSequence.Length);
+                    digitalOutputTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger("/Dev1/PFI6",
+                                                                                        DigitalEdgeStartTriggerEdge.Rising);
+
+                    //write output to card
+                    var writer = new DigitalSingleChannelWriter(digitalOutputTask.Stream);
                     writer.WriteMultiSamplePort(false, _outputSequence);
 
-                    if (_newRun)
-                        TriggerEvent(RunStarted);
-
-                    _newRun = false;
-                    myTask.WaitUntilDone(3600000);
-                    myTask.Stop();
+                    
                 }
 
-                _cycleCounter++;
-                TriggerEvent(CycleFinished);
+                
+                
+                if (_newRun)
+                    TriggerEvent(DataProcessed);
+                                               
+                _signal.WaitOne();
 
-                if (_networkMode && _cycleCounter >= _cyclesPerRun)
+              
+
+                //start and wait until everything is done
+                digitalOutputTask.Start();
+                
+                if (_newRun)
+                {
+                    _newRun = false;
+                    TriggerEvent(RunLaunched);
+                }
+
+                digitalOutputTask.WaitUntilDone(30000000);
+
+
+                //free hardware
+                digitalOutputTask.Stop();
+          
+
+                
+                _cycleCounter++;                
+                
+                TriggerEvent(CycleDone);
+                
+                if (_cyclesPerRun > 0 && _cycleCounter >= _cyclesPerRun)
                 {
                     Pause();
-                    TriggerEvent(RunFinished);
-                    _newRun = true;
-                }            
+                    TriggerEvent(RunDone);
+                }
+
+                if (_newRun)
+                {
+                    _signal.WaitOne();
+                    _signal.Reset();
+                }
 
             }
-            _running = false;
+            digitalOutputTask.Dispose();
             TriggerEvent(Stopped);
-            
+            _running = false;
         }
 
         public void Pause()
@@ -95,8 +134,7 @@ namespace DigitalOutput.Hardware
         {
             if (!_running)
             {
-                _cyclesPerRun = cyclesPerRun;
-                _networkMode = networkMode;
+                _cyclesPerRun = cyclesPerRun;                
                 _serializedData = data;
                 _updated = true;
                 _myWorker = new Thread(WorkingLoop);

@@ -5,7 +5,7 @@ using DigitalOutput.Controller;
 
 namespace DigitalOutput.GUI
 {
-    public class Helper
+    public class TabFabric
     {
         private static readonly List<TabPage> GeneratedPages = new List<TabPage>();
 
@@ -126,35 +126,27 @@ namespace DigitalOutput.GUI
 
         public static void GenerateTabView(TabControl tab, ControllerCard card)
         {
-            tab.SuspendLayout();
-
-            //var newPages = new TabPage[card.Patterns.Length];
-
-            for (int iPattern = 0; iPattern < card.Patterns.Length; iPattern++)
+                       
+            GenerateFlow(card);
+            foreach (ControllerPattern pattern in card.Patterns)
             {
-                ControllerPattern pattern = card.Patterns[iPattern];
                 GenerateTabPage(pattern);
             }
             tab.Controls.AddRange(GeneratedPages.ToArray());
-            //tab.Controls.AddRange(newPages);
-            tab.ResumeLayout();
+            GeneratedPages.Clear();
+            
         }
 
-        public static void DisposeTabs(TabControl tab)
-        {       
-            var toDelete = new List<TabPage>();
-
-            foreach (TabPage page in GeneratedPages)
-            {
-                if (tab.Controls.Contains(page))
-                    toDelete.Add(page);
-            }
-
-            foreach (TabPage page in toDelete)
-            {
-                GeneratedPages.Remove(page);
-                tab.Controls.Remove(page);
-            }
+        private static void GenerateFlow(ControllerCard card)
+        {
+            var flow = new TextBox() { Multiline = true, Size = new Size(200, 500), Location = new Point(20, 20) };
+            flow.DataBindings.Add("Text", card, "Flow");
+            var newTab = new TabPage("Flow");
+            newTab.AutoScroll = true;
+            newTab.Controls.Add(flow);
+            GeneratedPages.Add(newTab);
         }
+
+       
     }
 }

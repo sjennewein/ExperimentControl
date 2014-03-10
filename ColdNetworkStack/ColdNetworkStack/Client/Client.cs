@@ -27,7 +27,7 @@ namespace ColdNetworkStack.Client
         {
             _client.Connect(ip, port);
             WriteNetworkStream(_client, Commands.Register.ToString());  //write command
-            ReadNetworkStream(_client);                                 //read ack
+            Console.WriteLine(ReadNetworkStream(_client));                                 //read ack
             
             WriteNetworkStream(_client, _name);                         //write name
             ReadNetworkStream(_client);                                 //read ack
@@ -47,7 +47,8 @@ namespace ColdNetworkStack.Client
 
         public void StartLoop()
         {
-            WriteNetworkStream(_client, Commands.CyclesPerRun.ToString());      //enter trigger mode
+            WriteNetworkStream(_client, Commands.CyclesPerRun.ToString());      //enter trigger mode\
+            Console.WriteLine("bla: ");
             Console.WriteLine(ReadNetworkStream(_client));                      //read ack from server
             var answer = ReadNetworkStream(_client);                            //read how many cycles per run
             CyclesPerRun = Convert.ToInt32(answer);
@@ -73,7 +74,7 @@ namespace ColdNetworkStack.Client
             Console.WriteLine("starting loop");
             while (_loop)
             {                               
-                WriteNetworkStream(_client, Commands.WaitingForTrigger.ToString());
+                WriteNetworkStream(_client, Commands.Trigger.ToString());
                 Console.WriteLine("Waiting for trigger: " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
                 ReadNetworkStream(_client);
                 var trigger = ReadNetworkStream(_client);
@@ -138,9 +139,9 @@ namespace ColdNetworkStack.Client
             try
             {
                 byte[] payload = Encoding.ASCII.GetBytes(message);
-                Int32 length = payload.Length;
+                Int16 length = (Int16) payload.Length;
                 byte[] header = BitConverter.GetBytes(length);
-                byte[] packet = new byte[sizeof(Int32) + length];
+                byte[] packet = new byte[sizeof(Int16) + length];
                 Array.Copy(header, packet, header.Length);
                 Array.Copy(payload, 0, packet, header.Length, payload.Length); //copy the message behind the header
                 _NetworkStream.Write(packet, 0, packet.Length);

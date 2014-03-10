@@ -47,20 +47,16 @@ namespace ColdNetworkStack.Server
                 {
                      command = (Commands)Enum.Parse(typeof(Commands), input);    
                 }
-                catch
+                catch(Exception e)
                 {
                     command = Commands.Disconnect;
                 }
                 
-
                 switch (command)
                 {
                     case Commands.Trigger: //matlab workaround because it can't send long strings
                         TriggerMode(client);
-                        break;
-                    case Commands.WaitingForTrigger:
-                        TriggerMode(client);
-                        break;
+                        break;                    
                     case Commands.Register:
                         RegisterClient(client);
                         break;
@@ -120,8 +116,10 @@ namespace ColdNetworkStack.Server
         private void RegisterClient(TcpClient client)
         {
             WriteNetworkStream(client, Answers.Ack.ToString());
+            Console.WriteLine("Arrived");
 
             string name = ReadNetworkStream(client);
+            Console.WriteLine(name);
             _parent.RegisterClient(name);
 
             WriteNetworkStream(client, Answers.Ack.ToString());

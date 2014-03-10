@@ -14,11 +14,6 @@ namespace AnalogOutput.Logic
         public bool Activated = false;
         private DataNetwork _data = new DataNetwork();
 
-        public LogicNetwork()
-        {
-            
-        }
-
         public string Ip
         {
             get { return _data.Ip; }

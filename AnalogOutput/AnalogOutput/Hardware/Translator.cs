@@ -181,7 +181,7 @@ namespace AnalogOutput.Hardware
                             continue;
                         }
                         
-                        double stepSize = (step.Value - lastValue) / samples;
+                        double stepSize = (interpolator.Interpolate(step.Value) - lastValue) / samples;
 
                         for (int iSample = 1; iSample <= samples; iSample++)
                         {

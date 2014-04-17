@@ -146,7 +146,7 @@ namespace ColdNetworkStack.Server
 
             try
             {
-                _NetworkStream.ReadTimeout = 300000; // two minutes timeout     
+                _NetworkStream.ReadTimeout = 1800000; // two minutes timeout     
 
                 _NetworkStream.Read(header, 0, header.Length);
                 Int32 bytesToRead = BitConverter.ToInt16(header, 0);
@@ -175,7 +175,7 @@ namespace ColdNetworkStack.Server
 
             try
             {
-                _NetworkStream.WriteTimeout = 300000;
+                _NetworkStream.WriteTimeout = 1800000;
                 byte[] payload = Encoding.ASCII.GetBytes(message);
                 Int32 length = payload.Length;
                 

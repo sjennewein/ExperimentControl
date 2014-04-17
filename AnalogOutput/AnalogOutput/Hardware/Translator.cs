@@ -185,7 +185,7 @@ namespace AnalogOutput.Hardware
 
                         for (int iSample = 1; iSample <= samples; iSample++)
                         {
-                            var voltage = interpolator.Interpolate(lastValue + iSample*stepSize);
+                            var voltage =   lastValue + iSample  * stepSize;
                             sequence[iChannel, sampleCounter] = voltage;
                             sampleCounter++;
                         }

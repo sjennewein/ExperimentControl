@@ -61,7 +61,15 @@ namespace DigitalOutput.Hardware
                         TriggerEvent(RunStarted);
 
                     _newRun = false;
-                    myTask.WaitUntilDone(3600000);
+                    try
+                    {
+                        myTask.WaitUntilDone(3600000);
+                    }
+                    catch (DaqException e)
+                    {
+                        _run = false;
+                    }
+                    
                     myTask.Stop();
                 }
 

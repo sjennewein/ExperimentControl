@@ -55,6 +55,8 @@ namespace DigitalOutput.Hardware
                     var writer = new DigitalSingleChannelWriter(myTask.Stream);
                     writer.WriteMultiSamplePort(false, _outputSequence);
 
+                    myTask.Start();
+
                     if (_newRun)
                         TriggerEvent(RunStarted);
 

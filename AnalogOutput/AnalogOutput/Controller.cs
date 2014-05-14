@@ -26,6 +26,7 @@ namespace AnalogOutput
             _daqmx.CycleFinished += delegate { OnHwCycleFinished(); };
             _daqmx.RunFinished += delegate { OnHwRunFinished(); };
             _daqmx.RunStarted += delegate { OnHwRunStarted(); };
+            _daqmx.Stopped += delegate { OnHwStopped(); };            
         }
 
         public int CycleCounter { get; set; }
@@ -40,7 +41,7 @@ namespace AnalogOutput
 
         public void Initialize(string data = null)
         {
-            
+
             DataCard card = null;
 
             if (data != null)
@@ -146,6 +147,11 @@ namespace AnalogOutput
         private void OnHwRunStarted()
         {
             Network.HardwareStarted();
+        }
+
+        private void OnHwStopped()
+        {
+            TriggerEvent(DaqmxStopped);
         }
 
         private void OnHwCycleFinished()

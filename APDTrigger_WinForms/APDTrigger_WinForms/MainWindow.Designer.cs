@@ -77,18 +77,27 @@
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.textBox_tcpClient = new System.Windows.Forms.TextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.button_StopFrequency = new System.Windows.Forms.Button();
             this.button_StartFrequency = new System.Windows.Forms.Button();
             this.label18 = new System.Windows.Forms.Label();
             this.textBox_Frequency = new System.Windows.Forms.TextBox();
-            this.textBox_tcpClient = new System.Windows.Forms.TextBox();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.label19 = new System.Windows.Forms.Label();
+            this.label17 = new System.Windows.Forms.Label();
+            this.textBox_ReferenceCycles = new System.Windows.Forms.TextBox();
+            this.checkBox_activateReference = new System.Windows.Forms.CheckBox();
+            this.textBox_ReferenceThreshold = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.textBox_ReferenceDetection = new System.Windows.Forms.TextBox();
             this.groupBox_Trigger.SuspendLayout();
             this.groupBox_Recapture.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox_Histogram.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.groupBox4.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox_Trigger
@@ -116,6 +125,7 @@
             this.groupBox_Trigger.TabIndex = 0;
             this.groupBox_Trigger.TabStop = false;
             this.groupBox_Trigger.Text = "Trigger Settings";
+            
             // 
             // radioButton_Network
             // 
@@ -340,7 +350,7 @@
             this.apdSignal.GraphMargins = new System.Windows.Forms.Padding(80, 20, 30, 60);
             this.apdSignal.LegendBox = ((Arction.LightningChartBasic.LegendBox)(resources.GetObject("apdSignal.LegendBox")));
             this.apdSignal.LineSeriesCursors = ((System.Collections.Generic.List<Arction.LightningChartBasic.LineSeriesCursor>)(resources.GetObject("apdSignal.LineSeriesCursors")));
-            this.apdSignal.Location = new System.Drawing.Point(186, 12);
+            this.apdSignal.Location = new System.Drawing.Point(344, 13);
             this.apdSignal.MinimumSize = new System.Drawing.Size(120, 90);
             this.apdSignal.MouseInteraction = true;
             this.apdSignal.Name = "apdSignal";
@@ -522,7 +532,7 @@
             this.apdHistogram.GraphMargins = new System.Windows.Forms.Padding(80, 20, 30, 60);
             this.apdHistogram.LegendBox = ((Arction.LightningChartBasic.LegendBox)(resources.GetObject("apdHistogram.LegendBox")));
             this.apdHistogram.LineSeriesCursors = ((System.Collections.Generic.List<Arction.LightningChartBasic.LineSeriesCursor>)(resources.GetObject("apdHistogram.LineSeriesCursors")));
-            this.apdHistogram.Location = new System.Drawing.Point(186, 485);
+            this.apdHistogram.Location = new System.Drawing.Point(344, 486);
             this.apdHistogram.MinimumSize = new System.Drawing.Size(120, 90);
             this.apdHistogram.MouseInteraction = true;
             this.apdHistogram.Name = "apdHistogram";
@@ -611,6 +621,15 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Network";
             // 
+            // textBox_tcpClient
+            // 
+            this.textBox_tcpClient.Location = new System.Drawing.Point(10, 20);
+            this.textBox_tcpClient.Multiline = true;
+            this.textBox_tcpClient.Name = "textBox_tcpClient";
+            this.textBox_tcpClient.ReadOnly = true;
+            this.textBox_tcpClient.Size = new System.Drawing.Size(100, 68);
+            this.textBox_tcpClient.TabIndex = 0;
+            // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.button_StopFrequency);
@@ -661,20 +680,90 @@
             this.textBox_Frequency.TabIndex = 20;
             this.textBox_Frequency.Text = "1000";
             // 
-            // textBox_tcpClient
+            // groupBox4
             // 
-            this.textBox_tcpClient.Location = new System.Drawing.Point(10, 20);
-            this.textBox_tcpClient.Multiline = true;
-            this.textBox_tcpClient.Name = "textBox_tcpClient";
-            this.textBox_tcpClient.ReadOnly = true;
-            this.textBox_tcpClient.Size = new System.Drawing.Size(100, 68);
-            this.textBox_tcpClient.TabIndex = 0;
+            this.groupBox4.Controls.Add(this.label19);
+            this.groupBox4.Controls.Add(this.label17);
+            this.groupBox4.Controls.Add(this.textBox_ReferenceCycles);
+            this.groupBox4.Controls.Add(this.checkBox_activateReference);
+            this.groupBox4.Controls.Add(this.textBox_ReferenceThreshold);
+            this.groupBox4.Controls.Add(this.label7);
+            this.groupBox4.Controls.Add(this.textBox_ReferenceDetection);
+            this.groupBox4.Location = new System.Drawing.Point(187, 13);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(151, 269);
+            this.groupBox4.TabIndex = 9;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Reference Run";
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(43, 110);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(41, 13);
+            this.label19.TabIndex = 18;
+            this.label19.Text = "Cycles:";
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(27, 88);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(57, 13);
+            this.label17.TabIndex = 18;
+            this.label17.Text = "Threshold:";
+            // 
+            // textBox_ReferenceCycles
+            // 
+            this.textBox_ReferenceCycles.Enabled = false;
+            this.textBox_ReferenceCycles.Location = new System.Drawing.Point(90, 107);
+            this.textBox_ReferenceCycles.Name = "textBox_ReferenceCycles";
+            this.textBox_ReferenceCycles.Size = new System.Drawing.Size(53, 20);
+            this.textBox_ReferenceCycles.TabIndex = 17;
+            // 
+            // checkBox_activateReference
+            // 
+            this.checkBox_activateReference.AutoSize = true;
+            this.checkBox_activateReference.Location = new System.Drawing.Point(9, 21);
+            this.checkBox_activateReference.Name = "checkBox_activateReference";
+            this.checkBox_activateReference.Size = new System.Drawing.Size(65, 17);
+            this.checkBox_activateReference.TabIndex = 19;
+            this.checkBox_activateReference.Text = "Activate";
+            this.checkBox_activateReference.UseVisualStyleBackColor = true;
+            this.checkBox_activateReference.CheckedChanged += new System.EventHandler(this.activateReference_checkBox_CheckedChanged);
+            // 
+            // textBox_ReferenceThreshold
+            // 
+            this.textBox_ReferenceThreshold.Enabled = false;
+            this.textBox_ReferenceThreshold.Location = new System.Drawing.Point(90, 85);
+            this.textBox_ReferenceThreshold.Name = "textBox_ReferenceThreshold";
+            this.textBox_ReferenceThreshold.Size = new System.Drawing.Size(53, 20);
+            this.textBox_ReferenceThreshold.TabIndex = 17;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(6, 63);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(78, 13);
+            this.label7.TabIndex = 18;
+            this.label7.Text = "Detection bins:";
+            // 
+            // textBox_ReferenceDetection
+            // 
+            this.textBox_ReferenceDetection.Enabled = false;
+            this.textBox_ReferenceDetection.Location = new System.Drawing.Point(90, 60);
+            this.textBox_ReferenceDetection.Name = "textBox_ReferenceDetection";
+            this.textBox_ReferenceDetection.Size = new System.Drawing.Size(53, 20);
+            this.textBox_ReferenceDetection.TabIndex = 17;
             // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(728, 829);
+            this.ClientSize = new System.Drawing.Size(883, 829);
+            this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.groupBox_Histogram);
@@ -698,6 +787,8 @@
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -757,6 +848,14 @@
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.TextBox textBox_Frequency;
         private System.Windows.Forms.TextBox textBox_tcpClient;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.CheckBox checkBox_activateReference;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox textBox_ReferenceDetection;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.TextBox textBox_ReferenceCycles;
+        private System.Windows.Forms.TextBox textBox_ReferenceThreshold;
     }
 }
 

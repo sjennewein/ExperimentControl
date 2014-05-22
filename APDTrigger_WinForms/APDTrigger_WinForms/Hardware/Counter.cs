@@ -27,34 +27,33 @@ namespace APDTrigger.Hardware
     public class Counter
     {
         private readonly int _apdBinSize;
-        private readonly int _cyclesPerRun;
+        private readonly int _cycles;
         private readonly int _detectionBins;
         private readonly double _frequency;
         private readonly object _lockExperiment = new object();
-        private readonly bool _monitor;
         private readonly int _myClockEdges;
         private readonly Task _myEdgeCountingTask;
         private readonly Task _myFrequencyGenerator;
         private readonly Task _mySampleClock;
         private readonly Task _myThresholdTask;
-        private readonly Task _myTriggerTask;
-        private readonly ManualResetEvent _pauseCycling = new ManualResetEvent(true);
+        private readonly Task _myTriggerTask;        
         private readonly double _threshold;
         private readonly double _triggerBin;
         private volatile int _cycleCounter;
-
+        private readonly bool _monitor;
+            
         private int _detectedBins;
         private bool _finalized;
         private DateTime _lastRun;
         private int[] _myAcquiredData;
         private int[] _myBinnedSpectrum;
-        private int[] _mySpectrum;
+        private int[] _mySpectrum;        
         private Timer _myTimer;
         private int _newDataPoint;
         private volatile bool _running;
 
         /// <summary>
-        ///     Provides the functionality of a standard ASPHERIX experiment in terms of the counter card
+        ///     Provides the functionality of a standard ASPHERIX experiment
         /// </summary>
         /// <param name="threshold">The value from the APD above you think you have an atom in the trap</param>
         /// <param name="detectionBins">How often this value has to appear in a row before the trigger is send</param>
@@ -63,9 +62,10 @@ namespace APDTrigger.Hardware
         /// <param name="monitor"> </param>        
         /// <param name="clockEdges"> </param>
         public Counter(double threshold, int detectionBins, int apdBinSize, double triggerBin, bool monitor,
-                       int clockEdges, double frequency, int cyclesPerRun = 0)
+                       int clockEdges, double frequency, int cycles = 0)
         {
-            _cyclesPerRun = cyclesPerRun;
+            _monitor = monitor;
+            _cycles = cycles;
             _myThresholdTask = new Task("ThresholdTask");
             _myTriggerTask = new Task("TriggerTask");
             _myEdgeCountingTask = new Task("AcquisitionTask");
@@ -75,8 +75,7 @@ namespace APDTrigger.Hardware
             _threshold = threshold;
             _detectionBins = detectionBins;
             _apdBinSize = apdBinSize;
-            _triggerBin = triggerBin/1000.0; //_triggerBin is needed in seconds triggerBin comes in ms 
-            _monitor = monitor;
+            _triggerBin = triggerBin/1000.0; //_triggerBin is needed in seconds triggerBin comes in ms            
             _myClockEdges = clockEdges;
         }
 
@@ -103,7 +102,7 @@ namespace APDTrigger.Hardware
         /// Define the amount of read samples same value as for PrepareAcquisition (in continuous mode
         /// it's the buffer size)
         /// </param>
-        public void AimTrigger()
+        public void PrepareTrigger()
         {
             //minimum and maximum counter values are ignored in this measurement mode, but shouldn't be the same
             //measurement time is in seconds
@@ -214,9 +213,6 @@ namespace APDTrigger.Hardware
             {
                 try
                 {
-                    //used for pausing between runs signaled from the controller                    
-                    _pauseCycling.WaitOne();
-
                     ReadHighFrequencyCounter();
 
                     if (_monitor) //if we only monitor then ignore all fancy measurement functions
@@ -250,8 +246,12 @@ namespace APDTrigger.Hardware
 
                         _cycleCounter++;
 
-                        if (_cyclesPerRun > 0 && _cycleCounter >= _cyclesPerRun)
-                            Pause();
+                        if (_cycleCounter >= _cycles)
+                        {
+                            _running = false;
+                            ReleaseResources();
+                        }
+                        
 
                         CycleFinishedEvent(result);
                         _lastRun = DateTime.Now;
@@ -265,7 +265,7 @@ namespace APDTrigger.Hardware
         }
 
         private void ReleaseResources()
-        {
+        {            
             if (_finalized)
                 return;
 
@@ -300,11 +300,11 @@ namespace APDTrigger.Hardware
         }
 
         /// <summary>
-        /// Reads values from the high frequency counting
+        /// Reads values from the high frequency counting / Used to display the apd counts
         /// </summary>
         private void ReadHighFrequencyCounter()
         {
-            int[] readOutData;
+            int[] readOutData = new[]{0};
             try
             {
                 _myThresholdTask.Start();
@@ -318,30 +318,9 @@ namespace APDTrigger.Hardware
                 _myThresholdTask.Stop();
             }
 
-            if (readOutData.Length >= 1)
-            {
-                _newDataPoint = readOutData[0];
-
-
-                NewAPDValueEvent();
-            }
-        }
-
-        /// <summary>
-        /// pauses the counter
-        /// </summary>
-        public void Pause()
-        {
-            _pauseCycling.Reset();
-        }
-
-        /// <summary>
-        /// resumes the counter
-        /// </summary>
-        public void Resume()
-        {
-            _cycleCounter = 0;
-            _pauseCycling.Set();
+            _newDataPoint = readOutData[0];
+            NewAPDValueEvent();
+            
         }
 
         /// <summary>
@@ -430,7 +409,6 @@ namespace APDTrigger.Hardware
             return binnedData;
         }
 
-
         private void NewAPDValueEvent()
         {
             EventHandler dataUpdate = NewAPDValue;
@@ -443,6 +421,11 @@ namespace APDTrigger.Hardware
             EventHandler finished = APDStopped;
             if (null != finished)
                 finished(this, new EventArgs());
+
+            //remove all event subscription so the object gets disposed
+            NewAPDValue = null;
+            CycleFinished = null;
+            APDStopped = null;
         }
 
         /// <summary>

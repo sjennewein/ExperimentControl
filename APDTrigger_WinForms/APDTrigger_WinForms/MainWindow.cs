@@ -16,6 +16,7 @@ namespace APDTrigger_WinForms
         private bool _apdIsRunning;
         private DisplayType _myChart2Display = DisplayType.Histogram;
         private int _pointCount;
+        
 
         public MainWindow()
         {
@@ -29,12 +30,12 @@ namespace APDTrigger_WinForms
             _myController.Threshold = 400;
             _myController.Samples2Acquire = 5000;
             _myController.Cycles = 100;
-            _myController.TotalRuns = 1;
+            _myController.Runs = 1;
             _myController.Frequency = 0.5;
             stop_button.Enabled = false;
             button_StopFrequency.Enabled = false;
 
-            _myController.APDStopped += OnApdStopped;
+            _myController.MeasurementFinished += OnMeasurementFinished;
 
             textBox_binningInput.DataBindings.Add("Text", _myController, "Binning", true,
                                                   DataSourceUpdateMode.OnPropertyChanged);
@@ -44,13 +45,13 @@ namespace APDTrigger_WinForms
                                                     DataSourceUpdateMode.OnPropertyChanged);
             textBox_cyclesInput.DataBindings.Add("Text", _myController, "Cycles", true,
                                                  DataSourceUpdateMode.OnPropertyChanged);
-            textBox_runsInput.DataBindings.Add("Text", _myController, "TotalRuns", true,
+            textBox_runsInput.DataBindings.Add("Text", _myController, "Runs", true,
                                                DataSourceUpdateMode.OnPropertyChanged);
             textBox_apdInput.DataBindings.Add("Text", _myController, "APDBinsize", true,
                                               DataSourceUpdateMode.OnPropertyChanged);
             textBox_acquireInput.DataBindings.Add("Text", _myController, "Samples2Acquire", true,
                                                   DataSourceUpdateMode.OnPropertyChanged);
-            textBox_totalRuns.DataBindings.Add("Text", _myController, "TotalRuns", true,
+            textBox_totalRuns.DataBindings.Add("Text", _myController, "Runs", true,
                                                DataSourceUpdateMode.OnPropertyChanged);
             textBox_runsDone.DataBindings.Add("Text", _myController, "RunsDone", true,
                                               DataSourceUpdateMode.OnPropertyChanged);
@@ -65,6 +66,12 @@ namespace APDTrigger_WinForms
                                                DataSourceUpdateMode.OnPropertyChanged);
             textBox_tcpClient.DataBindings.Add("Text", _myController, "RegisteredClients", true,
                                                DataSourceUpdateMode.OnPropertyChanged);
+            textBox_ReferenceCycles.DataBindings.Add("Text", _myController, "RefCycles", true,
+                                                     DataSourceUpdateMode.OnPropertyChanged);
+            textBox_ReferenceDetection.DataBindings.Add("Text", _myController, "RefDetectionBins", true,
+                                                        DataSourceUpdateMode.OnPropertyChanged);
+            textBox_ReferenceThreshold.DataBindings.Add("Text", _myController, "RefThreshold", true,
+                                                        DataSourceUpdateMode.OnPropertyChanged);
             InitializeApdSignalChart();
             InitializeApdHistogram();
         }
@@ -188,11 +195,11 @@ namespace APDTrigger_WinForms
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void OnApdStopped(object sender, EventArgs e)
+        private void OnMeasurementFinished(object sender, EventArgs e)
         {
             if (InvokeRequired)
             {
-                GuiUpdate callback = OnApdStopped;
+                GuiUpdate callback = OnMeasurementFinished;
                 Invoke(callback, new[] {sender, e});
             }
             else
@@ -291,16 +298,12 @@ namespace APDTrigger_WinForms
                 switch (radio.Text)
                 {
                     case "Measurement":
-                        _myController.Mode = Controller.RunType.Measurement;
-                        _myController.DeactivateNetwork();
+                        _myController.Mode = Controller.RunType.Measurement;  
+                        _myController.ActivateNetwork();
                         break;
                     case "Monitor":
-                        _myController.Mode = Controller.RunType.Monitor;
+                        _myController.Mode = Controller.RunType.Monitor;                         
                         _myController.DeactivateNetwork();
-                        break;
-                    case "Network":
-                        _myController.Mode = Controller.RunType.Network;
-                        _myController.ActivateNetwork();
                         break;
                 }
             }
@@ -368,7 +371,10 @@ namespace APDTrigger_WinForms
             button_StartFrequency.Enabled = false;
             button_StopFrequency.Enabled = false;
             textBox_Frequency.Enabled = false;
-            radioButton_Network.Enabled = false;
+            checkBox_activateReference.Enabled = false;
+            textBox_ReferenceCycles.Enabled = false;
+            textBox_ReferenceDetection.Enabled = false;
+            textBox_ReferenceThreshold.Enabled = false;
         }
 
         /// <summary>
@@ -394,7 +400,10 @@ namespace APDTrigger_WinForms
             button_StartFrequency.Enabled = true;
             button_StopFrequency.Enabled = true;
             textBox_Frequency.Enabled = true;
-            radioButton_Network.Enabled = true;
+            checkBox_activateReference.Enabled = true;
+            textBox_ReferenceCycles.Enabled = true;
+            textBox_ReferenceDetection.Enabled = true;
+            textBox_ReferenceThreshold.Enabled = true;
         }
 
         /// <summary>
@@ -473,7 +482,8 @@ namespace APDTrigger_WinForms
         {
             _apdIsRunning = true;
             radioButton_Monitor.Checked = true;
-            _myController.Start(true);
+            _myController.Mode = Controller.RunType.FrequencyGenerator;
+            _myController.Start();
             DisableAllInputs();
             button_StopFrequency.Enabled = true;
             ApdHistogramUpdate.Start();
@@ -519,5 +529,27 @@ namespace APDTrigger_WinForms
         internal delegate void myGuiCallback(object state);
 
         #endregion
+
+        private void activateReference_checkBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if(!_myController.AlternatingRuns)
+            {
+                textBox_ReferenceCycles.Enabled = true;
+                textBox_ReferenceDetection.Enabled = true;
+                textBox_ReferenceThreshold.Enabled = true;
+                _myController.AlternatingRuns = true;
+            }
+            else
+            {
+                textBox_ReferenceCycles.Enabled = false;
+                textBox_ReferenceDetection.Enabled = false;
+                textBox_ReferenceThreshold.Enabled = false;
+                _myController.AlternatingRuns = false;
+            }                        
+        }
+
+     
+
+   
     }
 }

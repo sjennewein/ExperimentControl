@@ -16,9 +16,9 @@ namespace APDTrigger_WinForms.Helper
         #region RunType enum
 
         public enum RunType
-        {
-            Network,
+        {            
             Measurement,
+            FrequencyGenerator,
             Monitor
         };
 
@@ -31,7 +31,6 @@ namespace APDTrigger_WinForms.Helper
         private readonly object _HistogramDataLock = new object();
         private readonly List<AgingDataPoint> _histogramDataPoints = new List<AgingDataPoint>();
 
-
         private readonly Control _myGUI;
         private Server _tcpServer;
         public RunType Mode = RunType.Monitor;
@@ -39,20 +38,25 @@ namespace APDTrigger_WinForms.Helper
         private Thread _Worker;
         private int _atoms;
         private int[] _binnedSpectrumData;
-        private int _cyclesDone = 1;
+        private int _cyclesDone = 0;
 
 
         private int[] _histogramData = new int[600];
         private Counter _myCounterHardware;
         private int _noAtoms;
         private double _recapturerate;
-        private int _runsDone = 1;
+        private int _runsDone = 0;
         private bool _saveApdSignal;
         private string _saveFolder;
         private DateTime _today = DateTime.Now;
         private StreamWriter writer;
+        private int _nextCycles;
+        private int _nextThreshold;
+        private int _nextDetectionBins;
 
         #endregion
+
+        public bool AlternatingRuns = false;
 
         public Controller(Control gui)
         {
@@ -60,6 +64,7 @@ namespace APDTrigger_WinForms.Helper
             _saveFolder = _BaseSaveFolder + _today.Year + "\\" + _today.Month + "\\" + _today.Day + "\\";
         }
 
+        #region Network
         public void ActivateNetwork()
         {
             if (_tcpServer == null)
@@ -79,7 +84,32 @@ namespace APDTrigger_WinForms.Helper
                 _tcpServer.Stop();
                 _tcpServer = null;
             }
+            PropertyChangedEvent("RegisteredClients");
         }
+
+        private void StartAPDTrigger()
+        {
+            if(AlternatingRuns)
+            {
+                int actualRun = _runsDone + 1;
+               if(actualRun % 2 == 0)
+               {
+                   _nextThreshold = RefThreshold;
+                   _nextCycles = RefCycles;
+                   _nextDetectionBins = RefDetectionBins;
+               }
+               else
+               {
+                   _nextCycles = Cycles;
+                   _nextDetectionBins = DetectionBins;
+                   _nextThreshold = Threshold;
+               }
+            }
+            
+            InitializeCycle();
+            StartHardwareOutput();
+        }
+        #endregion
 
         #region BindingProperties
 
@@ -87,8 +117,13 @@ namespace APDTrigger_WinForms.Helper
         public int Binning { get; set; }
         public int DetectionBins { get; set; }
         public int Threshold { get; set; }
-        public int TotalRuns { get; set; }
+        public int Runs { get; set; }
         public int Cycles { get; set; }
+
+        //Reference Run parameter
+        public int RefDetectionBins { get; set; }
+        public int RefThreshold { get; set; }
+        public int RefCycles { get; set; }
 
         //Acquisition parameters
         public int Samples2Acquire { get; set; }
@@ -185,6 +220,7 @@ namespace APDTrigger_WinForms.Helper
         /// <summary>
         /// Creates a new folder for saving data if date changed
         /// </summary>
+        
         private void UpdateSaveFolder()
         {
             DateTime now = DateTime.Now;
@@ -198,63 +234,67 @@ namespace APDTrigger_WinForms.Helper
         /// <summary>
         /// Initializes the counter with the parameters from the GUI and starts the counter
         /// </summary>
-        public void Start(bool runFrequencyGenerator = false)
+        public void Start()
         {
-            Initialize();
+            _runsDone = 0;
+            _nextCycles = Cycles;
+            _nextDetectionBins = DetectionBins;
+            _nextThreshold = Threshold;
+            
+            if(Mode == RunType.Measurement)
+            {
+                _tcpServer.ClientReady();
+                return;
+            }
 
-
-            _Worker = new Thread(BackgroundWork) {Name = "Worker"};
-            _Worker.Start();
-
-            if (runFrequencyGenerator)
-                _myCounterHardware.StartFrequencyGenerator();
-
-
-
+            InitializeCycle();
+            StartHardwareOutput();
         }
 
-        private void Initialize()
+        private void InitializeCycle()
         {
             bool monitorMode = (Mode == RunType.Monitor); //enable monitor mode if user selected that
             _atoms = 0;
             _noAtoms = 0;
             _recapturerate = 0;
-            _runsDone = 0;
             _cyclesDone = 0;
             _Spectrum = null;
             _binnedSpectrumData = null;
             _histogramData = new int[600];
 
-            if (Mode == RunType.Network)
-                _myCounterHardware = new Counter(Threshold, DetectionBins, APDBinsize, Binning, monitorMode,
-                                                 Samples2Acquire, Frequency, Cycles);
-            else
-                _myCounterHardware = new Counter(Threshold, DetectionBins, APDBinsize, Binning, monitorMode,
-                                                 Samples2Acquire, Frequency);
+            _myCounterHardware = new Counter(_nextThreshold, _nextDetectionBins, APDBinsize, Binning, monitorMode,
+                                             Samples2Acquire, Frequency, _nextCycles);
 
-            _myCounterHardware.APDStopped += delegate { TriggerEvent(APDStopped); };
             _myCounterHardware.NewAPDValue += OnNewApdValue;
             _myCounterHardware.CycleFinished += OnCyleFinished;
-
-            if (Mode == RunType.Network)
-                _myCounterHardware.Pause();
+            
+            //initialize hardware in extra thread for less lagging
+            //_Worker = new Thread(StartHardwareOutput) { Name = "Worker" };
+            //_Worker.Start();
+            
         }
 
         //initializing the card is done in a separate thread otherwise the GUI lags from time to time
         /// <summary>
         /// Is used for multi-threading purposes
         /// </summary>
-        private void BackgroundWork()
+        private void StartHardwareOutput()
         {
-            _myCounterHardware.AimTrigger();
-            _myCounterHardware.PrepareAcquisition();
-            _myCounterHardware.InitializeMeasurementTimer();
-
-            if (Mode == RunType.Network)
+            switch (Mode)
             {
-                _tcpServer.ClientReady();                
+                    case RunType.Monitor:
+                        _myCounterHardware.PrepareTrigger();                        
+                        _myCounterHardware.InitializeMeasurementTimer();
+                    break;
+                    case RunType.Measurement:
+                        _myCounterHardware.PrepareTrigger();
+                        _myCounterHardware.PrepareAcquisition();
+                        _myCounterHardware.InitializeMeasurementTimer();
+                    break;
+                    case RunType.FrequencyGenerator:
+                        _myCounterHardware.StartFrequencyGenerator();
+                    break;
             }
-
         }
 
         /// <summary>
@@ -264,15 +304,22 @@ namespace APDTrigger_WinForms.Helper
         {
             if (_myCounterHardware != null)
             {
+                _myCounterHardware.APDStopped += OnMeasurementFinished;
                 _myCounterHardware.StopAPDTrigger();
-                _myCounterHardware.Resume();
             }
-
+            else
+            {
+                TriggerEvent(MeasurementFinished);
+            }
 
             if (_saveApdSignal)
-            {
-                writer.Flush();
-            }
+                writer.Flush();               
+        }
+
+        private void OnMeasurementFinished(object sender, EventArgs eventArgs)
+        {
+            _myCounterHardware = null;
+            TriggerEvent(MeasurementFinished);
         }
 
         /// <summary>
@@ -315,13 +362,8 @@ namespace APDTrigger_WinForms.Helper
             }
         }
 
-        private void StartAPDTrigger()
-        {
-            _myCounterHardware.Resume();
-        }
-
-    /// <summary>
-        /// Updates the values for the cycle counter
+        /// <summary>
+        /// Updates the values for the cycle counter and if in network mode initializes the next round
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -347,36 +389,25 @@ namespace APDTrigger_WinForms.Helper
 
                 TriggerEvent(RunHasFinished);
 
-                //_myTcpServer.SetTriggerData(
-                //  new NetworkData(_atoms, _noAtoms, _cyclesDone, _runsDone, TotalRuns, _recapturerate).Serialize());
-
-                //stop the counter for a certain amount of time
-                if (Mode == RunType.Network)
-                {                    
-                    _tcpServer.ClientReady();
-                }
-                    
-
+                _tcpServer.ClientReady();   //tell the network manager that this client is ready
+                                    
                 _runsDone++;
                 PropertyChangedEvent("RunsDone");
 
+                if (_runsDone >= Runs) //if all runs are done stop the run
+                {                                       
+                    _tcpServer.StopTrigger();
 
-                if (_runsDone >= TotalRuns) //if all runs are done stop the run
-                {
-                    if(Mode == RunType.Network)                    
-                        _tcpServer.StopTrigger();
-
-                    Stop();
+                    //Stop(); //TODO might not be needed anymore
+                    _myCounterHardware = null;
+                    TriggerEvent(MeasurementFinished);
                     return;
                 }
             }
 
             UpdateSpectrumDatePoint();
             UpdateBinnedSpectrum();
-
-            UpdateRecaptureResult(data);
-
-            
+            UpdateRecaptureResult(data);            
         }
 
         /// <summary>
@@ -522,7 +553,7 @@ namespace APDTrigger_WinForms.Helper
                 triggerEvent(this, new EventArgs());
         }
 
-        public event EventHandler APDStopped;
+        public event EventHandler MeasurementFinished;
 
         public event EventHandler RunHasFinished;
 

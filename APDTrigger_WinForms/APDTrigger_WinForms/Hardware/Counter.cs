@@ -248,9 +248,9 @@ namespace APDTrigger.Hardware
                         _myTriggerTask.Start();
                         _myTriggerTask.Stop();
 
-                        //MeasureSpectrum();
+                        MeasureSpectrum();
 
-                        //RecaptureResult result = EvaluateRecapture();
+                        RecaptureResult result = EvaluateRecapture();
 
                         _cycleCounter++;
 
@@ -259,9 +259,9 @@ namespace APDTrigger.Hardware
                             _running = false;
                             ReleaseResources();
                         }
-                        
 
-                        //CycleFinishedEvent(result);
+
+                        CycleFinishedEvent(result);
                         _lastRun = DateTime.Now;
                     }
                 }

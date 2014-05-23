@@ -31,7 +31,6 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             this.groupBox_Trigger = new System.Windows.Forms.GroupBox();
-            this.radioButton_Network = new System.Windows.Forms.RadioButton();
             this.checkBox_SaveHistogram = new System.Windows.Forms.CheckBox();
             this.CheckBox_SaveSignal = new System.Windows.Forms.CheckBox();
             this.label8 = new System.Windows.Forms.Label();
@@ -91,6 +90,7 @@
             this.textBox_ReferenceThreshold = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.textBox_ReferenceDetection = new System.Windows.Forms.TextBox();
+            this.label20 = new System.Windows.Forms.Label();
             this.groupBox_Trigger.SuspendLayout();
             this.groupBox_Recapture.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -102,7 +102,6 @@
             // 
             // groupBox_Trigger
             // 
-            this.groupBox_Trigger.Controls.Add(this.radioButton_Network);
             this.groupBox_Trigger.Controls.Add(this.checkBox_SaveHistogram);
             this.groupBox_Trigger.Controls.Add(this.CheckBox_SaveSignal);
             this.groupBox_Trigger.Controls.Add(this.label8);
@@ -125,18 +124,6 @@
             this.groupBox_Trigger.TabIndex = 0;
             this.groupBox_Trigger.TabStop = false;
             this.groupBox_Trigger.Text = "Trigger Settings";
-            
-            // 
-            // radioButton_Network
-            // 
-            this.radioButton_Network.AutoSize = true;
-            this.radioButton_Network.Location = new System.Drawing.Point(75, 213);
-            this.radioButton_Network.Name = "radioButton_Network";
-            this.radioButton_Network.Size = new System.Drawing.Size(65, 17);
-            this.radioButton_Network.TabIndex = 16;
-            this.radioButton_Network.Text = "Network";
-            this.radioButton_Network.UseVisualStyleBackColor = true;
-            this.radioButton_Network.CheckedChanged += new System.EventHandler(this.radioButton_Mode_CheckedChanged);
             // 
             // checkBox_SaveHistogram
             // 
@@ -682,6 +669,7 @@
             // 
             // groupBox4
             // 
+            this.groupBox4.Controls.Add(this.label20);
             this.groupBox4.Controls.Add(this.label19);
             this.groupBox4.Controls.Add(this.label17);
             this.groupBox4.Controls.Add(this.textBox_ReferenceCycles);
@@ -699,7 +687,7 @@
             // label19
             // 
             this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(43, 110);
+            this.label19.Location = new System.Drawing.Point(43, 136);
             this.label19.Name = "label19";
             this.label19.Size = new System.Drawing.Size(41, 13);
             this.label19.TabIndex = 18;
@@ -708,7 +696,7 @@
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(27, 88);
+            this.label17.Location = new System.Drawing.Point(27, 114);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(57, 13);
             this.label17.TabIndex = 18;
@@ -717,7 +705,7 @@
             // textBox_ReferenceCycles
             // 
             this.textBox_ReferenceCycles.Enabled = false;
-            this.textBox_ReferenceCycles.Location = new System.Drawing.Point(90, 107);
+            this.textBox_ReferenceCycles.Location = new System.Drawing.Point(90, 133);
             this.textBox_ReferenceCycles.Name = "textBox_ReferenceCycles";
             this.textBox_ReferenceCycles.Size = new System.Drawing.Size(53, 20);
             this.textBox_ReferenceCycles.TabIndex = 17;
@@ -725,7 +713,7 @@
             // checkBox_activateReference
             // 
             this.checkBox_activateReference.AutoSize = true;
-            this.checkBox_activateReference.Location = new System.Drawing.Point(9, 21);
+            this.checkBox_activateReference.Location = new System.Drawing.Point(9, 47);
             this.checkBox_activateReference.Name = "checkBox_activateReference";
             this.checkBox_activateReference.Size = new System.Drawing.Size(65, 17);
             this.checkBox_activateReference.TabIndex = 19;
@@ -736,7 +724,7 @@
             // textBox_ReferenceThreshold
             // 
             this.textBox_ReferenceThreshold.Enabled = false;
-            this.textBox_ReferenceThreshold.Location = new System.Drawing.Point(90, 85);
+            this.textBox_ReferenceThreshold.Location = new System.Drawing.Point(90, 111);
             this.textBox_ReferenceThreshold.Name = "textBox_ReferenceThreshold";
             this.textBox_ReferenceThreshold.Size = new System.Drawing.Size(53, 20);
             this.textBox_ReferenceThreshold.TabIndex = 17;
@@ -744,7 +732,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 63);
+            this.label7.Location = new System.Drawing.Point(6, 89);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(78, 13);
             this.label7.TabIndex = 18;
@@ -753,10 +741,19 @@
             // textBox_ReferenceDetection
             // 
             this.textBox_ReferenceDetection.Enabled = false;
-            this.textBox_ReferenceDetection.Location = new System.Drawing.Point(90, 60);
+            this.textBox_ReferenceDetection.Location = new System.Drawing.Point(90, 86);
             this.textBox_ReferenceDetection.Name = "textBox_ReferenceDetection";
             this.textBox_ReferenceDetection.Size = new System.Drawing.Size(53, 20);
             this.textBox_ReferenceDetection.TabIndex = 17;
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(6, 25);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(132, 13);
+            this.label20.TabIndex = 10;
+            this.label20.Text = "every 2nd run / alternating";
             // 
             // MainWindow
             // 
@@ -841,7 +838,6 @@
         private System.Windows.Forms.RadioButton radioButton1;
         private System.Windows.Forms.Button button_Rescale;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.RadioButton radioButton_Network;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Button button_StopFrequency;
         private System.Windows.Forms.Button button_StartFrequency;
@@ -856,6 +852,7 @@
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.TextBox textBox_ReferenceCycles;
         private System.Windows.Forms.TextBox textBox_ReferenceThreshold;
+        private System.Windows.Forms.Label label20;
     }
 }
 

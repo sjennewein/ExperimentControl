@@ -50,7 +50,7 @@ namespace APDTrigger.Hardware
         private int[] _mySpectrum;        
         private Timer _myTimer;
         private int _newDataPoint;
-        private volatile bool _running;
+        private volatile bool _running = false;
 
         /// <summary>
         ///     Provides the functionality of a standard ASPHERIX experiment
@@ -192,7 +192,15 @@ namespace APDTrigger.Hardware
         /// </summary>
         public void StopAPDTrigger()
         {
-            _running = false;
+            if(_running == false)
+            {
+                ReleaseResources();
+            }
+            else
+            {
+                _running = false;                
+            }
+
         }
 
         /// <summary>
@@ -240,9 +248,9 @@ namespace APDTrigger.Hardware
                         _myTriggerTask.Start();
                         _myTriggerTask.Stop();
 
-                        MeasureSpectrum();
+                        //MeasureSpectrum();
 
-                        RecaptureResult result = EvaluateRecapture();
+                        //RecaptureResult result = EvaluateRecapture();
 
                         _cycleCounter++;
 
@@ -253,7 +261,7 @@ namespace APDTrigger.Hardware
                         }
                         
 
-                        CycleFinishedEvent(result);
+                        //CycleFinishedEvent(result);
                         _lastRun = DateTime.Now;
                     }
                 }
@@ -276,8 +284,11 @@ namespace APDTrigger.Hardware
 
                 _finalized = true;
 
-                _myTimer.Change(Timeout.Infinite, Timeout.Infinite);
-                _myTimer.Dispose();
+                if (_myTimer != null)
+                {
+                    _myTimer.Change(Timeout.Infinite, Timeout.Infinite);
+                    _myTimer.Dispose();
+                }
 
                 _myTriggerTask.Stop();
                 _myTriggerTask.Dispose();
@@ -335,10 +346,11 @@ namespace APDTrigger.Hardware
                 _mySampleClock.Start();
                 _myEdgeCountingTask.Start();
                 var acquisitionReader = new CounterReader(_myEdgeCountingTask.Stream);
-                acquisitionReader.MemoryOptimizedReadMultiSampleInt32(_myClockEdges, ref data, out readOutSamples);
+                acquisitionReader.MemoryOptimizedReadMultiSampleInt32(_myClockEdges, ref data, out readOutSamples);                
             }
             catch (DaqException e)
             {
+                _running = false;
                 return;
             }
             finally

@@ -35,7 +35,7 @@ namespace APDTrigger_WinForms
             stop_button.Enabled = false;
             button_StopFrequency.Enabled = false;
 
-            _myController.APDStopped += OnApdStopped;
+            _myController.MeasurementFinished += OnMeasurementFinished;
 
             textBox_binningInput.DataBindings.Add("Text", _myController, "Binning", true,
                                                   DataSourceUpdateMode.OnPropertyChanged);
@@ -195,11 +195,11 @@ namespace APDTrigger_WinForms
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void OnApdStopped(object sender, EventArgs e)
+        private void OnMeasurementFinished(object sender, EventArgs e)
         {
             if (InvokeRequired)
             {
-                GuiUpdate callback = OnApdStopped;
+                GuiUpdate callback = OnMeasurementFinished;
                 Invoke(callback, new[] {sender, e});
             }
             else
@@ -298,16 +298,12 @@ namespace APDTrigger_WinForms
                 switch (radio.Text)
                 {
                     case "Measurement":
-                        _myController.Mode = Controller.RunType.Measurement;
-                        _myController.DeactivateNetwork();
+                        _myController.Mode = Controller.RunType.Measurement;  
+                        _myController.ActivateNetwork();
                         break;
                     case "Monitor":
-                        _myController.Mode = Controller.RunType.Monitor;
+                        _myController.Mode = Controller.RunType.Monitor;                         
                         _myController.DeactivateNetwork();
-                        break;
-                    case "Network":
-                        _myController.Mode = Controller.RunType.Network;
-                        _myController.ActivateNetwork();
                         break;
                 }
             }
@@ -375,7 +371,10 @@ namespace APDTrigger_WinForms
             button_StartFrequency.Enabled = false;
             button_StopFrequency.Enabled = false;
             textBox_Frequency.Enabled = false;
-            radioButton_Network.Enabled = false;
+            checkBox_activateReference.Enabled = false;
+            textBox_ReferenceCycles.Enabled = false;
+            textBox_ReferenceDetection.Enabled = false;
+            textBox_ReferenceThreshold.Enabled = false;
         }
 
         /// <summary>
@@ -401,7 +400,10 @@ namespace APDTrigger_WinForms
             button_StartFrequency.Enabled = true;
             button_StopFrequency.Enabled = true;
             textBox_Frequency.Enabled = true;
-            radioButton_Network.Enabled = true;
+            checkBox_activateReference.Enabled = true;
+            textBox_ReferenceCycles.Enabled = true;
+            textBox_ReferenceDetection.Enabled = true;
+            textBox_ReferenceThreshold.Enabled = true;
         }
 
         /// <summary>

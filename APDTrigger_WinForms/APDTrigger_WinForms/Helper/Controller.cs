@@ -72,7 +72,7 @@ namespace APDTrigger_WinForms.Helper
                 _tcpServer = new Server(IPAddress.Any, 9898);
                 _tcpServer.ClientsChanged += delegate { PropertyChangedEvent("RegisteredClients"); };
                 _tcpServer.AllClientsAreLaunched += delegate { StartAPDTrigger(); };
-                _tcpServer.CyclesPerRun = Cycles;
+                _tcpServer.Cycles = Cycles;
                 _tcpServer.RegisterClient("APDTrigger");
             }
         }
@@ -89,25 +89,29 @@ namespace APDTrigger_WinForms.Helper
 
         private void StartAPDTrigger()
         {
+            int cyclesAfter = Cycles;
             if(AlternatingRuns)
             {
-                int actualRun = _runsDone + 1;
+               int actualRun = _runsDone + 1;
+               
                if(actualRun % 2 == 0)
                {
                    _nextThreshold = RefThreshold;
                    _nextCycles = RefCycles;
-                   _nextDetectionBins = RefDetectionBins;
+                   _nextDetectionBins = RefDetectionBins;                   
                }
                else
                {
                    _nextCycles = Cycles;
                    _nextDetectionBins = DetectionBins;
                    _nextThreshold = Threshold;
+                   cyclesAfter = RefCycles;
                }
             }
             
             InitializeCycle();
             StartHardwareOutput();
+            _tcpServer.Cycles = cyclesAfter;
         }
         #endregion
 
@@ -185,7 +189,13 @@ namespace APDTrigger_WinForms.Helper
 
         public int Data
         {
-            get { return _myCounterHardware.NewDataPoint; }
+            get
+            {
+                if (_myCounterHardware != null)
+                    return _myCounterHardware.NewDataPoint;
+                
+                return 0;                                   
+            }
         }
 
         public int[] HistogramData

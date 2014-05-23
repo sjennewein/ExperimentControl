@@ -49,7 +49,7 @@ namespace APDTrigger.Hardware
         private int[] _myBinnedSpectrum;
         private int[] _mySpectrum;        
         private Timer _myTimer;
-        private int _newDataPoint;
+        private int _newDataPoint = 0;
         private volatile bool _running = false;
 
         /// <summary>

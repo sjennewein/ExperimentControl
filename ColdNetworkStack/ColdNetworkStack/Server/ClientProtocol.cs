@@ -60,12 +60,6 @@ namespace ColdNetworkStack.Server
                     case Commands.Register:
                         RegisterClient(client);
                         break;
-                    case Commands.CyclesPerRun:
-                        CyclesPerRun(client);
-                        break;
-                    case Commands.Data:
-                        HandleData(client);
-                        break;
                     case Commands.UnRegister:
                         UnRegisterClient(client);
                         break;
@@ -76,26 +70,11 @@ namespace ColdNetworkStack.Server
             }
         }
 
-        private void HandleData(TcpClient client)
-        {
-            WriteNetworkStream(client, Answers.Ack.ToString());
-            var command = (Commands) Enum.Parse(typeof (Commands), ReadNetworkStream(client));
-        }
-
-        private void CyclesPerRun(TcpClient client)
-        {
-            WriteNetworkStream(client, Answers.Ack.ToString());
-            WriteNetworkStream(client, _parent.CyclesPerRun.ToString());
-            ReadNetworkStream(client);
-        }
-
 
         private void TriggerMode(TcpClient client)
-        {
-            WriteNetworkStream(client, Answers.Ack.ToString());
-            //Thread.Sleep(5); might be needed
-
+        {                    
             _parent.ClientReady();
+            WriteNetworkStream(client,_parent.Cycles.ToString());
 
             _triggerSynchronization.WaitOne(); //all clients wait until all returned                
 
@@ -115,24 +94,16 @@ namespace ColdNetworkStack.Server
 
         private void RegisterClient(TcpClient client)
         {
-            WriteNetworkStream(client, Answers.Ack.ToString());
-            Console.WriteLine("Arrived");
 
             string name = ReadNetworkStream(client);
             Console.WriteLine(name);
             _parent.RegisterClient(name);
-
-            WriteNetworkStream(client, Answers.Ack.ToString());
         }
 
         private void UnRegisterClient(TcpClient client)
-        {
-            WriteNetworkStream(client, Answers.Ack.ToString());
-
+        {          
             string name = ReadNetworkStream(client);
             _parent.UnregisterClient(name);
-
-            WriteNetworkStream(client, Answers.Ack.ToString());
         }
 
         private string ReadNetworkStream(TcpClient client)
@@ -171,7 +142,6 @@ namespace ColdNetworkStack.Server
         {
             if (_NetworkStream == null)
                 _NetworkStream = client.GetStream();
-
 
             try
             {

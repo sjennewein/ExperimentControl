@@ -13,7 +13,7 @@ namespace ColdNetworkStack.Server
         private readonly AutoResetEvent _myClientGate = new AutoResetEvent(false);
         private readonly List<String> _registeredClients = new List<string>();
         
-        public int CyclesPerRun = 0;
+        public int Cycles = 0;
         
         public string TriggerData = "";
         private long _readyClients;

@@ -29,6 +29,7 @@ namespace DigitalOutput
             _daqmx.CycleFinished += delegate { OnHwCycleFinished(); };
             _daqmx.RunFinished += delegate { OnHwRunFinished(); };
             _daqmx.RunStarted += delegate { OnHwRunStarted(); };
+            _daqmx.Stopped += delegate { OnHwStopped(); };
         }
 
         public int CycleCounter { get; set; }
@@ -152,6 +153,11 @@ namespace DigitalOutput
         private void OnNwStartRun()
         {
             _daqmx.Resume();
+        }
+
+        private void OnHwStopped()
+        {
+            TriggerEvent(DaqmxStopped);
         }
 
         private void OnHwRunStarted()

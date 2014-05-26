@@ -99,17 +99,14 @@ namespace DigitalOutput.GUI
                 {
                     ControllerChannel channel = step.Channels[iChannel];
 
-                    var newLabel = new Label
+                    var newLabel = new DynamicLabel(channel)
                         {
                             Size = new Size(columnWidth, rowHeight),
                             Margin = new Padding(0),
                             Location = new Point(iStep*(columnWidth + 1) + xOffset, iChannel*(rowHeight + 1) + yOffset),
                         };
 
-                    newLabel.DataBindings.Add("BackColor", channel, "Color", false,
-                                              DataSourceUpdateMode.OnPropertyChanged);
-
-                    newLabel.MouseClick += channel.ChangeValue;
+        
                     newElements[elementCounter] = newLabel;
 
                     elementCounter++;

@@ -68,6 +68,9 @@
     <Compile Include="Controller\ControllerPattern.cs" />
     <Compile Include="Controller\ControllerStep.cs" />
     <Compile Include="Controller\RunData.cs" />
+    <Compile Include="GUI\DynamicLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="GUI\Network.cs">
       <SubType>UserControl</SubType>
     </Compile>

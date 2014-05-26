@@ -72,30 +72,7 @@ namespace DigitalOutput.Controller
             Iterator = newName;
             PropertyHasChanged("Iterator");
         }
-
-        public void StoreSyncedValues()
-        {
-            _syncedDuration = Duration;
-            foreach (ControllerChannel channel in Channels)
-            {
-                channel.StoreSyncedValue();
-            }
-        }
-
-        public void RestoreSyncedValues()
-        {
-            if (_syncedDuration != Duration)
-            {
-                Duration = _syncedDuration;
-                PropertyHasChanged("Duration");
-            }
-
-            foreach (ControllerChannel channel in Channels)
-            {
-                channel.RestoreSyncedValue();
-            }
-        }
-
+        
         private void PropertyHasChanged(string propertyName)
         {
             PropertyChangedEventHandler propertyChanged = PropertyChanged;

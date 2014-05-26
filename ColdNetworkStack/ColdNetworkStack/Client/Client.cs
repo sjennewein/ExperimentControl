@@ -66,7 +66,6 @@ namespace ColdNetworkStack.Client
             var answer = ReadNetworkStream(_client);
             Cycles = Convert.ToInt32(answer);
             TriggerEvent(DataReceived);
-
             
             var trigger = ReadNetworkStream(_client);
             Console.WriteLine(trigger + ": " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));

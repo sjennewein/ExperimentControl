@@ -28,7 +28,7 @@ namespace AnalogOutput.Logic
 
         public int Data
         {
-            get { return _client.CyclesPerRun; }
+            get { return _client.Cycles; }
         }
 
         public string ToJSON()
@@ -57,7 +57,7 @@ namespace AnalogOutput.Logic
 
         public void ListenToTrigger()
         {
-            _client.StartLoop();
+            _client.ListenForTrigger();
         }
 
         public void Disconnect()
@@ -71,12 +71,12 @@ namespace AnalogOutput.Logic
 
         public void StartNextRun()
         {
-            _client.Resume();
+            _client.ListenForTrigger();
         }
 
         public void HardwareStarted()
         {
-            _client.Resume();
+            _client.ThisClientIsReady();
             Console.WriteLine("Network resumed");
         }
 

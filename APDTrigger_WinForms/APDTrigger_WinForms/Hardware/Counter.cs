@@ -253,6 +253,7 @@ namespace APDTrigger.Hardware
                         RecaptureResult result = EvaluateRecapture();
 
                         _cycleCounter++;
+                        CycleFinishedEvent(result);
 
                         if (_cycleCounter >= _cycles)
                         {
@@ -261,7 +262,7 @@ namespace APDTrigger.Hardware
                         }
 
 
-                        CycleFinishedEvent(result);
+                        
                         _lastRun = DateTime.Now;
                     }
                 }

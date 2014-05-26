@@ -72,8 +72,7 @@ namespace APDTrigger_WinForms.Helper
                 _tcpServer = new Server(IPAddress.Any, 9898);
                 _tcpServer.ClientsChanged += delegate { PropertyChangedEvent("RegisteredClients"); };
                 _tcpServer.AllClientsAreLaunched += delegate { StartAPDTrigger(); };
-                _tcpServer.Cycles = Cycles;
-                _tcpServer.RegisterClient("APDTrigger");
+                _tcpServer.Cycles = Cycles;                
             }
         }
 
@@ -89,6 +88,7 @@ namespace APDTrigger_WinForms.Helper
 
         private void StartAPDTrigger()
         {
+            
             int cyclesAfter = Cycles;
             if(AlternatingRuns)
             {
@@ -110,6 +110,7 @@ namespace APDTrigger_WinForms.Helper
             }
             
             InitializeCycle();
+            _myCounterHardware.APDStopped += OnRunFinished;
             StartHardwareOutput();
             _tcpServer.Cycles = cyclesAfter;
         }
@@ -253,6 +254,7 @@ namespace APDTrigger_WinForms.Helper
             
             if(Mode == RunType.Measurement)
             {
+                _tcpServer.RegisterClient("APDTrigger");
                 _tcpServer.ClientReady();
                 return;
             }
@@ -273,17 +275,11 @@ namespace APDTrigger_WinForms.Helper
             _histogramData = new int[600];
 
             _myCounterHardware = new Counter(_nextThreshold, _nextDetectionBins, APDBinsize, Binning, monitorMode,
-                                             Samples2Acquire, Frequency, _nextCycles);
-
+                                             Samples2Acquire, Frequency, _nextCycles);            
             _myCounterHardware.NewAPDValue += OnNewApdValue;
-            _myCounterHardware.CycleFinished += OnCyleFinished;
-            
-            //initialize hardware in extra thread for less lagging
-            //_Worker = new Thread(StartHardwareOutput) { Name = "Worker" };
-            //_Worker.Start();
-            
+            _myCounterHardware.CycleFinished += OnCyleFinished;            
         }
-
+        
         //initializing the card is done in a separate thread otherwise the GUI lags from time to time
         /// <summary>
         /// Is used for multi-threading purposes
@@ -328,6 +324,8 @@ namespace APDTrigger_WinForms.Helper
 
         private void OnMeasurementFinished(object sender, EventArgs eventArgs)
         {
+            if(Mode == RunType.Measurement)
+                _tcpServer.UnregisterClient("APDTrigger");
             _myCounterHardware = null;
             TriggerEvent(MeasurementFinished);
         }
@@ -399,7 +397,7 @@ namespace APDTrigger_WinForms.Helper
 
                 TriggerEvent(RunHasFinished);
 
-                _tcpServer.ClientReady();   //tell the network manager that this client is ready
+                
                                     
                 _runsDone++;
                 PropertyChangedEvent("RunsDone");
@@ -408,16 +406,49 @@ namespace APDTrigger_WinForms.Helper
                 {                                       
                     _tcpServer.StopTrigger();
 
-                    //Stop(); //TODO might not be needed anymore
-                    _myCounterHardware = null;
-                    TriggerEvent(MeasurementFinished);
+                    OnMeasurementFinished(null,null);
                     return;
                 }
+                _tcpServer.ClientReady();   //tell the network manager that this client is ready
             }
 
             UpdateSpectrumDatePoint();
             UpdateBinnedSpectrum();
             UpdateRecaptureResult(data);            
+        }
+
+        private void OnRunFinished(object sender, EventArgs e)
+        {
+                _cyclesDone = 0;
+                _noAtoms = 0;
+                _atoms = 0;
+                _recapturerate = 0;
+                _myCounterHardware = null;
+
+                if (SaveSpectrum)
+                    SaveRunSpectrum();
+
+                _Spectrum = null;
+                _binnedSpectrumData = null;
+
+                TriggerEvent(RunHasFinished);
+
+               
+
+                _runsDone++;
+                PropertyChangedEvent("RunsDone");
+
+                if (_runsDone >= Runs) //if all runs are done stop the run
+                {
+                    _tcpServer.StopTrigger();
+
+                    //Stop(); //TODO might not be needed anymore
+                    
+                    TriggerEvent(MeasurementFinished);
+                    return;
+                }
+                _tcpServer.ClientReady();   //tell the network manager that this client is ready
+            
         }
 
         /// <summary>

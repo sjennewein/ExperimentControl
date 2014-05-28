@@ -24,20 +24,21 @@ namespace DigitalOutput
         public Manager(Form gui)
         {
             _myGui = gui;
-            Network.DataUpdated += delegate { RemoteStart(); };
+            Network.DataUpdated += delegate { OnNewNetworkCycles(); };
             Network.StartRun += delegate { OnNwStartRun(); };
+            Network.NetworkFinished += delegate { Stop(); };
             _daqmx.CycleFinished += delegate { OnHwCycleFinished(); };
             _daqmx.RunFinished += delegate { OnHwRunFinished(); };
             _daqmx.RunStarted += delegate { OnHwRunStarted(); };
-            _daqmx.Stopped += delegate { OnHwStopped(); };
+            
         }
 
         public int CycleCounter { get; set; }
         public int RunCounter { get; set; }
 
-        public int CyclesPerRun
+        public int NetworkCycles
         {
-            get { return Network.Data; }
+            get { return Network.Cycles; }
         }
 
         public void Initialize(string data = null)
@@ -115,13 +116,13 @@ namespace DigitalOutput
             {
                 Network.Connect();
                 TriggerEvent(NetworkConnected);
-                _daqmx.Pause();
+                TriggerEvent(OutputStarted);
                 Network.ListenToTrigger();
                 return;
             }
             string json = Hardware.ToJson();
             _daqmx.Start(false, json);
-            TriggerEvent(DaqmxStarted);
+            TriggerEvent(OutputStarted);
             TriggerEvent(BufferSynced);
         }
 
@@ -132,16 +133,13 @@ namespace DigitalOutput
                 Network.Disconnect();
                 TriggerEvent(NetworkDisconnected);
             }
-            _daqmx.Stop();
-            TriggerEvent(DaqmxStopped);
+            _daqmx.Stopped += delegate { OnHwStopped(); };
+            _daqmx.Stop();            
         }
 
-        private void RemoteStart()
-        {
-            string json = Hardware.ToJson();
-            _daqmx.Start(true, json, CyclesPerRun);
-            TriggerEvent(DaqmxStarted);
-            PropertyChangedEvent("CyclesPerRun");
+        private void OnNewNetworkCycles()
+        {                      
+            PropertyChangedEvent("NetworkCycles");
         }
 
         public void CopyToBuffer()
@@ -152,7 +150,9 @@ namespace DigitalOutput
 
         private void OnNwStartRun()
         {
-            _daqmx.Resume();
+            string json = Hardware.ToJson();
+            _daqmx.Start(true, json, NetworkCycles);
+            TriggerEvent(OutputStarted);
         }
 
         private void OnHwStopped()
@@ -210,7 +210,7 @@ namespace DigitalOutput
 
         private delegate void GuiUpdate(string propertyName);
 
-        public event EventHandler DaqmxStarted;
+        public event EventHandler OutputStarted;
         public event EventHandler DaqmxStopped;
         public event EventHandler NetworkConnected;
         public event EventHandler NetworkDisconnected;

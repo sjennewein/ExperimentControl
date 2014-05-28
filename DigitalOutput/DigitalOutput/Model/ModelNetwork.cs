@@ -2,7 +2,7 @@
 {
     public class ModelNetwork
     {
-        public string Ip = "127.0.0.1";
+        public string Ip = "10.117.50.202";
         public int Port = 9898;
     }
 }

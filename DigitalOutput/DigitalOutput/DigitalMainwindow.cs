@@ -24,7 +24,7 @@ namespace DigitalOutput
             _manager = new Manager(this);
             _manager.BufferUnsynced += delegate { OnBufferUnsynced(); };
             _manager.BufferSynced += delegate { OnBufferSynced(); };
-            _manager.DaqmxStarted += delegate { OnDaqmxStarted(); };
+            _manager.OutputStarted += delegate { OnDaqmxStarted(); };
             _manager.DaqmxStopped += delegate { OnDaqmxStopped(); };
 
             InitializeComponent();
@@ -44,7 +44,7 @@ namespace DigitalOutput
             TabFabric.GenerateTabView(TabPanel_pattern, _manager.Hardware);
             label_CycleCounter.DataBindings.Add("Text", _manager, "CycleCounter");
             label_RunCounter.DataBindings.Add("Text", _manager, "RunCounter");
-            label_CyclesPerRun.DataBindings.Add("Text", _manager, "CyclesPerRun");
+            label_CyclesPerRun.DataBindings.Add("Text", _manager, "NetworkCycles");
             ResumeLayout(true);
         }
 
@@ -150,6 +150,7 @@ namespace DigitalOutput
             }
             else
             {
+                button_Start.Enabled = true;
                 label_Status.Text = "Stopped";
                 label_Status.BackColor = Color.FromArgb(196, 20, 94);
             }
@@ -164,6 +165,7 @@ namespace DigitalOutput
             }
             else
             {
+                button_Start.Enabled = false;
                 label_Status.Text = "Started";
                 label_Status.BackColor = Color.FromArgb(127, 210, 21);
             }

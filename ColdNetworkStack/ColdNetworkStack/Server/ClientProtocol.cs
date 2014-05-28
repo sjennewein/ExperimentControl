@@ -81,6 +81,7 @@ namespace ColdNetworkStack.Server
             if (!_trigger)
             {
                 WriteNetworkStream(client, Commands.Finished.ToString());
+                _parent.ClientFinished();
                 return;
             }
                 

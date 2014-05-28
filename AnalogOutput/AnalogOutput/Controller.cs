@@ -21,8 +21,9 @@ namespace AnalogOutput
         public Controller(Form gui)
         {
             _myGui = gui;
-            Network.DataUpdated += delegate { RemoteStart(); };
+            Network.DataUpdated += delegate { OnNewNetworkCycles(); };
             Network.StartRun += delegate { OnNwStartRun(); };
+            Network.NetworkFinished += delegate { Stop(); };
             _daqmx.CycleFinished += delegate { OnHwCycleFinished(); };
             _daqmx.RunFinished += delegate { OnHwRunFinished(); };
             _daqmx.RunStarted += delegate { OnHwRunStarted(); };
@@ -32,7 +33,7 @@ namespace AnalogOutput
         public int CycleCounter { get; set; }
         public int RunCounter { get; set; }
 
-        public int CyclesPerRun
+        public int NetworkCycles
         {
             get { return Network.Data; }
         }
@@ -104,13 +105,13 @@ namespace AnalogOutput
             {
                 Network.Connect();
                 TriggerEvent(NetworkConnected);
-                _daqmx.Pause();
+                TriggerEvent(OutputStarted);
                 Network.ListenToTrigger();
                 return;
             }
             string json = Hardware.ToJson();
             _daqmx.Start(false, json);
-            TriggerEvent(DaqmxStarted);
+            TriggerEvent(OutputStarted);
             TriggerEvent(BufferSynced);
         }
 
@@ -125,12 +126,9 @@ namespace AnalogOutput
             TriggerEvent(DaqmxStopped);
         }
 
-        private void RemoteStart()
-        {
-            string json = Hardware.ToJson();
-            _daqmx.Start(true, json, CyclesPerRun);
-            TriggerEvent(DaqmxStarted);
-            PropertyChangedEvent("CyclesPerRun");
+        private void OnNewNetworkCycles()
+        {            
+            PropertyChangedEvent("NetworkCycles");
         }
 
         public void CopyToBuffer()
@@ -141,7 +139,9 @@ namespace AnalogOutput
 
         private void OnNwStartRun()
         {
-            _daqmx.Resume();
+            string json = Hardware.ToJson();
+            _daqmx.Start(true, json, NetworkCycles);
+            TriggerEvent(OutputStarted);
         }
 
         private void OnHwRunStarted()
@@ -199,7 +199,7 @@ namespace AnalogOutput
             TriggerEvent(BufferUnsynced);
         }
 
-        public event EventHandler DaqmxStarted;
+        public event EventHandler OutputStarted;
         public event EventHandler DaqmxStopped;
         public event EventHandler NetworkConnected;
         public event EventHandler NetworkDisconnected;

@@ -72,8 +72,9 @@ namespace ColdNetworkStack.Server
 
 
         private void TriggerMode(TcpClient client)
-        {                    
-            _parent.ClientReady();
+        {
+            _parent.ClientReady();            
+            
             WriteNetworkStream(client,_parent.Cycles.ToString());
 
             _triggerSynchronization.WaitOne(); //all clients wait until all returned                

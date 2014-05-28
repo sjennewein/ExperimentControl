@@ -7,10 +7,9 @@ using fastJSON;
 namespace AnalogOutput.Hardware
 {
     public class Buffer
-    {
-        private readonly ManualResetEvent _signal = new ManualResetEvent(true);
-        private int _cycleCounter;
-        private int _cyclesPerRun;
+    {        
+        private int _iCycle;
+        private int _cycles;
         private DataCard _data;
         private Thread _myWorker;
         private bool _networkMode;
@@ -31,17 +30,14 @@ namespace AnalogOutput.Hardware
         {
             TriggerEvent(Started);
             _running = true;
-            _cycleCounter = 0;
+            _iCycle = 0;
             while (_run)
-            {
-                _signal.WaitOne();
-
+            {                
                 if (_updated)
                 {
                     _data = (DataCard) JSON.Instance.ToObject(_serializedData);
                     _outputSequence = Translator.GenerateDAQmxSequence(_data);
-                    _updated = false;
-                                        
+                    _updated = false;                                        
                 }
 
                 using (var myTask = new Task())
@@ -73,22 +69,14 @@ namespace AnalogOutput.Hardware
                         
                     myTask.Stop();                    
                 }
-                _cycleCounter++;
+                _iCycle++;
                 TriggerEvent(CycleFinished);
 
-                if (_networkMode && _cycleCounter >= _cyclesPerRun)
-                {
-                    Pause();
+                if (_networkMode && _iCycle >= _cycles)
+                {                    
                     TriggerEvent(RunFinished);
                     _newRun = true;
-                }
-
-                
-
-                //if (_networkMode)
-                //{
-                //    _signal.Reset();
-                //}
+                }                          
             }
             _running = false;
             TriggerEvent(Stopped);
@@ -98,7 +86,8 @@ namespace AnalogOutput.Hardware
         {
             if (!_running)
             {
-                _cyclesPerRun = cyclesPerRun;
+                _newRun = true;
+                _cycles = cyclesPerRun;
                 _networkMode = networkMode;
                 _serializedData = data;
                 _updated = true;
@@ -110,21 +99,12 @@ namespace AnalogOutput.Hardware
 
         public void Stop()
         {
+            if(!_running)
+                TriggerEvent(Stopped);
             _run = false;
-            _signal.Set();
         }
 
-        public void Pause()
-        {
-            _signal.Reset();
-        }
 
-        public void Resume()
-        {
-            _cycleCounter = 0;
-            _signal.Set();
-            Console.WriteLine("Hardware resumed");
-        }
 
         private void TriggerEvent(EventHandler newEvent, EventArgs e = null)
         {

@@ -67,7 +67,10 @@ namespace ColdNetworkStack.Client
         {
             WriteNetworkStream(_client, Commands.Trigger.ToString());
             var answer = ReadNetworkStream(_client);
+
             Cycles = Convert.ToInt32(answer);
+
+            
             TriggerEvent(DataReceived);
             
             var trigger = ReadNetworkStream(_client);

@@ -265,7 +265,7 @@ namespace APDTrigger_WinForms.Helper
 
         private void InitializeCycle()
         {
-            bool monitorMode = (Mode == RunType.Monitor); //enable monitor mode if user selected that
+            bool monitorMode = (Mode != RunType.Measurement); //enable monitor mode if user selected that
             _atoms = 0;
             _noAtoms = 0;
             _recapturerate = 0;
@@ -298,6 +298,8 @@ namespace APDTrigger_WinForms.Helper
                         _myCounterHardware.InitializeMeasurementTimer();
                     break;
                     case RunType.FrequencyGenerator:
+                        _myCounterHardware.PrepareTrigger();                        
+                        _myCounterHardware.InitializeMeasurementTimer();
                         _myCounterHardware.StartFrequencyGenerator();
                     break;
             }
@@ -414,8 +416,7 @@ namespace APDTrigger_WinForms.Helper
                 if (_runsDone >= Runs) //if all runs are done stop the run
                 {
                     _tcpServer.StopTrigger();
-
-                    //Stop(); //TODO might not be needed anymore
+                    OnMeasurementFinished(null,null);
                     
                     TriggerEvent(MeasurementFinished);
                     return;

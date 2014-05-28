@@ -52,6 +52,9 @@ namespace ColdNetworkStack.Client
             WriteNetworkStream(_client, Commands.Disconnect.ToString());
             _client.Close();
             Connection = false;
+            LaunchNextRun = null;
+            DataReceived = null;
+            NetworkFinished = null;
         }    
 
         public void ListenForTrigger()
@@ -72,7 +75,7 @@ namespace ColdNetworkStack.Client
             if (trigger == Commands.Trigger.ToString())
                 TriggerEvent(LaunchNextRun);
             if (trigger == Commands.Finished.ToString())
-                return;
+                TriggerEvent(NetworkFinished);
             _signal.WaitOne();
             WriteNetworkStream(_client, Answers.Ack.ToString());    //signalize that this client is ready           
         }
@@ -149,7 +152,6 @@ namespace ColdNetworkStack.Client
 
         public event EventHandler LaunchNextRun;
         public event EventHandler DataReceived;
-        //public event EventHandler Connected;
-        //public event EventHandler Disconnected;
+        public event EventHandler NetworkFinished;
     }
 }

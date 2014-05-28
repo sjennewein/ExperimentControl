@@ -29,7 +29,7 @@ namespace DigitalOutput.Controller
             set { _data.Port = value; }
         }
 
-        public int Data
+        public int Cycles
         {
             get { return _client.Cycles; }
         }
@@ -55,6 +55,7 @@ namespace DigitalOutput.Controller
                 _client = new Client("DigitalOutput");
                 _client.DataReceived += delegate { OnDataReceived(); };
                 _client.LaunchNextRun += delegate { OnStartNextRun(); };
+                _client.NetworkFinished += delegate { OnNetworkFinished(); };
                 _client.Connect(IPAddress.Parse(Ip), Port);
                 TriggerEvent(Connected);
             }
@@ -85,6 +86,11 @@ namespace DigitalOutput.Controller
             Console.WriteLine("Network resumed");
         }
 
+        private void OnNetworkFinished()
+        {
+            TriggerEvent(NetworkFinished);
+        }
+
         private void OnDataReceived()
         {
             TriggerEvent(DataUpdated);
@@ -113,6 +119,7 @@ namespace DigitalOutput.Controller
         public event EventHandler StartRun;
         public event EventHandler Connected;
         public event EventHandler Disconnected;
+        public event EventHandler NetworkFinished;
 
         public event PropertyChangedEventHandler PropertyChanged;
     }

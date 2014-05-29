@@ -26,8 +26,7 @@ namespace AnalogOutput
             Network.NetworkFinished += delegate { Stop(); };
             _daqmx.CycleFinished += delegate { OnHwCycleFinished(); };
             _daqmx.RunFinished += delegate { OnHwRunFinished(); };
-            _daqmx.RunStarted += delegate { OnHwRunStarted(); };
-            _daqmx.Stopped += delegate { OnHwStopped(); };            
+            _daqmx.RunStarted += delegate { OnHwRunStarted(); };                 
         }
 
         public int CycleCounter { get; set; }
@@ -122,8 +121,8 @@ namespace AnalogOutput
                 Network.Disconnect();
                 TriggerEvent(NetworkDisconnected);
             }
+            _daqmx.Stopped += delegate { OnHwStopped(); };
             _daqmx.Stop();
-            TriggerEvent(DaqmxStopped);
         }
 
         private void OnNewNetworkCycles()

@@ -12,11 +12,11 @@ namespace ColdNetworkStack.Client
         private readonly TcpClient _client = new TcpClient();
         private readonly string _name;
         private readonly AutoResetEvent _signal = new AutoResetEvent(false);
-        private NetworkStream _NetworkStream;
-        private Thread _workerThread;
-        private bool _loop = true;
+        private NetworkStream _NetworkStream;                
         public bool Connection = false;
-        public int CyclesPerRun = 0;
+        public int Cycles = 0;
+        private bool _registered = false;
+        private Thread _workerThread;
 
         public Client(string name)
         {
@@ -26,77 +26,70 @@ namespace ColdNetworkStack.Client
         public void Connect(IPAddress ip, int port)
         {
             _client.Connect(ip, port);
-            WriteNetworkStream(_client, Commands.Register.ToString());  //write command
-            Console.WriteLine(ReadNetworkStream(_client));                                 //read ack
-            
-            WriteNetworkStream(_client, _name);                         //write name
-            ReadNetworkStream(_client);                                 //read ack
+
+            if(!_registered)
+                Register();
+
             Connection = true;
         }
 
-        public void Disconnect()
+        private void Register()
+        {
+            WriteNetworkStream(_client, Commands.Register.ToString());  //write command                                                        
+            WriteNetworkStream(_client, _name); //write name
+            _registered = true;
+        }
+
+        public void Unregister()
         {
             WriteNetworkStream(_client, Commands.UnRegister.ToString());
-            ReadNetworkStream(_client);
             WriteNetworkStream(_client, _name);
-            ReadNetworkStream(_client);
+        }
+
+        public void Disconnect()
+        {            
+            Unregister();
             WriteNetworkStream(_client, Commands.Disconnect.ToString());
             _client.Close();
             Connection = false;
+            LaunchNextRun = null;
+            DataReceived = null;
+            NetworkFinished = null;
         }    
 
-        public void StartLoop()
+        public void ListenForTrigger()
         {
-            WriteNetworkStream(_client, Commands.CyclesPerRun.ToString());      //enter trigger mode\
-            Console.WriteLine("bla: ");
-            Console.WriteLine(ReadNetworkStream(_client));                      //read ack from server
-            var answer = ReadNetworkStream(_client);                            //read how many cycles per run
-            CyclesPerRun = Convert.ToInt32(answer);
-            
-            WriteNetworkStream(_client, Answers.Ack.ToString());                //send ack
-            
-            
-            TriggerEvent(DataReceived);
-
-            _loop = true;
-            _workerThread = new Thread(RunLoop) {Name = "LOOP"};
+            _workerThread = new Thread(WaitForTrigger) { Name = "LOOP" };
             _workerThread.Start();
         }
 
-        public void StopLoop()
+        private void WaitForTrigger()
         {
-            _loop = false;
-            _signal.Set();
+            WriteNetworkStream(_client, Commands.Trigger.ToString());
+            var answer = ReadNetworkStream(_client);
+
+            Cycles = Convert.ToInt32(answer);
+
+            
+            TriggerEvent(DataReceived);
+            
+            var trigger = ReadNetworkStream(_client);
+            Console.WriteLine(trigger + ": " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
+            if (trigger == Commands.Trigger.ToString())
+                TriggerEvent(LaunchNextRun);
+            if (trigger == Commands.Finished.ToString())
+                TriggerEvent(NetworkFinished);
+            _signal.WaitOne();
+            WriteNetworkStream(_client, Answers.Ack.ToString());    //signalize that this client is ready           
         }
 
-        private void RunLoop()
-        {
-            Console.WriteLine("starting loop");
-            while (_loop)
-            {                               
-                WriteNetworkStream(_client, Commands.Trigger.ToString());
-                Console.WriteLine("Waiting for trigger: " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
-                ReadNetworkStream(_client);
-                var trigger = ReadNetworkStream(_client);
-                Console.WriteLine(trigger + ": " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
-                if (trigger == Commands.Trigger.ToString())
-                    TriggerEvent(LaunchNextRun);
-                if (trigger == Commands.Finished.ToString())
-                    break;
-                _signal.WaitOne();
-                //Thread.Sleep(5);
-                WriteNetworkStream(_client, Answers.Ack.ToString());
-                _signal.WaitOne();
-            }
-        }
-
-        public void Resume()
+        public void ThisClientIsReady()
         {
             Console.WriteLine("Resume");
             _signal.Set();
         }
 
-
+        #region NetworkCommunication
         private string ReadNetworkStream(TcpClient client)
         {
             var readHeader = new byte[4];
@@ -151,6 +144,7 @@ namespace ColdNetworkStack.Client
                 Trace.WriteLine(e.Message);
             }
         }
+        #endregion
 
         private void TriggerEvent(EventHandler newEvent)
         {
@@ -161,7 +155,6 @@ namespace ColdNetworkStack.Client
 
         public event EventHandler LaunchNextRun;
         public event EventHandler DataReceived;
-        //public event EventHandler Connected;
-        //public event EventHandler Disconnected;
+        public event EventHandler NetworkFinished;
     }
 }

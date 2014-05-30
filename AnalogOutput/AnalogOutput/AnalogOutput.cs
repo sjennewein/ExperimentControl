@@ -21,7 +21,7 @@ namespace AnalogOutput
             _controller = new Controller(this);
             _controller.BufferUnsynced += delegate { OnBufferUnsynced(); };
             _controller.BufferSynced += delegate { OnBufferSynced(); };
-            _controller.DaqmxStarted += delegate { OnDaqmxStarted(); };
+            _controller.OutputStarted += delegate { OnDaqmxStarted(); };
             _controller.DaqmxStopped += delegate { OnDaqmxStopped(); };
 
             InitializeComponent();
@@ -39,7 +39,7 @@ namespace AnalogOutput
             TabFabric.GenerateTabView(tabControl_pattern, _controller.Hardware);
             label_CycleCounter.DataBindings.Add("Text", _controller, "CycleCounter");
             label_RunCounter.DataBindings.Add("Text", _controller, "RunCounter");
-            label_CyclePerRun.DataBindings.Add("Text", _controller, "CyclesPerRun");
+            label_CyclePerRun.DataBindings.Add("Text", _controller, "NetworkCycles");
             ResumeLayout();
         }
 

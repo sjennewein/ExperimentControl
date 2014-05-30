@@ -4,13 +4,15 @@ using System.Drawing;
 using System.Windows.Forms;
 using DigitalOutput.Model;
 using System.ComponentModel;
+using Hulahoop.Controller;
+using Hulahoop.Interface;
 
 namespace DigitalOutput.Controller
 {
-    public class ControllerChannel : INotifyPropertyChanged
+    public class ControllerChannel : INotifyPropertyChanged, IteratorObserver
     {
         private readonly ModelData _model;
-        private int _syncedValue;
+        
         private ControllerStep _parent;
         //private Label _myControl;
 
@@ -18,26 +20,20 @@ namespace DigitalOutput.Controller
         {
             _parent.SomethingHasChanged();
         }
-
-        public void StoreSyncedValue()
-        {            
-            _syncedValue = _model.Value;
-        }
-
-        public void RestoreSyncedValue()
-        {
-            if(_syncedValue != _model.Value)
-            {
-                ChangeValue(new object(), new MouseEventArgs(MouseButtons.Left, 0,0,0,0));   
-                
-            }
-        }
+        
 
         public ControllerChannel(ModelData model, int channel, ControllerStep parent)
         {
             _parent = parent;
             _model = model;
             PickColor(channel);
+
+            if(Iterator != null)
+            {
+                Color = Color.FromArgb(255, 0, 0);
+                return;
+            }
+
             if(_model.Value == 1)
             {
                 Color = _onColor;
@@ -112,6 +108,74 @@ namespace DigitalOutput.Controller
                 propertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        public string Iterator
+        {
+            get { return _model.Iterator; }
+            set
+            {                
+                UnregisterFromSubject(_model.Iterator);
+                _model.Iterator = value;
+                RegisterToSubject(_model.Iterator);
+            }
+        }
+
+        public void SetIteratorColor()
+        {
+            //Color = Color.FromArgb(255, 0, 0);
+            //PropertyHasChanged("Color");
+        }
+
+        public void UnSetIteratorColor()
+        {
+            if (Value == 1)
+                Color = _onColor;
+            else
+                Color = _offColor;
+        
+            PropertyHasChanged("Color");               
+        }
+
+
+        private void RegisterToSubject(string iteratorName)
+        {
+            foreach (IteratorSubject iterator in HoopManager.Iterators)
+            {
+                if (iterator.Name() == iteratorName)
+                    iterator.Register(this);
+            }
+        }
+
+        private void UnregisterFromSubject(string iteratorName)
+        {
+            foreach (IteratorSubject iterator in HoopManager.Iterators)
+            {
+                if (iterator.Name() == iteratorName)
+                    iterator.UnRegister(this);
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public void NewValue(double value, string sender)
+        {
+            if(value > 0)
+            {
+                Value = 1;
+                Color = Color.FromArgb(0, 255, 0);
+                PropertyHasChanged("Color");
+            }
+            else
+            {
+                Value = 0;
+                Color = Color.FromArgb(255, 0, 0);
+                PropertyHasChanged("Color");
+            }
+        }
+
+        public void NewName(string newName, string oldName)
+        {
+            _model.Iterator = newName;
+            PropertyHasChanged("Iterator");
+        }
     }
 }

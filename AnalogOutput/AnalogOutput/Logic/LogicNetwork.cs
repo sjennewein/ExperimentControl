@@ -28,7 +28,7 @@ namespace AnalogOutput.Logic
 
         public int Data
         {
-            get { return _client.CyclesPerRun; }
+            get { return _client.Cycles; }
         }
 
         public string ToJSON()
@@ -50,6 +50,7 @@ namespace AnalogOutput.Logic
                 _client = new Client("AnalogOutput");
                 _client.DataReceived += delegate { OnDataReceived(); };
                 _client.LaunchNextRun += delegate { OnStartNextRun(); };
+                _client.NetworkFinished += delegate { OnNetworkFinished(); };
                 _client.Connect(IPAddress.Parse(Ip), Port);
                 TriggerEvent(Connected);
             }
@@ -57,7 +58,7 @@ namespace AnalogOutput.Logic
 
         public void ListenToTrigger()
         {
-            _client.StartLoop();
+            _client.ListenForTrigger();
         }
 
         public void Disconnect()
@@ -71,18 +72,23 @@ namespace AnalogOutput.Logic
 
         public void StartNextRun()
         {
-            _client.Resume();
+            _client.ListenForTrigger();
         }
 
         public void HardwareStarted()
         {
-            _client.Resume();
+            _client.ThisClientIsReady();
             Console.WriteLine("Network resumed");
         }
 
         private void OnDataReceived()
         {
             TriggerEvent(DataUpdated);
+        }
+
+        private void OnNetworkFinished()
+        {
+            TriggerEvent(NetworkFinished);
         }
 
         private void OnStartNextRun()
@@ -108,6 +114,7 @@ namespace AnalogOutput.Logic
         public event EventHandler StartRun;
         public event EventHandler Connected;
         public event EventHandler Disconnected;
+        public event EventHandler NetworkFinished;
 
         public event PropertyChangedEventHandler PropertyChanged;
     }

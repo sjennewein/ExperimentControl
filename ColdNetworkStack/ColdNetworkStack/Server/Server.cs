@@ -13,12 +13,13 @@ namespace ColdNetworkStack.Server
         private readonly AutoResetEvent _myClientGate = new AutoResetEvent(false);
         private readonly List<String> _registeredClients = new List<string>();
         
-        public int CyclesPerRun = 0;
+        public int Cycles = 0;
         
         public string TriggerData = "";
         private long _readyClients;
         private long _startedClients;
         private bool _serverRun = true;
+        private bool _masterIsReady = false;
 
         public List<String> RegisteredClients { get { return _registeredClients; } } 
 
@@ -50,6 +51,18 @@ namespace ColdNetworkStack.Server
         {
             _serverRun = false;
             _myClientGate.Set();
+        }
+
+        public void MasterIsReady()
+        {
+            _masterIsReady = true;
+            ClientReady();
+        }
+
+        public void MasterHasFinished()
+        {
+            _masterIsReady = false;
+            RegisteredClients.Clear();
         }
 
         public void RegisterClient(string name)
@@ -99,6 +112,9 @@ namespace ColdNetworkStack.Server
         {
             Interlocked.Add(ref _readyClients, 1);
 
+            if (!_masterIsReady)
+                return;
+
             if (Interlocked.Read(ref _readyClients) == _registeredClients.Count)
             {
                 Interlocked.Exchange(ref _readyClients, 0);
@@ -116,6 +132,11 @@ namespace ColdNetworkStack.Server
                 TriggerEvent(AllClientsAreLaunched);
             }
             
+        }
+
+        public void ClientFinished()
+        {
+            Interlocked.Exchange(ref _readyClients, 0);
         }
 
         public void StopTrigger()

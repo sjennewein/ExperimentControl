@@ -8,20 +8,19 @@ using fastJSON;
 namespace DigitalOutput.Hardware
 {
     public class Buffer
-    {
-        private readonly ManualResetEvent _signal = new ManualResetEvent(true);
+    {        
         private ModelCard _data;
         private Thread _myWorker;
         private UInt32[] _outputSequence;
         private bool _networkMode;
-        private bool _run;
-        private bool _running;
+        private bool _run = false;
+        //private bool _running;
         private string _serializedData;
         private bool _updated;
-        private bool _newRun;
-        private int _cyclesPerRun;
-        private int _cycleCounter;
-        //public int CyclesPerRun { set { _cyclesPerRun = value; } }
+        private bool _newRun = true;
+        private int _cycles;
+        private int _iCycle;
+        
         
 
         public void UpdateData(string newData)
@@ -33,11 +32,10 @@ namespace DigitalOutput.Hardware
         private void WorkingLoop()
         {
             TriggerEvent(Started);
-            _running = true;
-            _cycleCounter = 0;            
+            //_running = true;
+            _iCycle = 0;            
             while (_run)
-            {
-                _signal.WaitOne();
+            {                
 
                 if (_updated)
                 {
@@ -73,39 +71,27 @@ namespace DigitalOutput.Hardware
                     myTask.Stop();
                 }
 
-                _cycleCounter++;
+                _iCycle++;
                 TriggerEvent(CycleFinished);
 
-                if (_networkMode && _cycleCounter >= _cyclesPerRun)
+                if (_networkMode && _iCycle >= _cycles)
                 {
-                    Pause();
-                    TriggerEvent(RunFinished);
-                    _newRun = true;
+                    _run = false;
+                    TriggerEvent(RunFinished);                    
                 }            
 
             }
-            _running = false;
+            //_running = false;
             TriggerEvent(Stopped);
             
         }
 
-        public void Pause()
-        {           
-            _signal.Reset();            
-        }
-
-        public void Resume()
+        public void Start(bool networkMode, string data, int cycles = 0)
         {
-            _cycleCounter = 0;
-            _signal.Set();
-            Console.WriteLine("Hardware resumed");
-        }
-
-        public void Start(bool networkMode, string data, int cyclesPerRun = 0)
-        {
-            if (!_running)
+            if (!_run)
             {
-                _cyclesPerRun = cyclesPerRun;
+                _newRun = true;
+                _cycles = cycles;
                 _networkMode = networkMode;
                 _serializedData = data;
                 _updated = true;
@@ -117,8 +103,10 @@ namespace DigitalOutput.Hardware
 
         public void Stop()
         {
-            _run = false;
-            _signal.Set();
+            if(!_run)
+                TriggerEvent(Stopped);
+
+            _run = false;            
         }
 
         private void TriggerEvent(EventHandler newEvent, EventArgs e = null)

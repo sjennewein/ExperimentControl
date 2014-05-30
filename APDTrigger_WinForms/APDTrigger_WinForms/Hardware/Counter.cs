@@ -49,7 +49,7 @@ namespace APDTrigger.Hardware
         private int[] _myBinnedSpectrum;
         private int[] _mySpectrum;        
         private Timer _myTimer;
-        private int _newDataPoint;
+        private int _newDataPoint = 0;
         private volatile bool _running = false;
 
         /// <summary>
@@ -86,7 +86,10 @@ namespace APDTrigger.Hardware
 
         public int[] Spectrum
         {
-            get { return _mySpectrum; }
+            get
+            {
+                return _mySpectrum;
+            }
         }
 
         public int[] BinnedSpectrum
@@ -253,6 +256,7 @@ namespace APDTrigger.Hardware
                         RecaptureResult result = EvaluateRecapture();
 
                         _cycleCounter++;
+                        CycleFinishedEvent(result);
 
                         if (_cycleCounter >= _cycles)
                         {
@@ -261,7 +265,7 @@ namespace APDTrigger.Hardware
                         }
 
 
-                        CycleFinishedEvent(result);
+                        
                         _lastRun = DateTime.Now;
                     }
                 }

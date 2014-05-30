@@ -9,6 +9,7 @@
     public class ModelData
     {
         public int Value;
-        public DataType Type;       
+        public DataType Type;
+        public string Iterator;
     }
 }

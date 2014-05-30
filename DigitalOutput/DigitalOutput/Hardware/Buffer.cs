@@ -14,7 +14,7 @@ namespace DigitalOutput.Hardware
         private UInt32[] _outputSequence;
         private bool _networkMode;
         private bool _run = false;
-        //private bool _running;
+        private bool _running = false;
         private string _serializedData;
         private bool _updated;
         private bool _newRun = true;
@@ -31,9 +31,9 @@ namespace DigitalOutput.Hardware
 
         private void WorkingLoop()
         {
-            TriggerEvent(Started);
-            //_running = true;
-            _iCycle = 0;            
+            TriggerEvent(Started);            
+            _iCycle = 0;
+            _running = true;
             while (_run)
             {                
 
@@ -81,7 +81,7 @@ namespace DigitalOutput.Hardware
                 }            
 
             }
-            //_running = false;
+            _running = false;
             TriggerEvent(Stopped);
             
         }
@@ -103,7 +103,7 @@ namespace DigitalOutput.Hardware
 
         public void Stop()
         {
-            if(!_run)
+            if(!_running)
                 TriggerEvent(Stopped);
 
             _run = false;            

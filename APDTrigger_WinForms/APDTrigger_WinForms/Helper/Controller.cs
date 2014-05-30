@@ -255,7 +255,7 @@ namespace APDTrigger_WinForms.Helper
             if(Mode == RunType.Measurement)
             {
                 _tcpServer.RegisterClient("APDTrigger");
-                _tcpServer.ClientReady();
+                _tcpServer.MasterIsReady();                
                 return;
             }
 
@@ -265,7 +265,7 @@ namespace APDTrigger_WinForms.Helper
 
         private void InitializeCycle()
         {
-            bool monitorMode = (Mode == RunType.Monitor); //enable monitor mode if user selected that
+            bool monitorMode = (Mode != RunType.Measurement); //enable monitor mode if user selected that
             _atoms = 0;
             _noAtoms = 0;
             _recapturerate = 0;
@@ -298,6 +298,8 @@ namespace APDTrigger_WinForms.Helper
                         _myCounterHardware.InitializeMeasurementTimer();
                     break;
                     case RunType.FrequencyGenerator:
+                        _myCounterHardware.PrepareTrigger();                        
+                        _myCounterHardware.InitializeMeasurementTimer();
                         _myCounterHardware.StartFrequencyGenerator();
                     break;
             }
@@ -324,8 +326,11 @@ namespace APDTrigger_WinForms.Helper
 
         private void OnMeasurementFinished(object sender, EventArgs eventArgs)
         {
-            if(Mode == RunType.Measurement)
+            if (Mode == RunType.Measurement)
+            {
                 _tcpServer.UnregisterClient("APDTrigger");
+                _tcpServer.MasterHasFinished();
+            }
             _myCounterHardware = null;
             TriggerEvent(MeasurementFinished);
         }
@@ -382,36 +387,6 @@ namespace APDTrigger_WinForms.Helper
             _cyclesDone++;
             PropertyChangedEvent("CyclesDone");
 
-            if (_cyclesDone >= Cycles) //check if the whole run has finished
-            {
-                _cyclesDone = 0;
-                _noAtoms = 0;
-                _atoms = 0;
-                _recapturerate = 0;
-
-                if (SaveSpectrum)
-                    SaveRunSpectrum();
-
-                _Spectrum = null;
-                _binnedSpectrumData = null;
-
-                TriggerEvent(RunHasFinished);
-
-                
-                                    
-                _runsDone++;
-                PropertyChangedEvent("RunsDone");
-
-                if (_runsDone >= Runs) //if all runs are done stop the run
-                {                                       
-                    _tcpServer.StopTrigger();
-
-                    OnMeasurementFinished(null,null);
-                    return;
-                }
-                _tcpServer.ClientReady();   //tell the network manager that this client is ready
-            }
-
             UpdateSpectrumDatePoint();
             UpdateBinnedSpectrum();
             UpdateRecaptureResult(data);            
@@ -437,12 +412,11 @@ namespace APDTrigger_WinForms.Helper
 
                 _runsDone++;
                 PropertyChangedEvent("RunsDone");
-
+                System.Console.WriteLine(_runsDone);
                 if (_runsDone >= Runs) //if all runs are done stop the run
                 {
                     _tcpServer.StopTrigger();
-
-                    //Stop(); //TODO might not be needed anymore
+                    OnMeasurementFinished(null,null);
                     
                     TriggerEvent(MeasurementFinished);
                     return;
@@ -456,7 +430,11 @@ namespace APDTrigger_WinForms.Helper
         /// </summary>
         private void UpdateSpectrumDatePoint()
         {
+            if (_myCounterHardware.Spectrum == null)
+                return;
+
             int amountOfSamples = _myCounterHardware.Spectrum.Length;
+            
             if (_Spectrum == null)
                 _Spectrum = new int[amountOfSamples];
 
@@ -471,6 +449,9 @@ namespace APDTrigger_WinForms.Helper
         /// </summary>
         private void UpdateBinnedSpectrum()
         {
+            if (_myCounterHardware.BinnedSpectrum == null)
+                return;
+
             int amountOfBins = _myCounterHardware.BinnedSpectrum.Length;
             if (_binnedSpectrumData == null)
                 _binnedSpectrumData = new int[amountOfBins];

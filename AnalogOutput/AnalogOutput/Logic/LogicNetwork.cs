@@ -50,6 +50,7 @@ namespace AnalogOutput.Logic
                 _client = new Client("AnalogOutput");
                 _client.DataReceived += delegate { OnDataReceived(); };
                 _client.LaunchNextRun += delegate { OnStartNextRun(); };
+                _client.NetworkFinished += delegate { OnNetworkFinished(); };
                 _client.Connect(IPAddress.Parse(Ip), Port);
                 TriggerEvent(Connected);
             }
@@ -85,6 +86,11 @@ namespace AnalogOutput.Logic
             TriggerEvent(DataUpdated);
         }
 
+        private void OnNetworkFinished()
+        {
+            TriggerEvent(NetworkFinished);
+        }
+
         private void OnStartNextRun()
         {
             TriggerEvent(StartRun);
@@ -108,6 +114,7 @@ namespace AnalogOutput.Logic
         public event EventHandler StartRun;
         public event EventHandler Connected;
         public event EventHandler Disconnected;
+        public event EventHandler NetworkFinished;
 
         public event PropertyChangedEventHandler PropertyChanged;
     }

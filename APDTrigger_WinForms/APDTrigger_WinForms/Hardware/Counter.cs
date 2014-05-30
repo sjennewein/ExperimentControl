@@ -86,7 +86,10 @@ namespace APDTrigger.Hardware
 
         public int[] Spectrum
         {
-            get { return _mySpectrum; }
+            get
+            {
+                return _mySpectrum;
+            }
         }
 
         public int[] BinnedSpectrum

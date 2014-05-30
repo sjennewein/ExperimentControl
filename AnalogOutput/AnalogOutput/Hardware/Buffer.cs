@@ -75,7 +75,7 @@ namespace AnalogOutput.Hardware
                 if (_networkMode && _iCycle >= _cycles)
                 {                    
                     TriggerEvent(RunFinished);
-                    _newRun = true;
+                    _run = false;
                 }                          
             }
             _running = false;

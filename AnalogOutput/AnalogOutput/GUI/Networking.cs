@@ -44,8 +44,18 @@ namespace AnalogOutput.GUI
 
         private  void OnDisconnected()
         {
-            label_Connection.Text = "Disconnected";
-            label_Connection.BackColor = Color.FromArgb(196, 20, 94);
+            if (InvokeRequired)
+            {
+                GuiUpdate callback = OnDisconnected;
+                Invoke(callback);
+            }
+            else
+            {
+                label_Connection.Text = "Disconnected";
+                label_Connection.BackColor = Color.FromArgb(196, 20, 94);
+            }
+
         }
+        private delegate void GuiUpdate();
     }
 }

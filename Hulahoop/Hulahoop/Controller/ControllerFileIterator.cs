@@ -19,6 +19,8 @@ namespace Hulahoop.Controller
         public ControllerFileIterator(ModelFileIterator model)
         {
             _model = model;
+            if(_model.Iterations != null)
+                _fileLength = _model.Iterations.Length;
         }
 
         public string Name

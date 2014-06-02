@@ -30,7 +30,11 @@ namespace DigitalOutput.Controller
 
             if(Iterator != null)
             {
-                Color = Color.FromArgb(255, 0, 0);
+                if(_model.Value == 1)
+                    Color = Color.FromArgb(0, 255, 0);
+                else
+                    Color = Color.FromArgb(255, 0, 0);
+
                 return;
             }
 

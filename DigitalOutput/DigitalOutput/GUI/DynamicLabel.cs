@@ -14,8 +14,8 @@ namespace DigitalOutput.GUI
         {
             _controller = controller;
 
-            if(String.IsNullOrEmpty(_controller.Iterator))
-                MouseClick += _controller.ChangeValue;
+            if (String.IsNullOrEmpty(_controller.Iterator))
+                MouseClick += _controller.ChangeValue;           
 
             DataBindings.Add("BackColor", _controller, "Color", false,
                              DataSourceUpdateMode.OnPropertyChanged);

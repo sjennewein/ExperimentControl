@@ -35,6 +35,7 @@ namespace DigitalOutput.Controller
                 else
                     Color = Color.FromArgb(255, 0, 0);
 
+                RegisterToSubject(_model.Iterator);
                 return;
             }
 

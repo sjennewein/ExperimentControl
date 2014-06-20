@@ -96,6 +96,18 @@ namespace Hulahoop.Controller
                 propertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        public void Reset()
+        {
+            _counter = 0;
+
+            double newValue = _model.Iterations[_counter];
+
+            foreach (IteratorObserver observer in _observers)
+            {
+                observer.NewValue(newValue, Name);
+            }
+        }
+
         public void Increment()
         {
             _counter++;

@@ -91,6 +91,13 @@ namespace Hulahoop.Controller
         public void Reset()
         {
             _counter = 0;
+
+            double newValue = Start;
+
+            foreach (IteratorObserver observer in _observers)
+            {
+                observer.NewValue(newValue, Name);
+            }
         }
 
         public void Close()

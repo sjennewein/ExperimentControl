@@ -24,6 +24,19 @@ namespace Hulahoop.Controller
             }
         }
 
+        public static void Reset()
+        {
+            foreach (ControllerLinearIterator iterator in LinearIterators)
+            {
+                iterator.Reset();
+            }
+
+            foreach (ControllerFileIterator iterator in FileIterators)
+            {
+                iterator.Reset();
+            }
+        }
+
         public static void Increment()
         {
             foreach (ControllerLinearIterator iterator in LinearIterators)

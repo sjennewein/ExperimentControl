@@ -111,6 +111,7 @@ namespace DigitalOutput
         {
             CycleCounter = 0;
             RunCounter = 0;
+            HoopManager.Reset();
 
             if (Network.Activated)
             {

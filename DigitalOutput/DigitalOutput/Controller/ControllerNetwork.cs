@@ -83,7 +83,7 @@ namespace DigitalOutput.Controller
         public void HardwareStarted()
         {
             _client.ThisClientIsReady();
-            Console.WriteLine("Network resumed");
+            
         }
 
         private void OnNetworkFinished()

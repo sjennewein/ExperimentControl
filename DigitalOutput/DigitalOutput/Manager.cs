@@ -24,7 +24,7 @@ namespace DigitalOutput
         public Manager(Form gui)
         {
             _myGui = gui;
-            Network.DataUpdated += delegate { OnNewNetworkCycles(); };
+            //Network.DataUpdated += delegate { OnNewNetworkCycles(); };
             Network.StartRun += delegate { OnNwStartRun(); };
             Network.NetworkFinished += delegate { Stop(); };
             _daqmx.CycleFinished += delegate { OnHwCycleFinished(); };
@@ -111,10 +111,10 @@ namespace DigitalOutput
         {
             CycleCounter = 0;
             RunCounter = 0;
-            HoopManager.Reset();
-
+            
             if (Network.Activated)
             {
+                HoopManager.Reset();
                 Network.Connect();
                 TriggerEvent(NetworkConnected);
                 TriggerEvent(OutputStarted);
@@ -138,10 +138,10 @@ namespace DigitalOutput
             _daqmx.Stop();            
         }
 
-        private void OnNewNetworkCycles()
-        {                      
-            PropertyChangedEvent("NetworkCycles");
-        }
+        //private void OnNewNetworkCycles()
+        //{                      
+            
+        //}
 
         public void CopyToBuffer()
         {
@@ -151,6 +151,7 @@ namespace DigitalOutput
 
         private void OnNwStartRun()
         {
+            PropertyChangedEvent("NetworkCycles");
             string json = Hardware.ToJson();
             _daqmx.Start(true, json, NetworkCycles);
             TriggerEvent(OutputStarted);
@@ -163,6 +164,7 @@ namespace DigitalOutput
 
         private void OnHwRunStarted()
         {
+            Console.WriteLine("Hardware is ready " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
             Network.HardwareStarted();
         }
 
@@ -183,7 +185,7 @@ namespace DigitalOutput
             CycleCounter = 0;
             PropertyChangedEvent("RunCounter");
             HoopManager.Increment();
-            CopyToBuffer();
+            //CopyToBuffer();
             Network.StartNextRun();
         }
 

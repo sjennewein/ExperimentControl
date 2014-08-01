@@ -13,13 +13,13 @@ namespace DigitalOutput.Hardware
         private Thread _myWorker;
         private UInt32[] _outputSequence;
         private bool _networkMode;
-        private bool _run = false;
+        private volatile bool _run = false;
         private bool _running = false;
         private string _serializedData;
         private bool _updated;
         private bool _newRun = true;
         private int _cycles;
-        private int _iCycle;
+        
         
         
 
@@ -32,7 +32,7 @@ namespace DigitalOutput.Hardware
         private void WorkingLoop()
         {
             TriggerEvent(Started);            
-            _iCycle = 0;
+            int iCycle = 0;
             _running = true;
             while (_run)
             {                
@@ -60,30 +60,31 @@ namespace DigitalOutput.Hardware
 
                     _newRun = false;
                     try
-                    {
+                    {                       
                         myTask.WaitUntilDone(3600000);
                     }
                     catch (DaqException e)
                     {
                         _run = false;
+                        TriggerEvent(EmergencyStop);
                     }
                     
                     myTask.Stop();
                 }
 
-                _iCycle++;
+                iCycle++;
                 TriggerEvent(CycleFinished);
 
-                if (_networkMode && _iCycle >= _cycles)
+                if (_networkMode && iCycle >= _cycles)
                 {
-                    _run = false;
-                    TriggerEvent(RunFinished);                    
-                }            
+                    _run = false;   
+                    TriggerEvent(RunFinished);                                              
+                }
 
             }
             _running = false;
             TriggerEvent(Stopped);
-            
+                
         }
 
         public void Start(bool networkMode, string data, int cycles = 0)
@@ -95,7 +96,9 @@ namespace DigitalOutput.Hardware
                 _networkMode = networkMode;
                 _serializedData = data;
                 _updated = true;
-                _myWorker = new Thread(WorkingLoop);
+                _run = true;
+                _myWorker = new Thread(WorkingLoop) { Name = "DAQmx" };
+                Console.WriteLine("DAQmx started: " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
                 _myWorker.Start();
             }
             _run = true;
@@ -121,5 +124,6 @@ namespace DigitalOutput.Hardware
         public event EventHandler CycleFinished;
         public event EventHandler RunStarted;
         public event EventHandler RunFinished;
+        public event EventHandler EmergencyStop;
     }
 }

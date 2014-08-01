@@ -13,12 +13,16 @@ namespace DigitalOutput.GUI
         public DynamicLabel(ControllerChannel controller)
         {
             _controller = controller;
+
+            if (String.IsNullOrEmpty(_controller.Iterator))
+                MouseClick += _controller.ChangeValue;           
+
             DataBindings.Add("BackColor", _controller, "Color", false,
                              DataSourceUpdateMode.OnPropertyChanged);
             DataBindings.Add("Text", _controller, "Iterator", false,
                              DataSourceUpdateMode.OnPropertyChanged);
 
-            MouseClick += _controller.ChangeValue;
+            
             ContextMenu = new ContextMenu();
             ContextMenu.Popup += OnContextMenu;
         }

@@ -19,6 +19,8 @@ namespace Hulahoop.Controller
         public ControllerFileIterator(ModelFileIterator model)
         {
             _model = model;
+            if(_model.Iterations != null)
+                _fileLength = _model.Iterations.Length;
         }
 
         public string Name
@@ -92,6 +94,18 @@ namespace Hulahoop.Controller
             PropertyChangedEventHandler propertyChanged = PropertyChanged;
             if (null != propertyChanged)
                 propertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void Reset()
+        {
+            _counter = 0;
+
+            double newValue = _model.Iterations[_counter];
+
+            foreach (IteratorObserver observer in _observers)
+            {
+                observer.NewValue(newValue, Name);
+            }
         }
 
         public void Increment()

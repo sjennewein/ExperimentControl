@@ -79,8 +79,7 @@ namespace ColdNetworkStack.Client
                 TriggerEvent(LaunchNextRun);
             if (trigger == Commands.Finished.ToString())
                 TriggerEvent(NetworkFinished);
-            _signal.WaitOne();
-            Console.WriteLine("Reply to counter " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
+            _signal.WaitOne();            
             WriteNetworkStream(_client, Answers.Ack.ToString());    //signalize that this client is ready           
         }
 

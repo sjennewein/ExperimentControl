@@ -125,8 +125,7 @@ namespace ColdNetworkStack.Server
             if (Interlocked.Read(ref _readyClients) == _registeredClients.Count)
             {
                 Interlocked.Exchange(ref _readyClients, 0);
-                StartNextRun();
-                Console.WriteLine("All clients returned: " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
+                StartNextRun();                
             }
         }
 
@@ -136,12 +135,10 @@ namespace ColdNetworkStack.Server
         /// </summary>
         public void ClientStarted()
         {
-            Interlocked.Add(ref _startedClients, 1);
-            Console.WriteLine(_startedClients);
+            Interlocked.Add(ref _startedClients, 1);            
             if(Interlocked.Read(ref _startedClients) == _registeredClients.Count)
             {
-                Interlocked.Exchange(ref _startedClients, 0);
-                Console.WriteLine("Triggering Counter Card");
+                Interlocked.Exchange(ref _startedClients, 0);                
                 TriggerEvent(AllClientsAreLaunched);
             }
         }

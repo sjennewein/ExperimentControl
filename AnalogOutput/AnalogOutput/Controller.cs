@@ -20,8 +20,7 @@ namespace AnalogOutput
 
         public Controller(Form gui)
         {
-            _myGui = gui;
-            Network.DataUpdated += delegate { OnNewNetworkCycles(); };
+            _myGui = gui;            
             Network.StartRun += delegate { OnNwStartRun(); };
             Network.NetworkFinished += delegate { Stop(); };
             _daqmx.CycleFinished += delegate { OnHwCycleFinished(); };
@@ -102,6 +101,7 @@ namespace AnalogOutput
 
             if (Network.Activated)
             {
+                HoopManager.Reset();
                 Network.Connect();
                 TriggerEvent(NetworkConnected);
                 TriggerEvent(OutputStarted);
@@ -125,11 +125,6 @@ namespace AnalogOutput
             _daqmx.Stop();
         }
 
-        private void OnNewNetworkCycles()
-        {            
-            PropertyChangedEvent("NetworkCycles");
-        }
-
         public void CopyToBuffer()
         {
             _daqmx.UpdateData(Hardware.ToJson());
@@ -138,6 +133,7 @@ namespace AnalogOutput
 
         private void OnNwStartRun()
         {
+            PropertyChangedEvent("NetworkCycles");
             string json = Hardware.ToJson();
             _daqmx.Start(true, json, NetworkCycles);
             TriggerEvent(OutputStarted);
@@ -145,6 +141,7 @@ namespace AnalogOutput
 
         private void OnHwRunStarted()
         {
+            Console.WriteLine("Hardware is ready" + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
             Network.HardwareStarted();
         }
 
@@ -165,7 +162,7 @@ namespace AnalogOutput
             CycleCounter = 0;
             PropertyChangedEvent("RunCounter");
             HoopManager.Increment();            
-            CopyToBuffer();
+            //CopyToBuffer();
             Network.StartNextRun();
         }
 

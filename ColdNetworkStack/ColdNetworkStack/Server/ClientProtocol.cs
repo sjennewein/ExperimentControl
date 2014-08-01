@@ -78,8 +78,7 @@ namespace ColdNetworkStack.Server
             Console.WriteLine(_name + "waiting for network trigger " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
             WriteNetworkStream(client,_parent.Cycles.ToString());
 
-            _triggerSynchronization.WaitOne(); //all clients wait until all returned                
-            Console.WriteLine(_name + " Passed gate");
+            _triggerSynchronization.WaitOne(); //all clients wait until all returned                           
             if (!_trigger)
             {                
                 WriteNetworkStream(client, Commands.Finished.ToString());
@@ -88,8 +87,7 @@ namespace ColdNetworkStack.Server
             }
                 
 
-            WriteNetworkStream(client, Commands.Trigger.ToString());
-            Console.WriteLine(_name + " has not replied yet");
+            WriteNetworkStream(client, Commands.Trigger.ToString());            
             ReadNetworkStream(client);
             
             _parent.ClientStarted();

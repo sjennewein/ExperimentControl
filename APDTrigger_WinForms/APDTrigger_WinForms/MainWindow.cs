@@ -99,6 +99,7 @@ namespace APDTrigger_WinForms
             apdSignal.YAxes[0].Title.Color = Color.Black;
             apdSignal.YAxes[0].Title.Shadow.Visible = false;
             apdSignal.YAxes[0].Units.Visible = false;
+            apdSignal.YAxes[0].SetRange(0,5000);
 
             apdSignal.XAxis.SetRange(0, 5);
             apdSignal.XAxis.Title.Text = "Time [mm:ss]";

@@ -77,8 +77,7 @@ namespace AnalogOutput.Logic
 
         public void HardwareStarted()
         {
-            _client.ThisClientIsReady();
-            Console.WriteLine("Network resumed");
+            _client.ThisClientIsReady();            
         }
 
         private void OnDataReceived()

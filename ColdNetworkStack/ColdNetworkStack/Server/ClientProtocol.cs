@@ -13,6 +13,7 @@ namespace ColdNetworkStack.Server
         private NetworkStream _NetworkStream;
         private bool _run;
         private bool _trigger = true;
+        private string _name;
 
         public ClientProtocol(Server parent)
         {
@@ -41,7 +42,7 @@ namespace ColdNetworkStack.Server
             while (_run)
             {
                 string input = ReadNetworkStream(client);
-                Console.WriteLine(input);
+                //Console.WriteLine(input);
                 Commands command;
                 try
                 {
@@ -73,32 +74,32 @@ namespace ColdNetworkStack.Server
 
         private void TriggerMode(TcpClient client)
         {
-            _parent.ClientReady();            
-            
+            _parent.ClientReady();
+            Console.WriteLine(_name + "waiting for network trigger " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
             WriteNetworkStream(client,_parent.Cycles.ToString());
 
-            _triggerSynchronization.WaitOne(); //all clients wait until all returned                
-
+            _triggerSynchronization.WaitOne(); //all clients wait until all returned                           
             if (!_trigger)
-            {
+            {                
                 WriteNetworkStream(client, Commands.Finished.ToString());
                 _parent.ClientFinished();
                 return;
             }
                 
 
-            WriteNetworkStream(client, Commands.Trigger.ToString());
-            Console.WriteLine("SEND TRIGGER!");
-            Console.Write(ReadNetworkStream(client));            
-
+            WriteNetworkStream(client, Commands.Trigger.ToString());            
+            ReadNetworkStream(client);
+            
             _parent.ClientStarted();
+            Console.WriteLine(_name + " is ready for Hardware trigger");
         }
 
         private void RegisterClient(TcpClient client)
         {
 
             string name = ReadNetworkStream(client);
-            Console.WriteLine(name);
+            _name = name;
+            Console.WriteLine("Registered: " + name);
             _parent.RegisterClient(name);
         }
 

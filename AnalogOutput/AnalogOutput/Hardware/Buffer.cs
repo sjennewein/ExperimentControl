@@ -8,13 +8,13 @@ namespace AnalogOutput.Hardware
 {
     public class Buffer
     {        
-        private int _iCycle;
+        
         private int _cycles;
         private DataCard _data;
         private Thread _myWorker;
         private bool _networkMode;
         private double[,] _outputSequence;
-        private bool _run;
+        private volatile bool _run;
         private bool _running;
         private string _serializedData;
         private bool _updated;
@@ -30,7 +30,7 @@ namespace AnalogOutput.Hardware
         {
             TriggerEvent(Started);
             _running = true;
-            _iCycle = 0;
+            int iCycle = 0;
             while (_run)
             {                
                 if (_updated)
@@ -62,20 +62,20 @@ namespace AnalogOutput.Hardware
                         myTask.WaitUntilDone(3600000);
                     }
                     catch (DaqException e)
-                    {
+                    {                        
                         _run = false;
                     }
                     
                         
                     myTask.Stop();                    
                 }
-                _iCycle++;
+                iCycle++;
                 TriggerEvent(CycleFinished);
 
-                if (_networkMode && _iCycle >= _cycles)
-                {                    
-                    TriggerEvent(RunFinished);
+                if (_networkMode && iCycle >= _cycles)
+                {                                        
                     _run = false;
+                    TriggerEvent(RunFinished);
                 }                          
             }
             _running = false;
@@ -91,7 +91,8 @@ namespace AnalogOutput.Hardware
                 _networkMode = networkMode;
                 _serializedData = data;
                 _updated = true;
-                _myWorker = new Thread(WorkingLoop);
+                _run = true;
+                _myWorker = new Thread(WorkingLoop){Name = "DAQmx"};
                 _myWorker.Start();
             }
             _run = true;

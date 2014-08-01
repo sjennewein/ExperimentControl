@@ -182,9 +182,13 @@ namespace APDTrigger.Hardware
         /// Sets the timer with which the experiment is started
         /// </summary>
         public void InitializeMeasurementTimer()
-        {
+        {          
             if (_running == false)
             {
+                int bins = (int) Math.Ceiling(_myClockEdges/(double) _apdBinSize);
+                _myBinnedSpectrum = new int[bins];
+                _mySpectrum = new int[_myClockEdges];
+                _lastRun = DateTime.Now;
                 _running = true;
                 _myTimer = new Timer(RunAPDTrigger, null, 0, 10);
             }
@@ -213,7 +217,7 @@ namespace APDTrigger.Hardware
         private void RunAPDTrigger(object state)
         {
             if (!_running)
-            {
+            {                
                 ReleaseResources();
                 return;
             }
@@ -221,7 +225,7 @@ namespace APDTrigger.Hardware
 
             //the trigger keeps on starting this function every 10ms but only evaluates it if it's not running
             if (Monitor.TryEnter(_lockExperiment))
-            {
+            {              
                 try
                 {
                     ReadHighFrequencyCounter();
@@ -243,13 +247,13 @@ namespace APDTrigger.Hardware
                     TimeSpan timeSinceLastRun = DateTime.Now - _lastRun;
 
                     //check if enough bins have been over the threshold => atom in the trap
-                    if (_detectedBins >= _detectionBins && timeSinceLastRun.TotalMilliseconds >= 400)
+                    if (_detectedBins >= _detectionBins && timeSinceLastRun.TotalMilliseconds >= 500)
                     {
                         _detectedBins = 0;
 
                         //send a trigger to the digital output card                                                
                         _myTriggerTask.Start();
-                        _myTriggerTask.Stop();
+                        _myTriggerTask.Stop();                       
 
                         MeasureSpectrum();
 
@@ -263,8 +267,6 @@ namespace APDTrigger.Hardware
                             _running = false;
                             ReleaseResources();
                         }
-
-
                         
                         _lastRun = DateTime.Now;
                     }
@@ -279,8 +281,7 @@ namespace APDTrigger.Hardware
         private void ReleaseResources()
         {            
             if (_finalized)
-                return;
-
+                return;            
             lock (_lockExperiment)
             {
                 if (_finalized)

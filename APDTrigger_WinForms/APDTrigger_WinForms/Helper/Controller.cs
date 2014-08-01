@@ -112,6 +112,7 @@ namespace APDTrigger_WinForms.Helper
             InitializeCycle();
             _myCounterHardware.APDStopped += OnRunFinished;
             StartHardwareOutput();
+            Console.WriteLine("Hardware started");
             _tcpServer.Cycles = cyclesAfter;
         }
         #endregion
@@ -270,8 +271,9 @@ namespace APDTrigger_WinForms.Helper
             _noAtoms = 0;
             _recapturerate = 0;
             _cyclesDone = 0;
-            _Spectrum = null;
-            _binnedSpectrumData = null;
+            _Spectrum = new int[Samples2Acquire-1];
+            int bins = (int) Math.Ceiling((Samples2Acquire-1)/(double) APDBinsize);
+            _binnedSpectrumData = new int[bins];
             _histogramData = new int[600];
 
             _myCounterHardware = new Counter(_nextThreshold, _nextDetectionBins, APDBinsize, Binning, monitorMode,
@@ -406,7 +408,7 @@ namespace APDTrigger_WinForms.Helper
                 _Spectrum = null;
                 _binnedSpectrumData = null;
 
-                TriggerEvent(RunHasFinished);
+                //TriggerEvent(RunHasFinished);
 
                
 
@@ -418,9 +420,10 @@ namespace APDTrigger_WinForms.Helper
                     _tcpServer.StopTrigger();
                     OnMeasurementFinished(null,null);
                     
-                    TriggerEvent(MeasurementFinished);
+                    //TriggerEvent(MeasurementFinished);
                     return;
                 }
+                Console.WriteLine("Counter is ready");
                 _tcpServer.ClientReady();   //tell the network manager that this client is ready
             
         }
@@ -430,15 +433,10 @@ namespace APDTrigger_WinForms.Helper
         /// </summary>
         private void UpdateSpectrumDatePoint()
         {
-            if (_myCounterHardware.Spectrum == null)
+            if (_myCounterHardware == null)
                 return;
 
-            int amountOfSamples = _myCounterHardware.Spectrum.Length;
-            
-            if (_Spectrum == null)
-                _Spectrum = new int[amountOfSamples];
-
-            for (int i = 0; i < amountOfSamples; i++)
+            for (int i = 0; i < _Spectrum.Length; i++)
             {
                 _Spectrum[i] += _myCounterHardware.Spectrum[i];
             }
@@ -449,14 +447,10 @@ namespace APDTrigger_WinForms.Helper
         /// </summary>
         private void UpdateBinnedSpectrum()
         {
-            if (_myCounterHardware.BinnedSpectrum == null)
+            if (_myCounterHardware == null)
                 return;
-
-            int amountOfBins = _myCounterHardware.BinnedSpectrum.Length;
-            if (_binnedSpectrumData == null)
-                _binnedSpectrumData = new int[amountOfBins];
-
-            for (int i = 0; i < amountOfBins; i++)
+            
+            for (int i = 0; i < _binnedSpectrumData.Length; i++)
             {
                 _binnedSpectrumData[i] += _myCounterHardware.BinnedSpectrum[i];
             }

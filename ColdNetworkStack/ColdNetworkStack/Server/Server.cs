@@ -50,6 +50,11 @@ namespace ColdNetworkStack.Server
         public void Stop()
         {
             _serverRun = false;
+            foreach (var clientProtocol in _clientTalks)
+            {
+                clientProtocol.Stop();
+                clientProtocol.StopTriggerMode();
+            }
             _myClientGate.Set();
         }
 
@@ -107,7 +112,9 @@ namespace ColdNetworkStack.Server
             _clientTalks.Remove(clientTalk);
             client.Close();
         }
-       
+       /// <summary>
+       /// Each client calls that function to signal that it finished the run
+       /// </summary>
         public void ClientReady()
         {
             Interlocked.Add(ref _readyClients, 1);
@@ -123,15 +130,20 @@ namespace ColdNetworkStack.Server
             }
         }
 
+        /// <summary>
+        /// Each client calls this function after having started its hardware again and is
+        /// ready for a hardware trigger
+        /// </summary>
         public void ClientStarted()
         {
             Interlocked.Add(ref _startedClients, 1);
+            Console.WriteLine(_startedClients);
             if(Interlocked.Read(ref _startedClients) == _registeredClients.Count)
             {
                 Interlocked.Exchange(ref _startedClients, 0);
+                Console.WriteLine("Triggering Counter Card");
                 TriggerEvent(AllClientsAreLaunched);
             }
-            
         }
 
         public void ClientFinished()

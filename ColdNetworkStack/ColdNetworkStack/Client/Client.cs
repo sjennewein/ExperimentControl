@@ -79,24 +79,15 @@ namespace ColdNetworkStack.Client
                 TriggerEvent(LaunchNextRun);
             if (trigger == Commands.Finished.ToString())
                 TriggerEvent(NetworkFinished);
-<<<<<<< HEAD
             Console.WriteLine("Waiting for hardware: " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
             _signal.WaitOne();
             WriteNetworkStream(_client, Answers.Ack.ToString());    //signalize that this client is ready     
             Console.WriteLine("Network resumed: " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
         }
 
-        public void ThisClientIsReady()
-        {
-            Console.WriteLine("Signaled hardware: " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
-=======
-            _signal.WaitOne();            
-            WriteNetworkStream(_client, Answers.Ack.ToString());    //signalize that this client is ready           
-        }
 
         public void ThisClientIsReady()
         {            
->>>>>>> 3ebc34fac3c4eeea9629af828c0668db8d25dd50
             _signal.Set();
         }
 

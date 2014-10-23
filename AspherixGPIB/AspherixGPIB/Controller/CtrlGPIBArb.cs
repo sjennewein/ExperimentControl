@@ -13,6 +13,12 @@ namespace AspherixGPIB.Controller
         private ResourceManager rm;
         private FormattedIO488 ioArbFG = new FormattedIO488();
         private IMessage msg;
+        public CtrlGPIBArbParam AmplitudeVolt;
+        public CtrlGPIBArbParam SamplingFrequency;
+        public CtrlGPIBArbParam Samples;
+        public CtrlGPIBArbParam X0;
+        public CtrlGPIBArbParam Sigma;
+        public CtrlGPIBArbParam Amplitude;
 
         public CtrlGPIBArb(DataGPIBArb data = null)
         {
@@ -20,48 +26,15 @@ namespace AspherixGPIB.Controller
                 _data = new DataGPIBArb();
             else
                 _data = data;
+            
+            AmplitudeVolt = new CtrlGPIBArbParam(_data.AmplitudeVolt);
+            SamplingFrequency = new CtrlGPIBArbParam(_data.SamplingFrequency);
+            Samples = new CtrlGPIBArbParam(_data.Samples);
+            X0 = new CtrlGPIBArbParam(_data.X0);
+            Sigma = new CtrlGPIBArbParam(_data.Sigma);
+            Amplitude = new CtrlGPIBArbParam(_data.Amplitude);
         }
 
-        public string Address
-        {
-            get { return _data.Address; }
-            set { _data.Address = value; }
-        }
-
-        public int AmplitudeVolt
-        {
-            get { return _data.AmplitudeVolt; }
-            set { _data.AmplitudeVolt = value; }
-        }
-
-        public int SamplingFrequency
-        {
-            get { return _data.SamplingFrequency; }
-            set { _data.SamplingFrequency = value; }
-        }
-
-        public int Samples
-        {
-            get { return _data.Samples; }
-            set { _data.Samples = value; }
-        }
-
-        public int X0
-        {
-            get { return _data.X0; }
-            set { _data.X0 = value; }
-        }
-
-        public int Sigma
-        {
-            get { return _data.Sigma; }
-            set { _data.Sigma = value; }
-        }
-
-        public int Amplitude
-        {
-            get { return _data.Amplitude; }
-            set { _data.Amplitude = value; }
-        }
+        
     }
 }

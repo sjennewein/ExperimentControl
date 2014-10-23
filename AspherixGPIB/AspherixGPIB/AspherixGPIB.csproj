@@ -46,13 +46,18 @@
   <ItemGroup>
     <Compile Include="Controller\CtrlGPIBArb.cs" />
     <Compile Include="Controller\CtrlGPIBGeneric.cs" />
-    <Compile Include="Data\DataGPIBGeneric.cs" />
+    <Compile Include="Controller\CtrlGPIBArbParam.cs" />
     <Compile Include="Data\DataGPIBArb.cs" />
+    <Compile Include="Data\DataGPIBGeneric.cs" />
+    <Compile Include="Data\DataGPIBArbParam.cs" />
     <Compile Include="GPIBWindow.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="GPIBWindow.Designer.cs">
       <DependentUpon>GPIBWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\DynamicTextBox.cs">
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

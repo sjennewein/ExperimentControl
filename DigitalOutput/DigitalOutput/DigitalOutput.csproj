@@ -123,6 +123,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\AspherixGPIB\AspherixGPIB\AspherixGPIB.csproj">
+      <Project>{703bcf09-b14a-424a-b28d-0c2de51a2919}</Project>
+      <Name>AspherixGPIB</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\ColdNetworkStack\ColdNetworkStack\ColdNetworkStack.csproj">
       <Project>{455240AB-B9CB-4909-B0E7-AFB52198E91E}</Project>
       <Name>ColdNetworkStack</Name>

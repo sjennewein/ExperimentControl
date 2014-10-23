@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Globalization;
 using System.Threading;
 using System.Windows.Forms;
+using AspherixGPIB;
 using DigitalOutput.GUI;
 using DigitalOutput.Model;
 using Hulahoop;
@@ -12,6 +13,7 @@ namespace DigitalOutput
     public partial class DigitalMainwindow : Form
     {
         private readonly HulaHoopWindow _loops = new HulaHoopWindow();
+        private readonly GPIBWindow _gpib = new GPIBWindow();
         private readonly Manager _manager;
 
         public DigitalMainwindow()
@@ -173,5 +175,11 @@ namespace DigitalOutput
 
 
         private delegate void GuiUpdate();
+
+        private void button_GPIB_Click(object sender, EventArgs e)
+        {
+            _gpib.Visible = true;
+            _gpib.Focus();
+        }
     }
 }

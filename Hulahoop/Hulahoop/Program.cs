@@ -15,7 +15,7 @@ namespace Hulahoop
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new HulahoopDigital());
+            Application.Run(new HulaHoopWindow());
         }
     }
 }

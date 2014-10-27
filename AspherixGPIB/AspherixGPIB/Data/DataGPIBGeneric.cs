@@ -9,5 +9,6 @@ namespace AspherixGPIB.Data
     {
         public string Address;
         public string Commands;
+        public List<string> Iterator = new List<string>();
     }
 }

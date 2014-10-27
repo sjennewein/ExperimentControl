@@ -30,7 +30,6 @@ namespace AspherixGPIB
         /// </summary>
         private void InitializeComponent()
         {
-            this.textBox_GPCommands = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.textBox_GPAddress = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -56,16 +55,8 @@ namespace AspherixGPIB
             this.button_setArb = new System.Windows.Forms.Button();
             this.checkBox_GeneralPurpose = new System.Windows.Forms.CheckBox();
             this.checkBox_arb = new System.Windows.Forms.CheckBox();
+            this.richTextBox_GPCommands = new System.Windows.Forms.RichTextBox();
             this.SuspendLayout();
-            // 
-            // textBox_GPCommands
-            // 
-            this.textBox_GPCommands.Enabled = false;
-            this.textBox_GPCommands.Location = new System.Drawing.Point(12, 100);
-            this.textBox_GPCommands.Multiline = true;
-            this.textBox_GPCommands.Name = "textBox_GPCommands";
-            this.textBox_GPCommands.Size = new System.Drawing.Size(183, 213);
-            this.textBox_GPCommands.TabIndex = 0;
             // 
             // label1
             // 
@@ -289,11 +280,20 @@ namespace AspherixGPIB
             this.checkBox_arb.UseVisualStyleBackColor = true;
             this.checkBox_arb.CheckedChanged += new System.EventHandler(this.checkBox_arb_CheckedChanged);
             // 
+            // richTextBox_GPCommands
+            // 
+            this.richTextBox_GPCommands.Location = new System.Drawing.Point(12, 101);
+            this.richTextBox_GPCommands.Name = "richTextBox_GPCommands";
+            this.richTextBox_GPCommands.Size = new System.Drawing.Size(183, 206);
+            this.richTextBox_GPCommands.TabIndex = 31;
+            this.richTextBox_GPCommands.Text = "";
+            // 
             // GPIBWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(407, 374);
+            this.Controls.Add(this.richTextBox_GPCommands);
             this.Controls.Add(this.checkBox_arb);
             this.Controls.Add(this.checkBox_GeneralPurpose);
             this.Controls.Add(this.button_setArb);
@@ -319,7 +319,6 @@ namespace AspherixGPIB
             this.Controls.Add(this.label3);
             this.Controls.Add(this.textBox_GPAddress);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.textBox_GPCommands);
             this.Name = "GPIBWindow";
             this.Text = "GPIB";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.GPIBWindow_FormClosing);
@@ -330,7 +329,6 @@ namespace AspherixGPIB
 
         #endregion
 
-        private System.Windows.Forms.TextBox textBox_GPCommands;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox textBox_GPAddress;
         private System.Windows.Forms.Label label2;
@@ -356,6 +354,7 @@ namespace AspherixGPIB
         private System.Windows.Forms.Button button_setArb;
         private System.Windows.Forms.CheckBox checkBox_GeneralPurpose;
         private System.Windows.Forms.CheckBox checkBox_arb;
+        private System.Windows.Forms.RichTextBox richTextBox_GPCommands;
     }
 }
 

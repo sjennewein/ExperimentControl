@@ -36,7 +36,9 @@ namespace AspherixGPIB
             textBox_x.SetController(_GpibWaveform.Samples);
 
             textBox_GPAddress.DataBindings.Add("Text", _GpibGeneric, "Address");
-            textBox_GPCommands.DataBindings.Add("Text", _GpibGeneric, "Commands");
+            richTextBox_GPCommands.DataBindings.Add("Text", _GpibGeneric, "Commands");
+            richTextBox_GPCommands.TextChanged += _GpibGeneric.CheckText;
+
         }
 
         public void Restore()
@@ -51,7 +53,8 @@ namespace AspherixGPIB
 
         private void button_setGeneric_Click(object sender, EventArgs e)
         {
-
+            richTextBox_GPCommands.Select(1, 10);
+            richTextBox_GPCommands.SelectionBackColor = Color.Blue;
         }
 
         private void button_setArb_Click(object sender, EventArgs e)
@@ -73,12 +76,12 @@ namespace AspherixGPIB
             if (box.Checked == true)
             {
                 textBox_GPAddress.Enabled = true;
-                textBox_GPCommands.Enabled = true;
+                richTextBox_GPCommands.Enabled = true;
             }
             else
             {
                 textBox_GPAddress.Enabled = false;
-                textBox_GPCommands.Enabled = false;
+                richTextBox_GPCommands.Enabled = false;
             }
         }
 

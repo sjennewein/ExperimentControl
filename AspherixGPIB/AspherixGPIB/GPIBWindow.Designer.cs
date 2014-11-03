@@ -46,16 +46,18 @@ namespace AspherixGPIB
             this.label14 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
             this.button_setGeneric = new System.Windows.Forms.Button();
+            this.button_setArb = new System.Windows.Forms.Button();
+            this.checkBox_GeneralPurpose = new System.Windows.Forms.CheckBox();
+            this.checkBox_arb = new System.Windows.Forms.CheckBox();
+            this.richTextBox_GPCommands = new System.Windows.Forms.RichTextBox();
+            this.button_GPDisconnect = new System.Windows.Forms.Button();
+            this.button_ArbDisconnect = new System.Windows.Forms.Button();
             this.textBox_x = new AspherixGPIB.GUI.DynamicTextBox();
             this.textBox_sigma = new AspherixGPIB.GUI.DynamicTextBox();
             this.textBox_x0 = new AspherixGPIB.GUI.DynamicTextBox();
             this.textBox_sampling = new AspherixGPIB.GUI.DynamicTextBox();
             this.textBox_A = new AspherixGPIB.GUI.DynamicTextBox();
             this.textBox_amplitude = new AspherixGPIB.GUI.DynamicTextBox();
-            this.button_setArb = new System.Windows.Forms.Button();
-            this.checkBox_GeneralPurpose = new System.Windows.Forms.CheckBox();
-            this.checkBox_arb = new System.Windows.Forms.CheckBox();
-            this.richTextBox_GPCommands = new System.Windows.Forms.RichTextBox();
             this.SuspendLayout();
             // 
             // label1
@@ -192,13 +194,77 @@ namespace AspherixGPIB
             // 
             // button_setGeneric
             // 
-            this.button_setGeneric.Location = new System.Drawing.Point(120, 319);
+            this.button_setGeneric.Enabled = false;
+            this.button_setGeneric.Location = new System.Drawing.Point(120, 332);
             this.button_setGeneric.Name = "button_setGeneric";
             this.button_setGeneric.Size = new System.Drawing.Size(75, 23);
             this.button_setGeneric.TabIndex = 27;
             this.button_setGeneric.Text = "Set";
             this.button_setGeneric.UseVisualStyleBackColor = true;
             this.button_setGeneric.Click += new System.EventHandler(this.button_setGeneric_Click);
+            // 
+            // button_setArb
+            // 
+            this.button_setArb.Enabled = false;
+            this.button_setArb.Location = new System.Drawing.Point(320, 332);
+            this.button_setArb.Name = "button_setArb";
+            this.button_setArb.Size = new System.Drawing.Size(75, 23);
+            this.button_setArb.TabIndex = 28;
+            this.button_setArb.Text = "Set";
+            this.button_setArb.UseVisualStyleBackColor = true;
+            this.button_setArb.Click += new System.EventHandler(this.button_setArb_Click);
+            // 
+            // checkBox_GeneralPurpose
+            // 
+            this.checkBox_GeneralPurpose.AutoSize = true;
+            this.checkBox_GeneralPurpose.Location = new System.Drawing.Point(12, 38);
+            this.checkBox_GeneralPurpose.Name = "checkBox_GeneralPurpose";
+            this.checkBox_GeneralPurpose.Size = new System.Drawing.Size(65, 17);
+            this.checkBox_GeneralPurpose.TabIndex = 29;
+            this.checkBox_GeneralPurpose.Text = "Activate";
+            this.checkBox_GeneralPurpose.UseVisualStyleBackColor = true;
+            this.checkBox_GeneralPurpose.CheckedChanged += new System.EventHandler(this.checkBox_GeneralPurpose_CheckedChanged);
+            // 
+            // checkBox_arb
+            // 
+            this.checkBox_arb.AutoSize = true;
+            this.checkBox_arb.Location = new System.Drawing.Point(212, 38);
+            this.checkBox_arb.Name = "checkBox_arb";
+            this.checkBox_arb.Size = new System.Drawing.Size(65, 17);
+            this.checkBox_arb.TabIndex = 30;
+            this.checkBox_arb.Text = "Activate";
+            this.checkBox_arb.UseVisualStyleBackColor = true;
+            this.checkBox_arb.CheckedChanged += new System.EventHandler(this.checkBox_arb_CheckedChanged);
+            // 
+            // richTextBox_GPCommands
+            // 
+            this.richTextBox_GPCommands.Enabled = false;
+            this.richTextBox_GPCommands.Location = new System.Drawing.Point(12, 101);
+            this.richTextBox_GPCommands.Name = "richTextBox_GPCommands";
+            this.richTextBox_GPCommands.Size = new System.Drawing.Size(183, 206);
+            this.richTextBox_GPCommands.TabIndex = 31;
+            this.richTextBox_GPCommands.Text = "";
+            // 
+            // button_GPDisconnect
+            // 
+            this.button_GPDisconnect.Enabled = false;
+            this.button_GPDisconnect.Location = new System.Drawing.Point(12, 332);
+            this.button_GPDisconnect.Name = "button_GPDisconnect";
+            this.button_GPDisconnect.Size = new System.Drawing.Size(75, 23);
+            this.button_GPDisconnect.TabIndex = 32;
+            this.button_GPDisconnect.Text = "Disconnect";
+            this.button_GPDisconnect.UseVisualStyleBackColor = true;
+            this.button_GPDisconnect.Click += new System.EventHandler(this.button_GPDisconnect_Click);
+            // 
+            // button_ArbDisconnect
+            // 
+            this.button_ArbDisconnect.Enabled = false;
+            this.button_ArbDisconnect.Location = new System.Drawing.Point(215, 332);
+            this.button_ArbDisconnect.Name = "button_ArbDisconnect";
+            this.button_ArbDisconnect.Size = new System.Drawing.Size(75, 23);
+            this.button_ArbDisconnect.TabIndex = 33;
+            this.button_ArbDisconnect.Text = "Disconnect";
+            this.button_ArbDisconnect.UseVisualStyleBackColor = true;
             // 
             // textBox_x
             // 
@@ -248,51 +314,13 @@ namespace AspherixGPIB
             this.textBox_amplitude.Size = new System.Drawing.Size(93, 20);
             this.textBox_amplitude.TabIndex = 11;
             // 
-            // button_setArb
-            // 
-            this.button_setArb.Location = new System.Drawing.Point(320, 317);
-            this.button_setArb.Name = "button_setArb";
-            this.button_setArb.Size = new System.Drawing.Size(75, 23);
-            this.button_setArb.TabIndex = 28;
-            this.button_setArb.Text = "Set";
-            this.button_setArb.UseVisualStyleBackColor = true;
-            this.button_setArb.Click += new System.EventHandler(this.button_setArb_Click);
-            // 
-            // checkBox_GeneralPurpose
-            // 
-            this.checkBox_GeneralPurpose.AutoSize = true;
-            this.checkBox_GeneralPurpose.Location = new System.Drawing.Point(12, 38);
-            this.checkBox_GeneralPurpose.Name = "checkBox_GeneralPurpose";
-            this.checkBox_GeneralPurpose.Size = new System.Drawing.Size(65, 17);
-            this.checkBox_GeneralPurpose.TabIndex = 29;
-            this.checkBox_GeneralPurpose.Text = "Activate";
-            this.checkBox_GeneralPurpose.UseVisualStyleBackColor = true;
-            this.checkBox_GeneralPurpose.CheckedChanged += new System.EventHandler(this.checkBox_GeneralPurpose_CheckedChanged);
-            // 
-            // checkBox_arb
-            // 
-            this.checkBox_arb.AutoSize = true;
-            this.checkBox_arb.Location = new System.Drawing.Point(212, 38);
-            this.checkBox_arb.Name = "checkBox_arb";
-            this.checkBox_arb.Size = new System.Drawing.Size(65, 17);
-            this.checkBox_arb.TabIndex = 30;
-            this.checkBox_arb.Text = "Activate";
-            this.checkBox_arb.UseVisualStyleBackColor = true;
-            this.checkBox_arb.CheckedChanged += new System.EventHandler(this.checkBox_arb_CheckedChanged);
-            // 
-            // richTextBox_GPCommands
-            // 
-            this.richTextBox_GPCommands.Location = new System.Drawing.Point(12, 101);
-            this.richTextBox_GPCommands.Name = "richTextBox_GPCommands";
-            this.richTextBox_GPCommands.Size = new System.Drawing.Size(183, 206);
-            this.richTextBox_GPCommands.TabIndex = 31;
-            this.richTextBox_GPCommands.Text = "";
-            // 
             // GPIBWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(407, 374);
+            this.ClientSize = new System.Drawing.Size(407, 367);
+            this.Controls.Add(this.button_ArbDisconnect);
+            this.Controls.Add(this.button_GPDisconnect);
             this.Controls.Add(this.richTextBox_GPCommands);
             this.Controls.Add(this.checkBox_arb);
             this.Controls.Add(this.checkBox_GeneralPurpose);
@@ -355,6 +383,8 @@ namespace AspherixGPIB
         private System.Windows.Forms.CheckBox checkBox_GeneralPurpose;
         private System.Windows.Forms.CheckBox checkBox_arb;
         private System.Windows.Forms.RichTextBox richTextBox_GPCommands;
+        private System.Windows.Forms.Button button_GPDisconnect;
+        private System.Windows.Forms.Button button_ArbDisconnect;
     }
 }
 

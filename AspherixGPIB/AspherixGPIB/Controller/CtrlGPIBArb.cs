@@ -13,6 +13,11 @@ namespace AspherixGPIB.Controller
         private ResourceManager rm;
         private FormattedIO488 ioArbFG = new FormattedIO488();
         private IMessage msg;
+        public string Address
+        {
+            get { return _data.Address; }
+            set { _data.Address = value; }
+        }
         public CtrlGPIBArbParam AmplitudeVolt;
         public CtrlGPIBArbParam SamplingFrequency;
         public CtrlGPIBArbParam Samples;
@@ -35,6 +40,11 @@ namespace AspherixGPIB.Controller
             Amplitude = new CtrlGPIBArbParam(_data.Amplitude);
         }
 
-        
+
+
+        public void FromJSON(string gpibArbWave)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -15,8 +15,16 @@ namespace AspherixGPIB.Controller
     {
         private DataGPIBGeneric _data;
         private ResourceManager rm;
-        private FormattedIO488 ioArbFG = new FormattedIO488();
+        private FormattedIO488 _gpib = new FormattedIO488();
         private IMessage msg;
+
+        private enum gpibState
+        {
+            Connected,
+            Disconnected
+        };
+
+        private gpibState _deviceState = gpibState.Disconnected;
 
         public CtrlGPIBGeneric(DataGPIBGeneric data = null)
         {
@@ -36,8 +44,34 @@ namespace AspherixGPIB.Controller
         {
             get { return _data.Commands; }
             set { _data.Commands = value; }
+        }      
+
+        public void ManualSet()
+        {
+            if (_deviceState == gpibState.Disconnected)
+                GpibConnect();
+            //GetInstrumentID();
+            GpibSendMessage();
         }
-        
+
+        public void ManualDisconnect()
+        {
+            if(_deviceState == gpibState.Connected)
+                GpibDisconnect();
+        }
+
+        private void GpibSendMessage()
+        {
+            string message = Commands;
+            foreach (KeyValuePair<string, double> pair in _data.Iterator)
+            {
+                string key = pair.Key;
+                string value = Convert.ToString(pair.Value);
+                message = message.Replace(key, value);
+            }
+            _gpib.WriteString(message);
+            //System.Console.Write(_gpib.ReadString());
+        }
 
         public void CheckText(object sender, EventArgs e)
         {
@@ -78,33 +112,72 @@ namespace AspherixGPIB.Controller
             {
                 if (iterator.Name() == name)
                     iterator.Register(this);
-            }
-            _data.Iterator.Add(name);
+            }            
         }
 
         private void UnregisterFromSubject()
         {
-            foreach(String name in _data.Iterator)
+            foreach(KeyValuePair<string,double> pair in _data.Iterator)
             {
                 foreach (IteratorSubject iterator in HoopManager.Iterators)
                 {
-                    if (iterator.Name() == name)
+                    if (iterator.Name() == pair.Key)
                         iterator.UnRegister(this);
                 }
             }
 
             _data.Iterator.Clear();
+        }
 
+        private void GpibDisconnect()
+        {
+            if (_gpib.IO == null)
+                return;
+
+            _gpib.IO.Close();
+
+            _deviceState = gpibState.Disconnected;
+
+        }
+
+        private void GpibConnect()
+        {
+            rm = new ResourceManager();
+            try
+            {
+                msg = (rm.Open(Address)) as IMessage;
+                _gpib.IO = msg;
+            }
+            catch (SystemException ex)
+            {
+                MessageBox.Show("Open failed on " + Address + " " + ex.Source + "  " + ex.Message, "ApplyBurst");
+                _gpib.IO = null;
+                return;
+
+            }
+            _deviceState = gpibState.Connected;            
+   
         }
 
         public void NewValue(double value, string sender)
         {
-            //needed to fulfill the interface
+            _data.Iterator.RemoveAll(kvp => kvp.Key == sender);
+            _data.Iterator.Add(new KeyValuePair<string, double>(sender,value));
         }
 
         public void NewName(string newName, string oldName)
         {
             //needed to fulfill the interface
+        }
+
+        private void GetInstrumentID()
+        {
+            string m_strReturn;
+            _gpib.WriteString("*RST");
+            _gpib.WriteString("*IDN?");
+            
+            Console.Write(_gpib.ReadString());
+            
         }
     }
 }

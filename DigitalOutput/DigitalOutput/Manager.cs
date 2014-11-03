@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using AspherixGPIB.Controller;
 using DigitalOutput.Controller;
 using DigitalOutput.Model;
 using fastJSON;
@@ -19,6 +20,9 @@ namespace DigitalOutput
         private readonly Buffer _daqmx = new Buffer();
         public ControllerCard Hardware = null;
         public ControllerNetwork Network = new ControllerNetwork();
+        public CtrlGPIBGeneric GpibGeneric = new CtrlGPIBGeneric();
+        public CtrlGPIBArb GpibArb = new CtrlGPIBArb();
+
         private Form _myGui;
 
         public Manager(Form gui)
@@ -70,6 +74,9 @@ namespace DigitalOutput
         {
             string digitalData = null;
             string networkData = null;
+            string gpibArbWave = null;
+            string gpibGeneric = null;
+
             using (ZipFile zip = ZipFile.Read(fileName))
             {
                 using (var ms = new MemoryStream())
@@ -96,13 +103,51 @@ namespace DigitalOutput
                     catch
                     {
                         ms.Close();
-                    }
-                        
-                    
+                    }                                            
                 }
+                
+                using (var ms = new MemoryStream())
+                {
+                    ZipEntry entry = zip["GPIBGeneric.txt"];
+                    try
+                    {
+                        entry.Extract(ms);
+                        ms.Flush();
+                        ms.Position = 0;
+                        gpibGeneric = new StreamReader(ms).ReadToEnd();
+                        ms.Close();
+                    }
+                    catch (Exception)
+                    {
+                        ms.Close();
+                    }
+                }
+
+                using (var ms = new MemoryStream())
+                {
+                    ZipEntry entry = zip["GPIBArbWave.txt"];
+                    try
+                    {
+                        entry.Extract(ms);
+                        ms.Flush();
+                        ms.Position = 0;
+                        gpibArbWave = new StreamReader(ms).ReadToEnd();
+                        ms.Close();
+                    }
+                    catch (Exception)
+                    {
+                        ms.Close();
+                    }
+                }
+
                 if(!string.IsNullOrEmpty(networkData))
                     Network.FromJSON(networkData);
+
                 HoopManager.Load(zip); // has to be restored before the card fabric is called
+
+                if (!string.IsNullOrEmpty(gpibArbWave))
+                    GpibArb.FromJSON(gpibArbWave);
+
             }
             Initialize(digitalData);
         }

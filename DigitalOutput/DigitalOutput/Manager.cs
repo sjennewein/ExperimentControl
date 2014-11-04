@@ -66,6 +66,8 @@ namespace DigitalOutput
                 zip.AddEntry("NetworkData.txt", networkJSON);
                 zip.AddEntry("DigitalData.txt", hardwareJSON);
                 HoopManager.Save(zip);
+                GpibArb.Save(zip);
+                GpibGeneric.Save(zip);
                 zip.Save(fileName);
             }
         }
@@ -147,6 +149,9 @@ namespace DigitalOutput
 
                 if (!string.IsNullOrEmpty(gpibArbWave))
                     GpibArb.FromJSON(gpibArbWave);
+
+                if (!string.IsNullOrEmpty(gpibGeneric))
+                    GpibGeneric.FromJSON(gpibGeneric);
 
             }
             Initialize(digitalData);

@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using AspherixGPIB.Data;
+using Ionic.Zip;
 using Ivi.Visa.Interop;
+using fastJSON;
 
 namespace AspherixGPIB.Controller
 {
@@ -31,7 +33,12 @@ namespace AspherixGPIB.Controller
                 _data = new DataGPIBArb();
             else
                 _data = data;
-            
+
+            Initialize();            
+        }
+
+        private void Initialize()
+        {
             AmplitudeVolt = new CtrlGPIBArbParam(_data.AmplitudeVolt);
             SamplingFrequency = new CtrlGPIBArbParam(_data.SamplingFrequency);
             Samples = new CtrlGPIBArbParam(_data.Samples);
@@ -44,7 +51,14 @@ namespace AspherixGPIB.Controller
 
         public void FromJSON(string gpibArbWave)
         {
-            throw new NotImplementedException();
+            _data = (DataGPIBArb)fastJSON.JSON.Instance.ToObject(gpibArbWave);
+            Initialize();
+        }
+
+        public void Save(ZipFile zip)
+        {
+            string json = JSON.Instance.ToJSON(_data);
+            zip.AddEntry("GPIBArbWave.txt", json);
         }
     }
 }

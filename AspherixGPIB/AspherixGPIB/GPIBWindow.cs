@@ -15,11 +15,18 @@ namespace AspherixGPIB
     public partial class GPIBWindow : Form
     {
         
-        private CtrlGPIBArb _GpibWaveform = new CtrlGPIBArb();
-        private CtrlGPIBGeneric _GpibGeneric = new CtrlGPIBGeneric();
+        private CtrlGPIBArb _GpibWaveform;
+        private CtrlGPIBGeneric _GpibGeneric;
 
-        public GPIBWindow()
-        {            
+        public GPIBWindow(CtrlGPIBArb gpibArbWave = null, CtrlGPIBGeneric gpibGeneric = null)
+        {
+            _GpibWaveform = gpibArbWave ?? new CtrlGPIBArb();
+
+            if (gpibGeneric == null)
+                _GpibGeneric = new CtrlGPIBGeneric();
+            else
+                _GpibGeneric = gpibGeneric;
+
             InitializeComponent();
             Initialize();
         }
@@ -27,27 +34,27 @@ namespace AspherixGPIB
         private void Initialize()
         {
             textBox_A.SetController(_GpibWaveform.Amplitude);
-            textBox_arbAddress.DataBindings.Add("Text", _GpibWaveform, "Address");
+            textBox_arbAddress.DataBindings.Add("Text", _GpibWaveform, "Address",false,DataSourceUpdateMode.OnPropertyChanged);
             textBox_amplitude.SetController(_GpibWaveform.AmplitudeVolt);
             textBox_sampling.SetController(_GpibWaveform.SamplingFrequency);
             textBox_x0.SetController(_GpibWaveform.X0);
             textBox_sigma.SetController(_GpibWaveform.Sigma);
             textBox_x.SetController(_GpibWaveform.Samples);
 
-            textBox_GPAddress.DataBindings.Add("Text", _GpibGeneric, "Address");
+            textBox_GPAddress.DataBindings.Add("Text", _GpibGeneric, "Address",false,DataSourceUpdateMode.OnPropertyChanged);
             richTextBox_GPCommands.DataBindings.Add("Text", _GpibGeneric, "Commands");
             richTextBox_GPCommands.TextChanged += _GpibGeneric.CheckText;
         }
 
-        public void Restore()
-        {
+        //public void Restore()
+        //{
             
-        }
+        //}
 
-        public void Save()
-        {
+        //public void Save()
+        //{
             
-        }
+        //}
 
         private void button_setGeneric_Click(object sender, EventArgs e)
         {

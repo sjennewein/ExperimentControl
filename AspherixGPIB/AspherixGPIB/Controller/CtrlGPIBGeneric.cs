@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -7,13 +8,15 @@ using System.Windows.Forms;
 using AspherixGPIB.Data;
 using Hulahoop.Controller;
 using Hulahoop.Interface;
+using Ionic.Zip;
 using Ivi.Visa.Interop;
+using fastJSON;
 
 namespace AspherixGPIB.Controller
 {
-    public class CtrlGPIBGeneric : IteratorObserver
+    public class CtrlGPIBGeneric : IteratorObserver, INotifyPropertyChanged
     {
-        private DataGPIBGeneric _data;
+        private DataGPIBGeneric _data = new DataGPIBGeneric();
         private ResourceManager rm;
         private FormattedIO488 _gpib = new FormattedIO488();
         private IMessage msg;
@@ -25,14 +28,6 @@ namespace AspherixGPIB.Controller
         };
 
         private gpibState _deviceState = gpibState.Disconnected;
-
-        public CtrlGPIBGeneric(DataGPIBGeneric data = null)
-        {
-            if (data == null)
-                _data = new DataGPIBGeneric();
-            else
-                _data = data;
-        }
 
         public string Address
         {
@@ -81,6 +76,7 @@ namespace AspherixGPIB.Controller
             textBox.SelectionColor = Color.Black;
             textBox.SelectionLength = 0;
             UnregisterFromSubject();
+            _data.Commands = textBox.Text;
             foreach (IteratorSubject iterator in HoopManager.Iterators)
             {
                 var name = iterator.Name();
@@ -160,9 +156,9 @@ namespace AspherixGPIB.Controller
         }
 
         public void NewValue(double value, string sender)
-        {
-            _data.Iterator.RemoveAll(kvp => kvp.Key == sender);
-            _data.Iterator.Add(new KeyValuePair<string, double>(sender,value));
+        {            
+            _data.Iterator.Remove(sender);
+            _data.Iterator.Add(sender,value);
         }
 
         public void NewName(string newName, string oldName)
@@ -178,6 +174,35 @@ namespace AspherixGPIB.Controller
             
             Console.Write(_gpib.ReadString());
             
+        }
+
+        public void FromJSON(string gpibGeneric)
+        {
+            DataGPIBGeneric data = (DataGPIBGeneric)fastJSON.JSON.Instance.ToObject(gpibGeneric);
+            _data.Commands = data.Commands;
+            _data.Address = data.Address;
+
+            foreach (KeyValuePair<string, double> pair in data.Iterator)
+            {
+                RegisterToSubject(pair.Key);
+            }
+
+            PropertyHasChanged("Commands");
+        }
+
+        public void Save(ZipFile zip)
+        {
+            string json = JSON.Instance.ToJSON(_data);
+            zip.AddEntry("GPIBGeneric.txt", json);
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void PropertyHasChanged(string propertyName)
+        {
+            PropertyChangedEventHandler propertyChanged = PropertyChanged;
+            if (null != propertyChanged)
+                propertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

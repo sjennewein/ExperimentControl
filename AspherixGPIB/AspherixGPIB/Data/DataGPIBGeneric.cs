@@ -9,6 +9,6 @@ namespace AspherixGPIB.Data
     {
         public string Address;
         public string Commands;
-        public List<KeyValuePair<string,double>> Iterator = new List<KeyValuePair<string,double>>();
+        public Dictionary<string,double> Iterator = new Dictionary<string, double>();
     }
 }

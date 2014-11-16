@@ -46,15 +46,6 @@ namespace AspherixGPIB
             richTextBox_GPCommands.TextChanged += _GpibGeneric.CheckText;
         }
 
-        //public void Restore()
-        //{
-            
-        //}
-
-        //public void Save()
-        //{
-            
-        //}
 
         private void button_setGeneric_Click(object sender, EventArgs e)
         {
@@ -79,6 +70,7 @@ namespace AspherixGPIB
             var box = (CheckBox) sender;
             if (box.Checked)
             {
+                _GpibGeneric.Activated = true;
                 textBox_GPAddress.Enabled = true;
                 richTextBox_GPCommands.Enabled = true;
                 button_GPDisconnect.Enabled = true;
@@ -86,6 +78,7 @@ namespace AspherixGPIB
             }
             else
             {
+                _GpibGeneric.Activated = false;
                 textBox_GPAddress.Enabled = false;
                 richTextBox_GPCommands.Enabled = false;
                 button_GPDisconnect.Enabled = false;

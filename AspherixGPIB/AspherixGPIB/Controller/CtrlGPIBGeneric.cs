@@ -20,6 +20,7 @@ namespace AspherixGPIB.Controller
         private ResourceManager rm;
         private FormattedIO488 _gpib = new FormattedIO488();
         private IMessage msg;
+        public bool Activated = false;
 
         private enum gpibState
         {
@@ -49,6 +50,12 @@ namespace AspherixGPIB.Controller
             GpibSendMessage();
         }
 
+        public void Update()
+        {
+            if(Activated)
+            { }
+        }
+
         public void ManualDisconnect()
         {
             if(_deviceState == gpibState.Connected)
@@ -57,6 +64,9 @@ namespace AspherixGPIB.Controller
 
         private void GpibSendMessage()
         {
+            if(_deviceState == gpibState.Disconnected)
+                GpibConnect();
+
             string message = Commands;
             foreach (KeyValuePair<string, double> pair in _data.Iterator)
             {
@@ -65,7 +75,6 @@ namespace AspherixGPIB.Controller
                 message = message.Replace(key, value);
             }
             _gpib.WriteString(message);
-            //System.Console.Write(_gpib.ReadString());
         }
 
         public void CheckText(object sender, EventArgs e)
@@ -143,15 +152,15 @@ namespace AspherixGPIB.Controller
             {
                 msg = (rm.Open(Address)) as IMessage;
                 _gpib.IO = msg;
+                _deviceState = gpibState.Connected;    
             }
             catch (SystemException ex)
             {
                 MessageBox.Show("Open failed on " + Address + " " + ex.Source + "  " + ex.Message, "ApplyBurst");
                 _gpib.IO = null;
-                return;
-
+                _deviceState = gpibState.Disconnected;                    
             }
-            _deviceState = gpibState.Connected;            
+                    
    
         }
 

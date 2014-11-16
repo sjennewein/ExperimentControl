@@ -171,6 +171,7 @@ namespace DigitalOutput
                 Network.ListenToTrigger();
                 return;
             }
+            GpibGeneric.Update();
             string json = Hardware.ToJson();
             _daqmx.Start(false, json);
             TriggerEvent(OutputStarted);
@@ -233,6 +234,7 @@ namespace DigitalOutput
             CycleCounter = 0;
             PropertyChangedEvent("RunCounter");
             HoopManager.Increment();
+            GpibGeneric.Update();
             CopyToBuffer();
             Network.StartNextRun();
         }

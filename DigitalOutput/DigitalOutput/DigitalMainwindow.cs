@@ -56,7 +56,7 @@ namespace DigitalOutput
             saveFileDialog.RestoreDirectory = true;
 
             if (saveFileDialog.ShowDialog() != DialogResult.OK)
-                return;
+                return;           
 
             _manager.Save(saveFileDialog.FileName);
         }

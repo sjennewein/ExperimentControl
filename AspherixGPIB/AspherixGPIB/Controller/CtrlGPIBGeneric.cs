@@ -77,6 +77,7 @@ namespace AspherixGPIB.Controller
         public void CheckText(object sender, EventArgs e)
         {
             var textBox = (RichTextBox) sender;
+            int i = textBox.SelectionStart;
             textBox.SelectAll();
             textBox.SelectionBackColor = Color.White;
             textBox.SelectionColor = Color.Black;
@@ -105,7 +106,7 @@ namespace AspherixGPIB.Controller
                     }
                 }                
             }
-            textBox.Select(textBox.Text.Length,0);
+            textBox.SelectionStart = i;
         }
 
         private void RegisterToSubject(string name)

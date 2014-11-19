@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace Hulahoop
+namespace AspherixGPIB
 {
     static class Program
     {
@@ -15,7 +15,7 @@ namespace Hulahoop
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new HulaHoopWindow());
+            Application.Run(new GPIBWindow());
         }
     }
 }

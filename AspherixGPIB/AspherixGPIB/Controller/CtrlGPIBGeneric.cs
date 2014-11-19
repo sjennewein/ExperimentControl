@@ -43,17 +43,14 @@ namespace AspherixGPIB.Controller
         }      
 
         public void ManualSet()
-        {
-            if (_deviceState == gpibState.Disconnected)
-                GpibConnect();
-            //GetInstrumentID();
+        {       
             GpibSendMessage();
         }
 
         public void Update()
         {
-            if(Activated)
-            { }
+            if (Activated)
+                GpibSendMessage();
         }
 
         public void ManualDisconnect()

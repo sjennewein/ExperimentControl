@@ -45,7 +45,7 @@ namespace AspherixGPIB.GUI
             var item = (MenuItem)sender;
             _controller.Iterator = item.Text;
             ReadOnly = true;
-            DataBindings.RemoveAt(0);
+            DataBindings.Clear();
             DataBindings.Add("Text", _controller, "Iterator");
         }
 
@@ -53,8 +53,8 @@ namespace AspherixGPIB.GUI
         {           
             _controller.Iterator = null;
             ReadOnly = false;
-            DataBindings.RemoveAt(0);
-            DataBindings.Add("Text", _controller, "Duration", false, DataSourceUpdateMode.OnPropertyChanged);
+            DataBindings.Clear();
+            DataBindings.Add("Text", _controller, "Value", false, DataSourceUpdateMode.OnPropertyChanged);
         }
     }
 }

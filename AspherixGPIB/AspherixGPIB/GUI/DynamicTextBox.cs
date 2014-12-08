@@ -50,8 +50,7 @@ namespace AspherixGPIB.GUI
         }
 
         private void SwitchToManual(object sender, EventArgs e)
-        {           
-            _controller.Iterator = null;
+        {                       
             ReadOnly = false;
             DataBindings.Clear();
             DataBindings.Add("Text", _controller, "Value", false, DataSourceUpdateMode.OnPropertyChanged);

@@ -91,6 +91,7 @@ namespace AspherixGPIB
             var box = (CheckBox)sender;
             if (box.Checked)
             {
+                _GpibWaveform.Activated = true;
                 textBox_A.Enabled = true;
                 textBox_amplitude.Enabled = true;
                 textBox_arbAddress.Enabled = true;
@@ -103,6 +104,7 @@ namespace AspherixGPIB
             }
             else
             {
+                _GpibWaveform.Activated = false;
                 textBox_A.Enabled = false;
                 textBox_amplitude.Enabled = false;
                 textBox_arbAddress.Enabled = false;

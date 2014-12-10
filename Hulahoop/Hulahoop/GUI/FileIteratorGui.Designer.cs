@@ -58,7 +58,7 @@
             // 
             this.label_Close.AutoSize = true;
             this.label_Close.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(196)))), ((int)(((byte)(20)))), ((int)(((byte)(94)))));
-            this.label_Close.Location = new System.Drawing.Point(418, 0);
+            this.label_Close.Location = new System.Drawing.Point(613, -1);
             this.label_Close.Name = "label_Close";
             this.label_Close.Size = new System.Drawing.Size(14, 13);
             this.label_Close.TabIndex = 11;
@@ -66,7 +66,7 @@
             // 
             // button_Load
             // 
-            this.button_Load.Location = new System.Drawing.Point(353, 19);
+            this.button_Load.Location = new System.Drawing.Point(548, 18);
             this.button_Load.Name = "button_Load";
             this.button_Load.Size = new System.Drawing.Size(75, 23);
             this.button_Load.TabIndex = 12;
@@ -79,7 +79,7 @@
             this.textBox_Filename.Enabled = false;
             this.textBox_Filename.Location = new System.Drawing.Point(112, 21);
             this.textBox_Filename.Name = "textBox_Filename";
-            this.textBox_Filename.Size = new System.Drawing.Size(147, 20);
+            this.textBox_Filename.Size = new System.Drawing.Size(384, 20);
             this.textBox_Filename.TabIndex = 13;
             // 
             // label_Filename
@@ -94,7 +94,7 @@
             // label_Length
             // 
             this.label_Length.AutoSize = true;
-            this.label_Length.Location = new System.Drawing.Point(265, 24);
+            this.label_Length.Location = new System.Drawing.Point(502, 24);
             this.label_Length.Name = "label_Length";
             this.label_Length.Size = new System.Drawing.Size(13, 13);
             this.label_Length.TabIndex = 15;
@@ -103,7 +103,7 @@
             // label_Lines
             // 
             this.label_Lines.AutoSize = true;
-            this.label_Lines.Location = new System.Drawing.Point(265, 5);
+            this.label_Lines.Location = new System.Drawing.Point(502, 5);
             this.label_Lines.Name = "label_Lines";
             this.label_Lines.Size = new System.Drawing.Size(32, 13);
             this.label_Lines.TabIndex = 16;
@@ -123,7 +123,7 @@
             this.Controls.Add(this.textBox_Name);
             this.Controls.Add(this.label_Name);
             this.Name = "FileIteratorGui";
-            this.Size = new System.Drawing.Size(431, 46);
+            this.Size = new System.Drawing.Size(626, 46);
             this.ResumeLayout(false);
             this.PerformLayout();
 

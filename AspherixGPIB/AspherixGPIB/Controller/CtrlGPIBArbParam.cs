@@ -15,8 +15,14 @@ namespace AspherixGPIB.Controller
 
         public CtrlGPIBArbParam(DataGPIBArbParam data)
         {
+            UpdateData(data);
+        }
+
+        public void UpdateData(DataGPIBArbParam data)
+        {
             _data = data;
             RegisterToSubject(_data.Iterator);
+            TriggerEvent(DataLoaded);
         }
 
         public double Value
@@ -73,6 +79,14 @@ namespace AspherixGPIB.Controller
                 propertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        private void TriggerEvent(EventHandler newEvent, EventArgs e = null)
+        {
+            EventHandler triggerEvent = newEvent;
+            if (triggerEvent != null)
+                triggerEvent(this, new EventArgs());
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
+        public event EventHandler DataLoaded;
     }
 }

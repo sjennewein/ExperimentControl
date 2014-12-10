@@ -22,6 +22,11 @@ namespace AspherixGPIB.GUI
         public void SetController(CtrlGPIBArbParam controller)
         {
             _controller = controller;
+            _controller.DataLoaded += (sender, args) => UpdateGUI();
+            if(string.IsNullOrEmpty(_controller.Iterator))
+                SwitchToManual(new object(), new EventArgs());
+            else
+                ActivateLoops();                     
         }
 
         private void OnContextMenu(object sender, EventArgs e)
@@ -32,7 +37,7 @@ namespace AspherixGPIB.GUI
 
             foreach (IteratorSubject iterator in HoopManager.Iterators)
             {
-                var item = new MenuItem(iterator.Name(), SwitchToHooping);
+                var item = new MenuItem(iterator.Name(), SwitchToLoops);
                 contextMenu.MenuItems.Add(item);
             }
 
@@ -40,10 +45,15 @@ namespace AspherixGPIB.GUI
             contextMenu.Show(origSender.SourceControl, new Point(0));
         }
 
-        private void SwitchToHooping(object sender, EventArgs e)
+        private void SwitchToLoops(object sender, EventArgs e)
         {
             var item = (MenuItem)sender;
             _controller.Iterator = item.Text;
+            ActivateLoops();
+        }
+
+        private void ActivateLoops()
+        {
             ReadOnly = true;
             DataBindings.Clear();
             DataBindings.Add("Text", _controller, "Iterator");
@@ -54,6 +64,14 @@ namespace AspherixGPIB.GUI
             ReadOnly = false;
             DataBindings.Clear();
             DataBindings.Add("Text", _controller, "Value", false, DataSourceUpdateMode.OnPropertyChanged);
+        }
+
+        private void UpdateGUI()
+        {
+            if (string.IsNullOrEmpty(_controller.Iterator))
+                SwitchToManual(new object(), new EventArgs());
+            else
+                ActivateLoops();    
         }
     }
 }

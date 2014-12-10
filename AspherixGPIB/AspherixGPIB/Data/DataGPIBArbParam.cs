@@ -8,7 +8,7 @@ namespace AspherixGPIB.Data
 {
     public class DataGPIBArbParam
     {          
-        public double Value;
+        public double Value = 0;
         public string Iterator = "";
     }
 }

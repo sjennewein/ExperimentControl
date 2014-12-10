@@ -41,21 +41,36 @@ namespace AspherixGPIB.Controller
         public CtrlGPIBArb(DataGPIBArb data = null)
         {
             if (data == null)
+            {
                 _data = new DataGPIBArb();
+                _data.Amplitude = new DataGPIBArbParam();
+                _data.AmplitudeVolt = new DataGPIBArbParam();
+                _data.Samples = new DataGPIBArbParam();
+                _data.SamplingFrequency = new DataGPIBArbParam();
+                _data.Sigma = new DataGPIBArbParam();
+                _data.X0 = new DataGPIBArbParam();
+            }
             else
-                _data = data;
+            {
+                   _data = data;
+            }
 
-            Initialize();            
-        }
-
-        private void Initialize()
-        {
             AmplitudeVolt = new CtrlGPIBArbParam(_data.AmplitudeVolt);
             SamplingFrequency = new CtrlGPIBArbParam(_data.SamplingFrequency);
             Samples = new CtrlGPIBArbParam(_data.Samples);
             X0 = new CtrlGPIBArbParam(_data.X0);
             Sigma = new CtrlGPIBArbParam(_data.Sigma);
-            Amplitude = new CtrlGPIBArbParam(_data.Amplitude);
+            Amplitude = new CtrlGPIBArbParam(_data.Amplitude);            
+        }
+
+        private void Initialize()
+        {
+            AmplitudeVolt.UpdateData(_data.AmplitudeVolt);
+            SamplingFrequency.UpdateData(_data.SamplingFrequency);
+            Samples.UpdateData(_data.Samples);
+            X0.UpdateData(_data.X0);
+            Sigma.UpdateData(_data.Sigma);
+            Amplitude.UpdateData(_data.Amplitude);
         }
 
         private void GpibConnect()
@@ -65,6 +80,7 @@ namespace AspherixGPIB.Controller
             {
                 msg = (rm.Open(Address)) as IMessage;
                 _gpib.IO = msg;
+                //_gpib.WriteString("*CAL?");
                 _deviceState = gpibState.Connected;
             }
             catch (SystemException ex)
@@ -73,6 +89,11 @@ namespace AspherixGPIB.Controller
                 _gpib.IO = null;
                 _deviceState = gpibState.Disconnected;
             }
+        }
+
+        public void ManualSet()
+        {
+            UpdateGPIB();
         }
 
         private void UpdateGPIB()
@@ -84,12 +105,12 @@ namespace AspherixGPIB.Controller
                 GpibConnect();
             
             string volt = Convert.ToString(AmplitudeVolt.Value);
-            string sampleFreq = Convert.ToString(SamplingFrequency.Value);
+            string freq = Convert.ToString(SamplingFrequency.Value);
             int samples = Convert.ToInt16(Samples.Value);
             int x0 = Convert.ToInt16(X0.Value);
             int sigma = Convert.ToInt16(Sigma.Value);
             int amplitude = Convert.ToInt16(Amplitude.Value);
-            short[] myData = new short[samples];
+            short[] myData = new short[samples+1];
             short sum = 0;
 
             for (int i = 0; i < samples; i++)
@@ -99,12 +120,16 @@ namespace AspherixGPIB.Controller
 
                 sum += myData[i];
             }
-
+            myData[samples] = sum;
             int byteLength = Buffer.ByteLength(myData);
             byte[] myBytes = new byte[byteLength];
             Buffer.BlockCopy(myData, 0, myBytes, 0, byteLength);
 
             _gpib.WriteString("*RST");
+            _gpib.WriteString("TSRC 2");
+            _gpib.WriteString("BCNT 1");
+            _gpib.WriteString("MTYP 5");
+            _gpib.WriteString("MENA 1");
             _gpib.WriteString("LDWF?0," + samples.ToString() + "\n");
 
 
@@ -112,13 +137,13 @@ namespace AspherixGPIB.Controller
             {
                 //ioArbFG.WriteString(output,false);
                 _gpib.IO.Timeout = 10000;
-                _gpib.IO.Write(myBytes, 2 * samples + 2);
+                _gpib.IO.Write(myBytes, 2 * samples+2);
             }
-            _gpib.WriteString("FUNC5\n");
+            _gpib.WriteString("FUNC5");
 
 
             _gpib.WriteString("AMPL" + volt + "VP");
-            _gpib.WriteString("FSMP" + volt);
+            _gpib.WriteString("FSMP" + freq);
         }
 
         public void FromJSON(string gpibArbWave)
@@ -131,6 +156,11 @@ namespace AspherixGPIB.Controller
         {
             string json = JSON.Instance.ToJSON(_data);
             zip.AddEntry("GPIBArbWave.txt", json);
+        }
+
+        public void Update()
+        {
+            UpdateGPIB();
         }
     }
 }

@@ -163,6 +163,7 @@ namespace DigitalOutput
             RunCounter = 0;
             HoopManager.Reset();
             GpibGeneric.Update();
+            GpibArb.Update();
             if (Network.Activated)
             {
                 Network.Connect();
@@ -235,6 +236,7 @@ namespace DigitalOutput
             PropertyChangedEvent("RunCounter");
             HoopManager.Increment();
             GpibGeneric.Update();
+            GpibArb.Update();
             CopyToBuffer();
             Network.StartNextRun();
         }

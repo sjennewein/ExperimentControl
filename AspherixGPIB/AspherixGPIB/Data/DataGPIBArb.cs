@@ -7,12 +7,12 @@ namespace AspherixGPIB.Data
 {
     public class DataGPIBArb
     {
-        public string Address = "";
-        public DataGPIBArbParam AmplitudeVolt = new DataGPIBArbParam();
-        public DataGPIBArbParam SamplingFrequency = new DataGPIBArbParam();        
-        public DataGPIBArbParam Samples = new DataGPIBArbParam();
-        public DataGPIBArbParam X0 = new DataGPIBArbParam();
-        public DataGPIBArbParam Sigma = new DataGPIBArbParam();
-        public DataGPIBArbParam Amplitude = new DataGPIBArbParam();
+        public string Address = "GPIB0::XX";
+        public DataGPIBArbParam AmplitudeVolt;
+        public DataGPIBArbParam SamplingFrequency;        
+        public DataGPIBArbParam Samples;
+        public DataGPIBArbParam X0;
+        public DataGPIBArbParam Sigma;
+        public DataGPIBArbParam Amplitude;
     }
 }

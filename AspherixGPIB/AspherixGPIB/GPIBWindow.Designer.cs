@@ -118,7 +118,7 @@ namespace AspherixGPIB
             this.textBox_arbAddress.Location = new System.Drawing.Point(266, 72);
             this.textBox_arbAddress.Name = "textBox_arbAddress";
             this.textBox_arbAddress.Size = new System.Drawing.Size(129, 20);
-            this.textBox_arbAddress.TabIndex = 9;
+            this.textBox_arbAddress.TabIndex = 7;
             // 
             // label8
             // 
@@ -198,7 +198,7 @@ namespace AspherixGPIB
             this.button_setGeneric.Location = new System.Drawing.Point(120, 332);
             this.button_setGeneric.Name = "button_setGeneric";
             this.button_setGeneric.Size = new System.Drawing.Size(75, 23);
-            this.button_setGeneric.TabIndex = 27;
+            this.button_setGeneric.TabIndex = 4;
             this.button_setGeneric.Text = "Set";
             this.button_setGeneric.UseVisualStyleBackColor = true;
             this.button_setGeneric.Click += new System.EventHandler(this.button_setGeneric_Click);
@@ -209,7 +209,7 @@ namespace AspherixGPIB
             this.button_setArb.Location = new System.Drawing.Point(320, 332);
             this.button_setArb.Name = "button_setArb";
             this.button_setArb.Size = new System.Drawing.Size(75, 23);
-            this.button_setArb.TabIndex = 28;
+            this.button_setArb.TabIndex = 14;
             this.button_setArb.Text = "Set";
             this.button_setArb.UseVisualStyleBackColor = true;
             this.button_setArb.Click += new System.EventHandler(this.button_setArb_Click);
@@ -220,7 +220,7 @@ namespace AspherixGPIB
             this.checkBox_GeneralPurpose.Location = new System.Drawing.Point(12, 38);
             this.checkBox_GeneralPurpose.Name = "checkBox_GeneralPurpose";
             this.checkBox_GeneralPurpose.Size = new System.Drawing.Size(65, 17);
-            this.checkBox_GeneralPurpose.TabIndex = 29;
+            this.checkBox_GeneralPurpose.TabIndex = 1;
             this.checkBox_GeneralPurpose.Text = "Activate";
             this.checkBox_GeneralPurpose.UseVisualStyleBackColor = true;
             this.checkBox_GeneralPurpose.CheckedChanged += new System.EventHandler(this.checkBox_GeneralPurpose_CheckedChanged);
@@ -231,7 +231,7 @@ namespace AspherixGPIB
             this.checkBox_arb.Location = new System.Drawing.Point(212, 38);
             this.checkBox_arb.Name = "checkBox_arb";
             this.checkBox_arb.Size = new System.Drawing.Size(65, 17);
-            this.checkBox_arb.TabIndex = 30;
+            this.checkBox_arb.TabIndex = 6;
             this.checkBox_arb.Text = "Activate";
             this.checkBox_arb.UseVisualStyleBackColor = true;
             this.checkBox_arb.CheckedChanged += new System.EventHandler(this.checkBox_arb_CheckedChanged);
@@ -242,7 +242,7 @@ namespace AspherixGPIB
             this.richTextBox_GPCommands.Location = new System.Drawing.Point(12, 101);
             this.richTextBox_GPCommands.Name = "richTextBox_GPCommands";
             this.richTextBox_GPCommands.Size = new System.Drawing.Size(183, 206);
-            this.richTextBox_GPCommands.TabIndex = 31;
+            this.richTextBox_GPCommands.TabIndex = 3;
             this.richTextBox_GPCommands.Text = "";
             // 
             // button_GPDisconnect
@@ -251,7 +251,7 @@ namespace AspherixGPIB
             this.button_GPDisconnect.Location = new System.Drawing.Point(12, 332);
             this.button_GPDisconnect.Name = "button_GPDisconnect";
             this.button_GPDisconnect.Size = new System.Drawing.Size(75, 23);
-            this.button_GPDisconnect.TabIndex = 32;
+            this.button_GPDisconnect.TabIndex = 5;
             this.button_GPDisconnect.Text = "Disconnect";
             this.button_GPDisconnect.UseVisualStyleBackColor = true;
             this.button_GPDisconnect.Click += new System.EventHandler(this.button_GPDisconnect_Click);
@@ -262,7 +262,7 @@ namespace AspherixGPIB
             this.button_ArbDisconnect.Location = new System.Drawing.Point(215, 332);
             this.button_ArbDisconnect.Name = "button_ArbDisconnect";
             this.button_ArbDisconnect.Size = new System.Drawing.Size(75, 23);
-            this.button_ArbDisconnect.TabIndex = 33;
+            this.button_ArbDisconnect.TabIndex = 15;
             this.button_ArbDisconnect.Text = "Disconnect";
             this.button_ArbDisconnect.UseVisualStyleBackColor = true;
             // 
@@ -272,7 +272,7 @@ namespace AspherixGPIB
             this.textBox_x.Location = new System.Drawing.Point(302, 291);
             this.textBox_x.Name = "textBox_x";
             this.textBox_x.Size = new System.Drawing.Size(93, 20);
-            this.textBox_x.TabIndex = 22;
+            this.textBox_x.TabIndex = 13;
             // 
             // textBox_sigma
             // 
@@ -280,7 +280,7 @@ namespace AspherixGPIB
             this.textBox_sigma.Location = new System.Drawing.Point(302, 265);
             this.textBox_sigma.Name = "textBox_sigma";
             this.textBox_sigma.Size = new System.Drawing.Size(93, 20);
-            this.textBox_sigma.TabIndex = 20;
+            this.textBox_sigma.TabIndex = 12;
             // 
             // textBox_x0
             // 
@@ -288,7 +288,7 @@ namespace AspherixGPIB
             this.textBox_x0.Location = new System.Drawing.Point(302, 239);
             this.textBox_x0.Name = "textBox_x0";
             this.textBox_x0.Size = new System.Drawing.Size(93, 20);
-            this.textBox_x0.TabIndex = 18;
+            this.textBox_x0.TabIndex = 11;
             // 
             // textBox_sampling
             // 
@@ -296,7 +296,7 @@ namespace AspherixGPIB
             this.textBox_sampling.Location = new System.Drawing.Point(302, 124);
             this.textBox_sampling.Name = "textBox_sampling";
             this.textBox_sampling.Size = new System.Drawing.Size(93, 20);
-            this.textBox_sampling.TabIndex = 13;
+            this.textBox_sampling.TabIndex = 9;
             // 
             // textBox_A
             // 
@@ -304,7 +304,7 @@ namespace AspherixGPIB
             this.textBox_A.Location = new System.Drawing.Point(302, 213);
             this.textBox_A.Name = "textBox_A";
             this.textBox_A.Size = new System.Drawing.Size(93, 20);
-            this.textBox_A.TabIndex = 12;
+            this.textBox_A.TabIndex = 10;
             // 
             // textBox_amplitude
             // 
@@ -312,7 +312,7 @@ namespace AspherixGPIB
             this.textBox_amplitude.Location = new System.Drawing.Point(302, 98);
             this.textBox_amplitude.Name = "textBox_amplitude";
             this.textBox_amplitude.Size = new System.Drawing.Size(93, 20);
-            this.textBox_amplitude.TabIndex = 11;
+            this.textBox_amplitude.TabIndex = 8;
             // 
             // GPIBWindow
             // 

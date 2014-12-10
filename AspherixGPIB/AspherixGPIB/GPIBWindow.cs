@@ -20,7 +20,10 @@ namespace AspherixGPIB
 
         public GPIBWindow(CtrlGPIBArb gpibArbWave = null, CtrlGPIBGeneric gpibGeneric = null)
         {
-            _GpibWaveform = gpibArbWave ?? new CtrlGPIBArb();
+            if(gpibArbWave == null)
+                _GpibWaveform = new CtrlGPIBArb();
+            else
+                _GpibWaveform = gpibArbWave;                       
 
             if (gpibGeneric == null)
                 _GpibGeneric = new CtrlGPIBGeneric();
@@ -54,7 +57,7 @@ namespace AspherixGPIB
 
         private void button_setArb_Click(object sender, EventArgs e)
         {
-
+            _GpibWaveform.ManualSet();
         }
 
 
@@ -121,6 +124,7 @@ namespace AspherixGPIB
         {
 
         }
+
 
        
 

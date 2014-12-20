@@ -23,6 +23,18 @@ namespace Hulahoop.Controller
                 _fileLength = _model.Iterations.Length;
         }
 
+        public int Counter
+        { get { return _counter; } }
+
+        public double CurrentValue
+        {
+            get
+            {
+                if (_model.Iterations != null && _model.Iterations.Length != 0)
+                    return _model.Iterations[_counter];
+                return 0;
+            } }
+
         public string Name
         {
             get { return _model.Name; }
@@ -123,6 +135,8 @@ namespace Hulahoop.Controller
             {
                 observer.NewValue(newValue, Name);
             }
+            PropertyChangedEvent("Counter");
+            PropertyChangedEvent("CurrentValue");
         }
 
         public void Save(ZipFile zip)

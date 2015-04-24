@@ -36,6 +36,10 @@
             this.label_Filename = new System.Windows.Forms.Label();
             this.label_Length = new System.Windows.Forms.Label();
             this.label_Lines = new System.Windows.Forms.Label();
+            this.label_counter = new System.Windows.Forms.Label();
+            this.label_counterValue = new System.Windows.Forms.Label();
+            this.label_currentValue = new System.Windows.Forms.Label();
+            this.label_current = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label_Name
@@ -58,7 +62,7 @@
             // 
             this.label_Close.AutoSize = true;
             this.label_Close.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(196)))), ((int)(((byte)(20)))), ((int)(((byte)(94)))));
-            this.label_Close.Location = new System.Drawing.Point(613, -1);
+            this.label_Close.Location = new System.Drawing.Point(762, -1);
             this.label_Close.Name = "label_Close";
             this.label_Close.Size = new System.Drawing.Size(14, 13);
             this.label_Close.TabIndex = 11;
@@ -66,7 +70,7 @@
             // 
             // button_Load
             // 
-            this.button_Load.Location = new System.Drawing.Point(548, 18);
+            this.button_Load.Location = new System.Drawing.Point(697, 18);
             this.button_Load.Name = "button_Load";
             this.button_Load.Size = new System.Drawing.Size(75, 23);
             this.button_Load.TabIndex = 12;
@@ -109,11 +113,51 @@
             this.label_Lines.TabIndex = 16;
             this.label_Lines.Text = "Lines";
             // 
+            // label_counter
+            // 
+            this.label_counter.AutoSize = true;
+            this.label_counter.Location = new System.Drawing.Point(540, 5);
+            this.label_counter.Name = "label_counter";
+            this.label_counter.Size = new System.Drawing.Size(44, 13);
+            this.label_counter.TabIndex = 17;
+            this.label_counter.Text = "Counter";
+            // 
+            // label_counterValue
+            // 
+            this.label_counterValue.AutoSize = true;
+            this.label_counterValue.Location = new System.Drawing.Point(540, 24);
+            this.label_counterValue.Name = "label_counterValue";
+            this.label_counterValue.Size = new System.Drawing.Size(13, 13);
+            this.label_counterValue.TabIndex = 18;
+            this.label_counterValue.Text = "0";
+            // 
+            // label_currentValue
+            // 
+            this.label_currentValue.AutoSize = true;
+            this.label_currentValue.Location = new System.Drawing.Point(590, 24);
+            this.label_currentValue.Name = "label_currentValue";
+            this.label_currentValue.Size = new System.Drawing.Size(13, 13);
+            this.label_currentValue.TabIndex = 20;
+            this.label_currentValue.Text = "0";
+            // 
+            // label_current
+            // 
+            this.label_current.AutoSize = true;
+            this.label_current.Location = new System.Drawing.Point(590, 5);
+            this.label_current.Name = "label_current";
+            this.label_current.Size = new System.Drawing.Size(70, 13);
+            this.label_current.TabIndex = 19;
+            this.label_current.Text = "Current value";
+            // 
             // FileIteratorGui
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.Controls.Add(this.label_currentValue);
+            this.Controls.Add(this.label_current);
+            this.Controls.Add(this.label_counterValue);
+            this.Controls.Add(this.label_counter);
             this.Controls.Add(this.label_Lines);
             this.Controls.Add(this.label_Length);
             this.Controls.Add(this.label_Filename);
@@ -123,7 +167,7 @@
             this.Controls.Add(this.textBox_Name);
             this.Controls.Add(this.label_Name);
             this.Name = "FileIteratorGui";
-            this.Size = new System.Drawing.Size(626, 46);
+            this.Size = new System.Drawing.Size(775, 46);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -139,5 +183,9 @@
         private System.Windows.Forms.Label label_Filename;
         private System.Windows.Forms.Label label_Length;
         private System.Windows.Forms.Label label_Lines;
+        private System.Windows.Forms.Label label_counter;
+        private System.Windows.Forms.Label label_counterValue;
+        private System.Windows.Forms.Label label_currentValue;
+        private System.Windows.Forms.Label label_current;
     }
 }

@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Globalization;
 using System.Threading;
 using System.Windows.Forms;
+using AspherixGPIB;
 using DigitalOutput.GUI;
 using DigitalOutput.Model;
 using Hulahoop;
@@ -12,6 +13,7 @@ namespace DigitalOutput
     public partial class DigitalMainwindow : Form
     {
         private readonly HulaHoopWindow _loops = new HulaHoopWindow();
+        private readonly GPIBWindow _gpib;
         private readonly Manager _manager;
 
         public DigitalMainwindow()
@@ -26,6 +28,7 @@ namespace DigitalOutput
             _manager.BufferSynced += delegate { OnBufferSynced(); };
             _manager.OutputStarted += delegate { OnDaqmxStarted(); };
             _manager.DaqmxStopped += delegate { OnDaqmxStopped(); };
+            _gpib = new GPIBWindow(_manager.GpibArb,_manager.GpibGeneric);
 
             InitializeComponent();
 
@@ -56,7 +59,7 @@ namespace DigitalOutput
             saveFileDialog.RestoreDirectory = true;
 
             if (saveFileDialog.ShowDialog() != DialogResult.OK)
-                return;
+                return;           
 
             _manager.Save(saveFileDialog.FileName);
         }
@@ -173,5 +176,11 @@ namespace DigitalOutput
 
 
         private delegate void GuiUpdate();
+
+        private void button_GPIB_Click(object sender, EventArgs e)
+        {
+            _gpib.Visible = true;
+            _gpib.Focus();
+        }
     }
 }

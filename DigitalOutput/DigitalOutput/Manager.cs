@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using AspherixGPIB.Controller;
 using DigitalOutput.Controller;
 using DigitalOutput.Model;
 using fastJSON;
@@ -19,12 +20,15 @@ namespace DigitalOutput
         private readonly Buffer _daqmx = new Buffer();
         public ControllerCard Hardware = null;
         public ControllerNetwork Network = new ControllerNetwork();
+        public CtrlGPIBGeneric GpibGeneric = new CtrlGPIBGeneric();
+        public CtrlGPIBArb GpibArb = new CtrlGPIBArb();
+
         private Form _myGui;
 
         public Manager(Form gui)
         {
             _myGui = gui;
-            //Network.DataUpdated += delegate { OnNewNetworkCycles(); };
+            Network.DataUpdated += delegate { OnNewNetworkCycles(); };
             Network.StartRun += delegate { OnNwStartRun(); };
             Network.NetworkFinished += delegate { Stop(); };
             _daqmx.CycleFinished += delegate { OnHwCycleFinished(); };
@@ -62,6 +66,8 @@ namespace DigitalOutput
                 zip.AddEntry("NetworkData.txt", networkJSON);
                 zip.AddEntry("DigitalData.txt", hardwareJSON);
                 HoopManager.Save(zip);
+                GpibArb.Save(zip);
+                GpibGeneric.Save(zip);
                 zip.Save(fileName);
             }
         }
@@ -70,6 +76,9 @@ namespace DigitalOutput
         {
             string digitalData = null;
             string networkData = null;
+            string gpibArbWave = null;
+            string gpibGeneric = null;
+
             using (ZipFile zip = ZipFile.Read(fileName))
             {
                 using (var ms = new MemoryStream())
@@ -96,13 +105,54 @@ namespace DigitalOutput
                     catch
                     {
                         ms.Close();
-                    }
-                        
-                    
+                    }                                            
                 }
+                
+                using (var ms = new MemoryStream())
+                {
+                    ZipEntry entry = zip["GPIBGeneric.txt"];
+                    try
+                    {
+                        entry.Extract(ms);
+                        ms.Flush();
+                        ms.Position = 0;
+                        gpibGeneric = new StreamReader(ms).ReadToEnd();
+                        ms.Close();
+                    }
+                    catch (Exception)
+                    {
+                        ms.Close();
+                    }
+                }
+
+                using (var ms = new MemoryStream())
+                {
+                    ZipEntry entry = zip["GPIBArbWave.txt"];
+                    try
+                    {
+                        entry.Extract(ms);
+                        ms.Flush();
+                        ms.Position = 0;
+                        gpibArbWave = new StreamReader(ms).ReadToEnd();
+                        ms.Close();
+                    }
+                    catch (Exception)
+                    {
+                        ms.Close();
+                    }
+                }
+
                 if(!string.IsNullOrEmpty(networkData))
                     Network.FromJSON(networkData);
+
                 HoopManager.Load(zip); // has to be restored before the card fabric is called
+
+                if (!string.IsNullOrEmpty(gpibArbWave))
+                    GpibArb.FromJSON(gpibArbWave);
+
+                if (!string.IsNullOrEmpty(gpibGeneric))
+                    GpibGeneric.FromJSON(gpibGeneric);
+
             }
             Initialize(digitalData);
         }
@@ -111,16 +161,18 @@ namespace DigitalOutput
         {
             CycleCounter = 0;
             RunCounter = 0;
-            
+            HoopManager.Reset();
+            GpibGeneric.Update();
+            GpibArb.Update();
             if (Network.Activated)
             {
-                HoopManager.Reset();
                 Network.Connect();
                 TriggerEvent(NetworkConnected);
                 TriggerEvent(OutputStarted);
                 Network.ListenToTrigger();
                 return;
             }
+            
             string json = Hardware.ToJson();
             _daqmx.Start(false, json);
             TriggerEvent(OutputStarted);
@@ -138,10 +190,10 @@ namespace DigitalOutput
             _daqmx.Stop();            
         }
 
-        //private void OnNewNetworkCycles()
-        //{                      
-            
-        //}
+        private void OnNewNetworkCycles()
+        {                      
+            PropertyChangedEvent("NetworkCycles");
+        }
 
         public void CopyToBuffer()
         {
@@ -151,7 +203,6 @@ namespace DigitalOutput
 
         private void OnNwStartRun()
         {
-            PropertyChangedEvent("NetworkCycles");
             string json = Hardware.ToJson();
             _daqmx.Start(true, json, NetworkCycles);
             TriggerEvent(OutputStarted);
@@ -164,7 +215,6 @@ namespace DigitalOutput
 
         private void OnHwRunStarted()
         {
-            Console.WriteLine("Hardware is ready " + DateTime.UtcNow.ToString("HH:mm:ss.ffffff"));
             Network.HardwareStarted();
         }
 
@@ -185,7 +235,9 @@ namespace DigitalOutput
             CycleCounter = 0;
             PropertyChangedEvent("RunCounter");
             HoopManager.Increment();
-            //CopyToBuffer();
+            GpibGeneric.Update();
+            GpibArb.Update();
+            CopyToBuffer();
             Network.StartNextRun();
         }
 

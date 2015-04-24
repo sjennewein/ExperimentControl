@@ -1,11 +1,15 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DigitalOutput", "DigitalOutput\DigitalOutput.csproj", "{85D88896-B52A-4254-A9EB-DC449B864953}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hulahoop", "..\Hulahoop\Hulahoop\Hulahoop.csproj", "{84F2B64F-19A4-4D98-BBE5-DE570A5A4D2A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColdNetworkStack", "..\ColdNetworkStack\ColdNetworkStack\ColdNetworkStack.csproj", "{455240AB-B9CB-4909-B0E7-AFB52198E91E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspherixGPIB", "..\AspherixGPIB\AspherixGPIB\AspherixGPIB.csproj", "{703BCF09-B14A-424A-B28D-0C2DE51A2919}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +51,16 @@ Global
 		{455240AB-B9CB-4909-B0E7-AFB52198E91E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{455240AB-B9CB-4909-B0E7-AFB52198E91E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{455240AB-B9CB-4909-B0E7-AFB52198E91E}.Release|x86.ActiveCfg = Release|Any CPU
+		{703BCF09-B14A-424A-B28D-0C2DE51A2919}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{703BCF09-B14A-424A-B28D-0C2DE51A2919}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{703BCF09-B14A-424A-B28D-0C2DE51A2919}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{703BCF09-B14A-424A-B28D-0C2DE51A2919}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{703BCF09-B14A-424A-B28D-0C2DE51A2919}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{703BCF09-B14A-424A-B28D-0C2DE51A2919}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{703BCF09-B14A-424A-B28D-0C2DE51A2919}.Release|Any CPU.Build.0 = Release|Any CPU
+		{703BCF09-B14A-424A-B28D-0C2DE51A2919}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{703BCF09-B14A-424A-B28D-0C2DE51A2919}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{703BCF09-B14A-424A-B28D-0C2DE51A2919}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

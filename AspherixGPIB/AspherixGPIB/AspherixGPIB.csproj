@@ -1,21 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{84F2B64F-19A4-4D98-BBE5-DE570A5A4D2A}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{703BCF09-B14A-424A-B28D-0C2DE51A2919}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Hulahoop</RootNamespace>
-    <AssemblyName>Hulahoop</AssemblyName>
+    <RootNamespace>AspherixGPIB</RootNamespace>
+    <AssemblyName>AspherixGPIB</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -25,8 +23,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -34,21 +32,19 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
-  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="fastJSON">
-      <HintPath>external_Library\fastJSON\fastJSON.dll</HintPath>
+    <Reference Include="fastJSON, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\DigitalOutput\DigitalOutput\external_Library\fastJSON\fastJSON.dll</HintPath>
     </Reference>
-    <Reference Include="Ionic.Zip.Reduced">
-      <HintPath>external_Library\IonicZip\Ionic.Zip.Reduced.dll</HintPath>
+    <Reference Include="Ionic.Zip.Reduced, Version=1.9.1.8, Culture=neutral, PublicKeyToken=edbe51ad942a3f5c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\DigitalOutput\DigitalOutput\external_Library\IonicZip\Ionic.Zip.Reduced.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
@@ -56,41 +52,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controller\ControllerLinearIterator.cs" />
-    <Compile Include="Controller\ControllerFileIterator.cs" />
-    <Compile Include="Controller\HoopManager.cs" />
-    <Compile Include="HulaHoopWindow.cs">
+    <Compile Include="Controller\CtrlGPIBArb.cs" />
+    <Compile Include="Controller\CtrlGPIBGeneric.cs" />
+    <Compile Include="Controller\CtrlGPIBArbParam.cs" />
+    <Compile Include="Data\DataGPIBArb.cs" />
+    <Compile Include="Data\DataGPIBGeneric.cs" />
+    <Compile Include="Data\DataGPIBArbParam.cs" />
+    <Compile Include="GPIBWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="HulaHoopWindow.Designer.cs">
-      <DependentUpon>HulaHoopWindow.cs</DependentUpon>
+    <Compile Include="GPIBWindow.Designer.cs">
+      <DependentUpon>GPIBWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\LinearIteratorGui.cs">
-      <SubType>UserControl</SubType>
+    <Compile Include="GUI\DynamicTextBox.cs">
+      <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\LinearIteratorGui.Designer.cs">
-      <DependentUpon>LinearIteratorGui.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\FileIteratorGui.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="GUI\FileIteratorGui.Designer.cs">
-      <DependentUpon>FileIteratorGui.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Interface\IteratorObserver.cs" />
-    <Compile Include="Interface\IteratorSubject.cs" />
-    <Compile Include="Model\ModelLinearIterator.cs" />
-    <Compile Include="Model\ModelFileIterator.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="GUI\LinearIteratorGui.resx">
-      <DependentUpon>LinearIteratorGui.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GUI\FileIteratorGui.resx">
-      <DependentUpon>FileIteratorGui.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HulaHoopWindow.resx">
-      <DependentUpon>HulaHoopWindow.cs</DependentUpon>
+    <EmbeddedResource Include="GPIBWindow.resx">
+      <DependentUpon>GPIBWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -102,6 +82,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -112,6 +93,24 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
   </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="VisaComLib">
+      <Guid>{DB8CBF00-D6D3-11D4-AA51-00A024EE30BD}</Guid>
+      <VersionMajor>5</VersionMajor>
+      <VersionMinor>2</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Hulahoop\Hulahoop\Hulahoop.csproj">
+      <Project>{84f2b64f-19a4-4d98-bbe5-de570a5a4d2a}</Project>
+      <Name>Hulahoop</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

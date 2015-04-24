@@ -47,9 +47,12 @@
             this.groupBox_Network = new System.Windows.Forms.GroupBox();
             this.button_HulaHoop = new System.Windows.Forms.Button();
             this.groupBox_Loops = new System.Windows.Forms.GroupBox();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.button_gpib = new System.Windows.Forms.Button();
             this.groupBox_Buffer.SuspendLayout();
             this.groupBox_Information.SuspendLayout();
             this.groupBox_Loops.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // TabPanel_pattern
@@ -248,11 +251,32 @@
             this.groupBox_Loops.TabStop = false;
             this.groupBox_Loops.Text = "Hula Hoops";
             // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.button_gpib);
+            this.groupBox1.Location = new System.Drawing.Point(449, 12);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(100, 128);
+            this.groupBox1.TabIndex = 12;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "GPIB";
+            // 
+            // button_gpib
+            // 
+            this.button_gpib.Location = new System.Drawing.Point(6, 19);
+            this.button_gpib.Name = "button_gpib";
+            this.button_gpib.Size = new System.Drawing.Size(88, 23);
+            this.button_gpib.TabIndex = 10;
+            this.button_gpib.Text = "Open Window";
+            this.button_gpib.UseVisualStyleBackColor = true;
+            this.button_gpib.Click += new System.EventHandler(this.button_GPIB_Click);
+            // 
             // DigitalMainwindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1284, 1006);
+            this.ClientSize = new System.Drawing.Size(1284, 750);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.groupBox_Loops);
             this.Controls.Add(this.groupBox_Network);
             this.Controls.Add(this.groupBox_Information);
@@ -269,6 +293,7 @@
             this.groupBox_Information.ResumeLayout(false);
             this.groupBox_Information.PerformLayout();
             this.groupBox_Loops.ResumeLayout(false);
+            this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -294,6 +319,8 @@
         private System.Windows.Forms.Label label_Run;
         private System.Windows.Forms.Label label_CyclesPerRun;
         private System.Windows.Forms.Label label_Of;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Button button_gpib;
     }
 }
 

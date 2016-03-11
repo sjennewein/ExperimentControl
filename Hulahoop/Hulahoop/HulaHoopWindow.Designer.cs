@@ -54,7 +54,7 @@
             // 
             // button_FileIterator
             // 
-            this.button_FileIterator.Location = new System.Drawing.Point(770, 12);
+            this.button_FileIterator.Location = new System.Drawing.Point(1152, 12);
             this.button_FileIterator.Name = "button_FileIterator";
             this.button_FileIterator.Size = new System.Drawing.Size(88, 23);
             this.button_FileIterator.TabIndex = 5;
@@ -67,14 +67,14 @@
             this.panel_FileIterator.AutoSize = true;
             this.panel_FileIterator.Location = new System.Drawing.Point(414, 45);
             this.panel_FileIterator.Name = "panel_FileIterator";
-            this.panel_FileIterator.Size = new System.Drawing.Size(444, 236);
+            this.panel_FileIterator.Size = new System.Drawing.Size(826, 236);
             this.panel_FileIterator.TabIndex = 4;
             // 
             // HulaHoopWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(870, 293);
+            this.ClientSize = new System.Drawing.Size(1252, 293);
             this.Controls.Add(this.panel_FileIterator);
             this.Controls.Add(this.button_FileIterator);
             this.Controls.Add(this.button_Iterator);

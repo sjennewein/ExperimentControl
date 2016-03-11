@@ -99,7 +99,7 @@ namespace APDTrigger_WinForms
             apdSignal.YAxes[0].Title.Color = Color.Black;
             apdSignal.YAxes[0].Title.Shadow.Visible = false;
             apdSignal.YAxes[0].Units.Visible = false;
-            apdSignal.YAxes[0].SetRange(0,5000);
+            apdSignal.YAxes[0].SetRange(0,_myController.Samples2Acquire);
 
             apdSignal.XAxis.SetRange(0, 5);
             apdSignal.XAxis.Title.Text = "Time [mm:ss]";
@@ -139,12 +139,12 @@ namespace APDTrigger_WinForms
             apdHistogram.Background.Color = Color.LightGray;
             apdHistogram.Background.GradientColor = Color.LightGray;
 
-            apdHistogram.YAxes[0].Title.Text = "Magnitude";
+            apdHistogram.YAxes[0].Title.Text = "#Occurences";
             apdHistogram.YAxes[0].Title.Color = Color.Black;
             apdHistogram.YAxes[0].Title.Shadow.Visible = false;
             apdHistogram.YAxes[0].Units.Visible = false;
 
-            apdHistogram.XAxis.Title.Text = "Counts";
+            apdHistogram.XAxis.Title.Text = "APD Counts";
             apdHistogram.XAxis.Units.Visible = false;
             apdHistogram.XAxis.Title.Color = Color.Black;
             apdHistogram.XAxis.Title.Shadow.Visible = false;
@@ -160,7 +160,7 @@ namespace APDTrigger_WinForms
             apdHistogram.BarViewOptions.IndexGroupingFitSideMargins = 0;
 
             //apdHistogram.MouseInteraction = false;
-            apdHistogram.XAxis.SetRange(0, 600);
+            apdHistogram.XAxis.SetRange(0, 6000);
             apdHistogram.YAxes[0].SetRange(0, 100);
 
             apdHistogram.EndUpdate();
@@ -229,22 +229,21 @@ namespace APDTrigger_WinForms
             bs.Shadow.Visible = false;
             bs.Fill.GradientColor = ChartTools.CalcGradient(Color.Black, Color.Black, 10);
             bs.Fill.Color = Color.LightGray;
-            bs.BarWidth = 0;
+            bs.BarWidth = 1;
             switch (_myChart2Display)
             {
                 case DisplayType.Histogram:
-                    for (int iBucket = 0; iBucket < 600; iBucket++)
+                    for (int iBucket = 0; iBucket < _myController.HistogramData.Length; iBucket++)
                     {
-                        bs.AddValue(iBucket, _myController.HistogramData[iBucket], "", true);
+                        bs.AddValue(iBucket*10, _myController.HistogramData[iBucket], "", true);
                     }
                     break;
                 case DisplayType.Spectrum:
                     if (_myController.BinnedSpectrum != null)
-                        for (int iBucket = 0;
-                             iBucket < Math.Ceiling((double) _myController.Samples2Acquire/_myController.APDBinsize);
-                             iBucket++)
+                        for (int iBucket = 0; iBucket < _myController.BinnedSpectrum.Length; iBucket++)                           
                         {
-                            bs.AddValue(iBucket, _myController.BinnedSpectrum[iBucket], "", true);
+                            double xAxis = (double) iBucket/_myController.APDBinsize;
+                            bs.AddValue(xAxis, _myController.BinnedSpectrum[iBucket], "", true);
                         }
                     break;
             }
@@ -447,16 +446,20 @@ namespace APDTrigger_WinForms
                     case "Spectrum":
                         apdHistogram.BeginUpdate();
                         apdHistogram.Title.Text = "Spectrum";
-                        apdHistogram.XAxis.SetRange(0,
-                                                    Math.Ceiling((double) _myController.Samples2Acquire/
-                                                                 _myController.APDBinsize));
+                        apdHistogram.XAxis.SetRange(0, _myController.Samples2Acquire);                                               
+                          //_myController.APDBinsize >= 1000  }
+                        //apdHistogram.XAxis.Title.Text = "Time [us]";
+                        apdHistogram.XAxis.Title.Text = "Time [us]";
+                        apdHistogram.YAxes[0].Title.Text = "Magnitude";
                         apdHistogram.EndUpdate();
                         _myChart2Display = DisplayType.Spectrum;
                         break;
                     case "Signal Histogram":
                         apdHistogram.BeginUpdate();
                         apdHistogram.Title.Text = "APD Counter Histogram";
-                        apdHistogram.XAxis.SetRange(0, 600);
+                        apdHistogram.XAxis.Title.Text = "#Bin";
+                        apdHistogram.YAxes[0].Title.Text = "#Occurences";
+                        apdHistogram.XAxis.SetRange(0, 6000);
                         apdHistogram.EndUpdate();
 
                         _myChart2Display = DisplayType.Histogram;

@@ -11,12 +11,14 @@ namespace Hulahoop.GUI
         public FileIteratorGui(ControllerFileIterator controller)
         {
             _controller = controller;
+            _controller.myGUI = this;
             InitializeComponent();
 
             textBox_Filename.DataBindings.Add("Text", _controller, "FileName");
             textBox_Name.DataBindings.Add("Text", _controller, "Name", false, DataSourceUpdateMode.OnPropertyChanged);
             label_Length.DataBindings.Add("Text", _controller, "Lines");
-                
+            label_counterValue.DataBindings.Add("Text", _controller, "Counter");
+            label_currentValue.DataBindings.Add("Text", _controller, "CurrentValue");
             label_Close.MouseClick += Delete;
         }
 

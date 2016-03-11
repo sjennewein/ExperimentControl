@@ -533,11 +533,8 @@ namespace APDTrigger_WinForms.Helper
 
                 foreach (AgingDataPoint dataPoint in _histogramDataPoints)
                 {
-
                     if (dataPoint.Value/interval < bucketNumber)
-
                         buckets[dataPoint.Value/interval]++;
-                    
                 }
             }
             _histogramData = buckets;

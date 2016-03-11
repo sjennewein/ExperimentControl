@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Windows.Forms;
 using Hulahoop.Interface;
 using Hulahoop.Model;
 using Ionic.Zip;
@@ -13,11 +14,12 @@ namespace Hulahoop.Controller
     {
         private readonly ModelFileIterator _model;
         private readonly List<IteratorObserver> _observers = new List<IteratorObserver>();
+        public UserControl myGUI;
         private int _counter;
         private int _fileLength;
 
         public ControllerFileIterator(ModelFileIterator model)
-        {
+        {            
             _model = model;
             if(_model.Iterations != null)
                 _fileLength = _model.Iterations.Length;
@@ -103,9 +105,17 @@ namespace Hulahoop.Controller
 
         private void PropertyChangedEvent(string propertyName)
         {
-            PropertyChangedEventHandler propertyChanged = PropertyChanged;
-            if (null != propertyChanged)
-                propertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            if (myGUI.InvokeRequired)
+            {
+                GuiUpdate callback = PropertyChangedEvent;
+                myGUI.Invoke(callback, propertyName);
+            }
+            else
+            {
+                PropertyChangedEventHandler propertyChanged = PropertyChanged;
+                if (null != propertyChanged)
+                    propertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
         }
 
         public void Reset()
@@ -150,5 +160,7 @@ namespace Hulahoop.Controller
         {
             return Name;
         }
+
+        private delegate void GuiUpdate(string propertyName);
     }
 }

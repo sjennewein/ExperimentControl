@@ -11,6 +11,7 @@ namespace Hulahoop.GUI
         public FileIteratorGui(ControllerFileIterator controller)
         {
             _controller = controller;
+            _controller.myGUI = this;
             InitializeComponent();
 
             textBox_Filename.DataBindings.Add("Text", _controller, "FileName");

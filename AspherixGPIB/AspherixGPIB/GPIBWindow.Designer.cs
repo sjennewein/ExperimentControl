@@ -58,6 +58,8 @@ namespace AspherixGPIB
             this.textBox_sampling = new AspherixGPIB.GUI.DynamicTextBox();
             this.textBox_A = new AspherixGPIB.GUI.DynamicTextBox();
             this.textBox_amplitude = new AspherixGPIB.GUI.DynamicTextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.textBox_offset = new AspherixGPIB.GUI.DynamicTextBox();
             this.SuspendLayout();
             // 
             // label1
@@ -80,7 +82,7 @@ namespace AspherixGPIB
             // label2
             // 
             this.label2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.label2.Location = new System.Drawing.Point(201, 9);
+            this.label2.Location = new System.Drawing.Point(201, 33);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(2, 350);
             this.label2.TabIndex = 3;
@@ -132,7 +134,7 @@ namespace AspherixGPIB
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(212, 216);
+            this.label9.Location = new System.Drawing.Point(212, 251);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(17, 13);
             this.label9.TabIndex = 15;
@@ -150,7 +152,7 @@ namespace AspherixGPIB
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(283, 161);
+            this.label11.Location = new System.Drawing.Point(283, 196);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(51, 13);
             this.label11.TabIndex = 17;
@@ -159,7 +161,7 @@ namespace AspherixGPIB
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(212, 242);
+            this.label12.Location = new System.Drawing.Point(212, 277);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(21, 13);
             this.label12.TabIndex = 19;
@@ -168,7 +170,7 @@ namespace AspherixGPIB
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(212, 268);
+            this.label13.Location = new System.Drawing.Point(212, 303);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(39, 13);
             this.label13.TabIndex = 21;
@@ -177,7 +179,7 @@ namespace AspherixGPIB
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(212, 294);
+            this.label14.Location = new System.Drawing.Point(212, 329);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(88, 13);
             this.label14.TabIndex = 23;
@@ -186,7 +188,7 @@ namespace AspherixGPIB
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(206, 185);
+            this.label15.Location = new System.Drawing.Point(206, 220);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(161, 13);
             this.label15.TabIndex = 24;
@@ -195,7 +197,7 @@ namespace AspherixGPIB
             // button_setGeneric
             // 
             this.button_setGeneric.Enabled = false;
-            this.button_setGeneric.Location = new System.Drawing.Point(120, 332);
+            this.button_setGeneric.Location = new System.Drawing.Point(120, 356);
             this.button_setGeneric.Name = "button_setGeneric";
             this.button_setGeneric.Size = new System.Drawing.Size(75, 23);
             this.button_setGeneric.TabIndex = 4;
@@ -206,7 +208,7 @@ namespace AspherixGPIB
             // button_setArb
             // 
             this.button_setArb.Enabled = false;
-            this.button_setArb.Location = new System.Drawing.Point(320, 332);
+            this.button_setArb.Location = new System.Drawing.Point(320, 356);
             this.button_setArb.Name = "button_setArb";
             this.button_setArb.Size = new System.Drawing.Size(75, 23);
             this.button_setArb.TabIndex = 14;
@@ -248,7 +250,7 @@ namespace AspherixGPIB
             // button_GPDisconnect
             // 
             this.button_GPDisconnect.Enabled = false;
-            this.button_GPDisconnect.Location = new System.Drawing.Point(12, 332);
+            this.button_GPDisconnect.Location = new System.Drawing.Point(12, 356);
             this.button_GPDisconnect.Name = "button_GPDisconnect";
             this.button_GPDisconnect.Size = new System.Drawing.Size(75, 23);
             this.button_GPDisconnect.TabIndex = 5;
@@ -259,7 +261,7 @@ namespace AspherixGPIB
             // button_ArbDisconnect
             // 
             this.button_ArbDisconnect.Enabled = false;
-            this.button_ArbDisconnect.Location = new System.Drawing.Point(215, 332);
+            this.button_ArbDisconnect.Location = new System.Drawing.Point(215, 356);
             this.button_ArbDisconnect.Name = "button_ArbDisconnect";
             this.button_ArbDisconnect.Size = new System.Drawing.Size(75, 23);
             this.button_ArbDisconnect.TabIndex = 15;
@@ -269,7 +271,7 @@ namespace AspherixGPIB
             // textBox_x
             // 
             this.textBox_x.Enabled = false;
-            this.textBox_x.Location = new System.Drawing.Point(302, 291);
+            this.textBox_x.Location = new System.Drawing.Point(302, 326);
             this.textBox_x.Name = "textBox_x";
             this.textBox_x.Size = new System.Drawing.Size(93, 20);
             this.textBox_x.TabIndex = 13;
@@ -277,7 +279,7 @@ namespace AspherixGPIB
             // textBox_sigma
             // 
             this.textBox_sigma.Enabled = false;
-            this.textBox_sigma.Location = new System.Drawing.Point(302, 265);
+            this.textBox_sigma.Location = new System.Drawing.Point(302, 300);
             this.textBox_sigma.Name = "textBox_sigma";
             this.textBox_sigma.Size = new System.Drawing.Size(93, 20);
             this.textBox_sigma.TabIndex = 12;
@@ -285,7 +287,7 @@ namespace AspherixGPIB
             // textBox_x0
             // 
             this.textBox_x0.Enabled = false;
-            this.textBox_x0.Location = new System.Drawing.Point(302, 239);
+            this.textBox_x0.Location = new System.Drawing.Point(302, 274);
             this.textBox_x0.Name = "textBox_x0";
             this.textBox_x0.Size = new System.Drawing.Size(93, 20);
             this.textBox_x0.TabIndex = 11;
@@ -301,7 +303,7 @@ namespace AspherixGPIB
             // textBox_A
             // 
             this.textBox_A.Enabled = false;
-            this.textBox_A.Location = new System.Drawing.Point(302, 213);
+            this.textBox_A.Location = new System.Drawing.Point(302, 248);
             this.textBox_A.Name = "textBox_A";
             this.textBox_A.Size = new System.Drawing.Size(93, 20);
             this.textBox_A.TabIndex = 10;
@@ -314,11 +316,30 @@ namespace AspherixGPIB
             this.textBox_amplitude.Size = new System.Drawing.Size(93, 20);
             this.textBox_amplitude.TabIndex = 8;
             // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(212, 153);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(51, 13);
+            this.label6.TabIndex = 26;
+            this.label6.Text = "Offset [V]";
+            // 
+            // textBox_offset
+            // 
+            this.textBox_offset.Enabled = false;
+            this.textBox_offset.Location = new System.Drawing.Point(302, 150);
+            this.textBox_offset.Name = "textBox_offset";
+            this.textBox_offset.Size = new System.Drawing.Size(93, 20);
+            this.textBox_offset.TabIndex = 25;
+            // 
             // GPIBWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(407, 367);
+            this.ClientSize = new System.Drawing.Size(407, 391);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.textBox_offset);
             this.Controls.Add(this.button_ArbDisconnect);
             this.Controls.Add(this.button_GPDisconnect);
             this.Controls.Add(this.richTextBox_GPCommands);
@@ -385,6 +406,8 @@ namespace AspherixGPIB
         private System.Windows.Forms.RichTextBox richTextBox_GPCommands;
         private System.Windows.Forms.Button button_GPDisconnect;
         private System.Windows.Forms.Button button_ArbDisconnect;
+        private System.Windows.Forms.Label label6;
+        private DynamicTextBox textBox_offset;
     }
 }
 

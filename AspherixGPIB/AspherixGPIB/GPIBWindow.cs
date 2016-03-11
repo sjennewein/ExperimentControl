@@ -43,6 +43,7 @@ namespace AspherixGPIB
             textBox_x0.SetController(_GpibWaveform.X0);
             textBox_sigma.SetController(_GpibWaveform.Sigma);
             textBox_x.SetController(_GpibWaveform.Samples);
+            textBox_offset.SetController(_GpibWaveform.Offset);
 
             textBox_GPAddress.DataBindings.Add("Text", _GpibGeneric, "Address",false,DataSourceUpdateMode.OnPropertyChanged);
             richTextBox_GPCommands.DataBindings.Add("Text", _GpibGeneric, "Commands");
@@ -102,12 +103,14 @@ namespace AspherixGPIB
                 textBox_sigma.Enabled = true;
                 textBox_x.Enabled = true;
                 textBox_x0.Enabled = true;
+                textBox_offset.Enabled = true;
                 button_ArbDisconnect.Enabled = true;
                 button_setArb.Enabled = true;
             }
             else
             {
                 _GpibWaveform.Activated = false;
+                textBox_offset.Enabled = false;
                 textBox_A.Enabled = false;
                 textBox_amplitude.Enabled = false;
                 textBox_arbAddress.Enabled = false;

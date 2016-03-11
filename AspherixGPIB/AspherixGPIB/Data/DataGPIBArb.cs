@@ -14,5 +14,6 @@ namespace AspherixGPIB.Data
         public DataGPIBArbParam X0;
         public DataGPIBArbParam Sigma;
         public DataGPIBArbParam Amplitude;
+        public DataGPIBArbParam Offset;
     }
 }

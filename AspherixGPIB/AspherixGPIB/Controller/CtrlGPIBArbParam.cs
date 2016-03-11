@@ -21,7 +21,8 @@ namespace AspherixGPIB.Controller
         public void UpdateData(DataGPIBArbParam data)
         {
             _data = data;
-            RegisterToSubject(_data.Iterator);
+            if(!string.IsNullOrEmpty(_data.Iterator))
+                RegisterToSubject(_data.Iterator);
             TriggerEvent(DataLoaded);
         }
 

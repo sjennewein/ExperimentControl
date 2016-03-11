@@ -37,6 +37,7 @@ namespace AspherixGPIB.Controller
         public CtrlGPIBArbParam X0;
         public CtrlGPIBArbParam Sigma;
         public CtrlGPIBArbParam Amplitude;
+        public CtrlGPIBArbParam Offset;
 
         public CtrlGPIBArb(DataGPIBArb data = null)
         {
@@ -49,6 +50,7 @@ namespace AspherixGPIB.Controller
                 _data.SamplingFrequency = new DataGPIBArbParam();
                 _data.Sigma = new DataGPIBArbParam();
                 _data.X0 = new DataGPIBArbParam();
+                _data.Offset = new DataGPIBArbParam();
             }
             else
             {
@@ -61,6 +63,7 @@ namespace AspherixGPIB.Controller
             X0 = new CtrlGPIBArbParam(_data.X0);
             Sigma = new CtrlGPIBArbParam(_data.Sigma);
             Amplitude = new CtrlGPIBArbParam(_data.Amplitude);            
+            Offset = new CtrlGPIBArbParam(_data.Offset);
         }
 
         private void Initialize()
@@ -71,6 +74,7 @@ namespace AspherixGPIB.Controller
             X0.UpdateData(_data.X0);
             Sigma.UpdateData(_data.Sigma);
             Amplitude.UpdateData(_data.Amplitude);
+            Offset.UpdateData(_data.Offset);
         }
 
         private void GpibConnect()
@@ -141,14 +145,18 @@ namespace AspherixGPIB.Controller
             }
             _gpib.WriteString("FUNC5");
 
-
-            _gpib.WriteString("AMPL" + volt + "VP");
             _gpib.WriteString("FSMP" + freq);
+            _gpib.WriteString("OFFS 0");
+            _gpib.WriteString("AMPL" + volt + "VP");
+            _gpib.WriteString("AMPL?");
+            System.Console.WriteLine("Arb Waveform Ampl: " +_gpib.ReadString());
         }
 
         public void FromJSON(string gpibArbWave)
         {
             _data = (DataGPIBArb)fastJSON.JSON.Instance.ToObject(gpibArbWave);
+            if(_data.Offset == null)
+                _data.Offset = new DataGPIBArbParam();
             Initialize();
         }
 
